@@ -2167,11 +2167,11 @@ void World::Update(uint32 diff)
     }
 
     /// <li> Handle AHBot operations
-    // if (m_timers[WUPDATE_AHBOT].Passed())
-    //{
-    //    sAuctionBot->Update();
-    //    m_timers[WUPDATE_AHBOT].Reset();
-    //}
+    if (m_timers[WUPDATE_AHBOT].Passed())
+    {
+        sAuctionBot->Update();
+        m_timers[WUPDATE_AHBOT].Reset();
+    }
     // end of playerbot mod
 
     /// <li> Handle session updates when the timer has passed
