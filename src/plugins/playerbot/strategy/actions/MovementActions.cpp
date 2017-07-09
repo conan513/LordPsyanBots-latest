@@ -56,7 +56,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
             ai->InterruptSpell();
         }
 
-        bool generatePath = bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) &&
+        bool generatePath = !bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) &&
                 !bot->IsFlying() && !bot->IsUnderWater();
         MotionMaster &mm = *bot->GetMotionMaster();
         mm.Clear();
@@ -69,10 +69,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z)
         }
         else
             mm.MovePoint(mapId, x, y, z, generatePath);
+
+        AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
+        return true;
     }
 
-    AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
-    return true;
+    return false;
 }
 
 bool MovementAction::MoveTo(Unit* target, float distance)
@@ -152,7 +154,7 @@ bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 bool MovementAction::IsMovingAllowed()
 {
     if (bot->isFrozen() || bot->IsPolymorphed() ||
-            (bot->isDead() && !bot->GetCorpse()) ||
+			(bot->isDead() && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
             bot->IsBeingTeleported() ||
             bot->isInRoots() ||
             bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || bot->IsCharmed() ||

@@ -62,9 +62,7 @@ bool SayAction::Execute(Event event)
     time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
     ai->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(time(0) + urand(1, 60));
 
-    if (!lastSaid || (time(0) - lastSaid) > 90) return false;
-
-    uint32 probability = probabilityTable[name];
+    uint32 probability = probabilityTable[qualifier];
     if (!probability) probability = 100;
     if (urand(0, 100) >= probability) return false;
 
@@ -82,7 +80,7 @@ bool SayAction::Execute(Event event)
         uint32 areaId = bot->GetMap()->GetAreaId(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
         if (areaId)
         {
-            AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaId);
+			AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaId);
             if (area)
             {
                 replaceAll(text, "<subzone>", area->area_name[0]);

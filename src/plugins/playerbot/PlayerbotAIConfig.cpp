@@ -29,7 +29,8 @@ bool PlayerbotAIConfig::Initialize()
     sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
 
     string error;
-    if (!config.LoadInitial("aiplayerbot.conf", error))
+	vector<string> args;
+    if (!config.LoadInitial("aiplayerbot.conf", args, error))
     {
         sLog->outMessage("playerbot", LOG_LEVEL_INFO, "AI Playerbot is Disabled. Unable to open configuration file aiplayerbot.conf");
         return false;
@@ -47,7 +48,7 @@ bool PlayerbotAIConfig::Initialize()
     reactDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReactDelay", 100);
 
     sightDistance = config.GetFloatDefault("AiPlayerbot.SightDistance", 50.0f);
-    spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 30.0f);
+    spellDistance = config.GetFloatDefault("AiPlayerbot.SpellDistance", 25.0f);
     reactDistance = config.GetFloatDefault("AiPlayerbot.ReactDistance", 150.0f);
     grindDistance = config.GetFloatDefault("AiPlayerbot.GrindDistance", 100.0f);
     lootDistance = config.GetFloatDefault("AiPlayerbot.LootDistance", 20.0f);
@@ -68,7 +69,7 @@ bool PlayerbotAIConfig::Initialize()
     randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15);
     randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.4);
 
-    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 4);
+    iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 10);
 
     allowGuildBots = config.GetBoolDefault("AiPlayerbot.AllowGuildBots", true);
 
@@ -105,8 +106,10 @@ bool PlayerbotAIConfig::Initialize()
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
-    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+attack weak");
+    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat");
     randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot");
+    combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
+    nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say");
 
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
 

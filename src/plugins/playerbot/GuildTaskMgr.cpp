@@ -179,15 +179,19 @@ bool GuildTaskMgr::CreateKillTask(uint32 owner, uint32 guildId)
     if (!player)
         return false;
 
+    uint32 rank = !urand(0, 2) ? CREATURE_ELITE_RAREELITE : CREATURE_ELITE_RARE;
     vector<uint32> ids;
     CreatureTemplateContainer const* creatureTemplateContainer = sObjectMgr->GetCreatureTemplates();
     for (CreatureTemplateContainer::const_iterator i = creatureTemplateContainer->begin(); i != creatureTemplateContainer->end(); ++i)
     {
         CreatureTemplate const& co = i->second;
-        if (co.rank != CREATURE_ELITE_RARE)
+        if (co.rank != rank)
             continue;
 
-        if (co.minlevel > player->getLevel() || co.maxlevel < player->getLevel() - 5)
+        if (co.maxlevel > player->getLevel() + 4 || co.minlevel < player->getLevel() - 3)
+            continue;
+
+        if (co.Name.find("UNUSED") != string::npos)
             continue;
 
         ids.push_back(i->first);
@@ -378,6 +382,8 @@ uint32 GuildTaskMgr::GetMaxItemTaskCount(uint32 itemId)
 
     if (proto->Quality < ITEM_QUALITY_RARE && proto->Stackable && proto->GetMaxStackSize() > 1)
         return proto->GetMaxStackSize();
+    else if (proto->Stackable && proto->GetMaxStackSize() > 1)
+        return urand(1 + proto->GetMaxStackSize() / 4, proto->GetMaxStackSize());
 
     return 1;
 }
@@ -530,9 +536,24 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
                 if (!guild)
                     continue;
 
-                sLog->outMessage("gtask", LOG_LEVEL_INFO, "Player '%s' Guild '%s' %s=%u (%u secs)",
+                ostringstream name;
+                name << value;
+                if (type == "killTask")
+                {
+                    CreatureTemplate const* proto = sObjectMgr->GetCreatureTemplate(value);
+                    string rank = proto->rank == CREATURE_ELITE_RARE ? "rare" : "elite";
+                    if (proto) name << " (" << proto->Name << "," << rank << ")";
+                }
+                else if (type == "itemTask")
+                {
+                    ItemTemplate const* proto = sObjectMgr->GetItemTemplate(value);
+                    string rank = proto->Quality == ITEM_QUALITY_UNCOMMON ? "uncommon" : "rare";
+                    if (proto) name << " (" << proto->Name1 << "," << rank << ")";
+                }
+
+                sLog->outMessage("gtask", LOG_LEVEL_INFO, "Player '%s' Guild '%s' %s=%s (%u secs)",
                         charName.c_str(), guild->GetName().c_str(),
-                        type.c_str(), value, validIn);
+                        type.c_str(), name.str().c_str(), validIn);
 
             } while (result->NextRow());
 
@@ -657,6 +678,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
     body << "Hello, " << player->GetName() << ",\n";
     body << "\n";
 
+    RandomItemType rewardType;
     if (itemTask)
     {
         ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemTask);
@@ -668,6 +690,7 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << "Many thanks,\n";
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
+        rewardType = RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP;
     }
     else if (killTask)
     {
@@ -680,12 +703,13 @@ bool GuildTaskMgr::Reward(uint32 owner, uint32 guildId)
         body << "Many thanks,\n";
         body << guild->GetName() << "\n";
         body << leader->GetName() << "\n";
+        rewardType = RANDOM_ITEM_GUILD_TASK_REWARD_TRADE;
     }
 
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     MailDraft draft("Thank You", body.str());
 
-    uint32 itemId = sRandomItemMgr.GetRandomItem(RANDOM_ITEM_GUILD_TASK_REWARD);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(rewardType);
     if (itemId)
     {
         Item* item = Item::CreateItem(itemId, 1, leader);

@@ -2,7 +2,7 @@
 #include "playerbot.h"
 #include "PlayerbotFactory.h"
 #include "../../server/game/Guilds/GuildMgr.h"
-#include "../ItemPrototype.h"
+#include "../Entities/Item/ItemTemplate.h"
 #include "PlayerbotAIConfig.h"
 #include "../../shared/DataStores/DBCStore.h"
 #include "../Miscellaneous/SharedDefines.h"
@@ -90,10 +90,9 @@ void PlayerbotFactory::Randomize(bool incremental)
     ClearSpells();
     ClearInventory();
     bot->SaveToDB();
-/* Disabled. Causes crash
+
     sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing quests...");
     InitQuests();
-*/
     // quest rewards boost bot level, so reduce back
     bot->SetLevel(level);
     ClearInventory();

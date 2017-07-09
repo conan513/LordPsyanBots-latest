@@ -189,7 +189,8 @@ void PlayerbotAI::HandleTeleportAck()
 	}
 	else if (bot->IsBeingTeleportedFar())
 	{
-		bot->GetSession()->HandleMoveWorldportAckOpcode();
+	    WorldPacket p;
+		bot->GetSession()->HandleMoveWorldportAckOpcode(p);
 		SetNextCheckDelay(1000);
 	}
 }
@@ -439,13 +440,13 @@ void PlayerbotAI::DoNextAction()
     {
         bot->m_movementInfo.SetMovementFlags((MovementFlags)(MOVEMENTFLAG_FLYING|MOVEMENTFLAG_CAN_FLY));
 
-        bot->SetSpeed(MOVE_FLIGHT, 1.0f, true);
-        bot->SetSpeed(MOVE_RUN, 1.0f, true);
+        bot->SetSpeed(MOVE_FLIGHT, 1.0f);
+        bot->SetSpeed(MOVE_RUN, 1.0f);
 
         if (master)
         {
-            bot->SetSpeed(MOVE_FLIGHT, master->GetSpeedRate(MOVE_FLIGHT), true);
-            bot->SetSpeed(MOVE_RUN, master->GetSpeedRate(MOVE_FLIGHT), true);
+            bot->SetSpeed(MOVE_FLIGHT, master->GetSpeedRate(MOVE_FLIGHT));
+            bot->SetSpeed(MOVE_RUN, master->GetSpeedRate(MOVE_FLIGHT));
         }
 
     }
@@ -502,14 +503,17 @@ void PlayerbotAI::DoSpecificAction(string name)
         case ACTION_RESULT_OK:
             out << name << ": done";
             TellMaster(out);
+            PlaySound(TEXT_EMOTE_NOD);
             return;
         case ACTION_RESULT_IMPOSSIBLE:
             out << name << ": impossible";
             TellMaster(out);
+            PlaySound(TEXT_EMOTE_NO);
             return;
         case ACTION_RESULT_USELESS:
             out << name << ": useless";
             TellMaster(out);
+            PlaySound(TEXT_EMOTE_NO);
             return;
         case ACTION_RESULT_FAILED:
             out << name << ": failed";
@@ -520,6 +524,17 @@ void PlayerbotAI::DoSpecificAction(string name)
     ostringstream out;
     out << name << ": unknown action";
     TellMaster(out);
+}
+
+bool PlayerbotAI::PlaySound(uint32 emote)
+{
+    if (EmotesTextSoundEntry const* soundEntry = FindTextSoundEmoteFor(emote, bot->getRace(), bot->getGender()))
+    {
+        bot->PlayDistanceSound(soundEntry->SoundId);
+        return true;
+    }
+
+    return false;
 }
 
 bool PlayerbotAI::ContainsStrategy(StrategyType type)
@@ -992,7 +1007,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
 {
     const SpellInfo* const pSpellInfo = spell->GetSpellInfo();
 
-    float castTime = spell->GetCastTime() + sPlayerbotAIConfig.reactDelay;
+    float castTime = spell->GetCastTime();
     if (pSpellInfo->IsChanneled())
     {
         int32 duration = pSpellInfo->GetDuration();
@@ -1006,7 +1021,7 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     if (castTime < globalCooldown)
         castTime = globalCooldown;
 
-    SetNextCheckDelay(castTime);
+    SetNextCheckDelay(castTime + sPlayerbotAIConfig.reactDelay);
 }
 
 void PlayerbotAI::InterruptSpell()
@@ -1020,6 +1035,9 @@ void PlayerbotAI::InterruptSpell()
     {
         Spell* spell = bot->GetCurrentSpell((CurrentSpellTypes)type);
         if (!spell)
+            continue;
+
+        if (spell->m_spellInfo->IsPositive())
             continue;
 
         bot->InterruptSpell((CurrentSpellTypes)type);
