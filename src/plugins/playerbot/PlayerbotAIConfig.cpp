@@ -2,7 +2,7 @@
 #include "PlayerbotAIConfig.h"
 #include "playerbot.h"
 #include "RandomPlayerbotFactory.h"
-#include "../../game/Accounts/AccountMgr.h"
+#include "AccountMgr.h"
 
 using namespace std;
 
@@ -29,8 +29,7 @@ bool PlayerbotAIConfig::Initialize()
     sLog->outMessage("playerbot", LOG_LEVEL_INFO, "Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
 
     string error;
-	vector<string> args;
-    if (!config.LoadInitial("aiplayerbot.conf", args, error))
+    if (!config.LoadInitial("aiplayerbot.conf", error))
     {
         sLog->outMessage("playerbot", LOG_LEVEL_INFO, "AI Playerbot is Disabled. Unable to open configuration file aiplayerbot.conf");
         return false;

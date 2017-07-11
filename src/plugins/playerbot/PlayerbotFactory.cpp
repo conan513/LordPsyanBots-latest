@@ -1,13 +1,13 @@
 #include "../pchdef.h"
 #include "playerbot.h"
 #include "PlayerbotFactory.h"
-#include "../../server/game/Guilds/GuildMgr.h"
-#include "../Entities/Item/ItemTemplate.h"
+#include "GuildMgr.h"
+#include "ItemPrototype.h"
 #include "PlayerbotAIConfig.h"
-#include "../../shared/DataStores/DBCStore.h"
-#include "../Miscellaneous/SharedDefines.h"
+#include "DBCStore.h"
+#include "SharedDefines.h"
 #include "../ahbot/AhBot.h"
-#include "../Entities/Pet/Pet.h"
+#include "Pet.h"
 #include "RandomPlayerbotFactory.h"
 
 using namespace ai;

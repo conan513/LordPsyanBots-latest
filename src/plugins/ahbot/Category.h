@@ -1,6 +1,6 @@
 #pragma once
 #include "PricingStrategy.h"
-#include "../Entities/Item/ItemTemplate.h"
+#include "ItemPrototype.h"
 
 using namespace std;
 

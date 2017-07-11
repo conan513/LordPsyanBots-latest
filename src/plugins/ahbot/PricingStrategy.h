@@ -1,5 +1,5 @@
 #pragma once
-#include "../../game/Entities/Item/ItemTemplate.h"
+#include "ItemPrototype.h"
 
 using namespace std;
 
