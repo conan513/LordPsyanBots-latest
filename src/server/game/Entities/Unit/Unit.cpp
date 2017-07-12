@@ -12506,6 +12506,7 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
                 return;
         }
 
+        data << GetPackGUID();
         BuildMovementPacket(&data);
         data << float(GetSpeed(mtype));
         SendMessageToSet(&data, true);
@@ -12563,6 +12564,11 @@ void Unit::SetSpeed(UnitMoveType mtype, float rate, bool forced)
         data << float(GetSpeed(mtype));
         SendMessageToSet(&data, true);
     }
+}
+
+bool Unit::IsGhouled() const
+{
+    return HasAura(SPELL_DK_RAISE_ALLY);
 }
 
 void Unit::setDeathState(DeathState s)
