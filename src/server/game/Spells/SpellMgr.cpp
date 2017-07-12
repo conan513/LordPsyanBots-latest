@@ -353,6 +353,12 @@ SpellMgr::~SpellMgr()
     UnloadSpellInfoStore();
 }
 
+SpellMgr* SpellMgr::instance()
+{
+    static SpellMgr instance;
+    return &instance;
+}
+
 /// Some checks for spells, to prevent adding deprecated/broken spells for trainers, spell book, etc
 bool SpellMgr::IsSpellValid(SpellInfo const* spellInfo, Player* player, bool msg)
 {
@@ -3050,6 +3056,7 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 48246: // Ball of Flame
             case 36327: // Shoot Arcane Explosion Arrow
             case 55479: // Force Obedience
+            case 28560: // Summon Blizzard (Sapphiron)
                 spellInfo->MaxAffectedTargets = 1;
                 break;
             case 36384: // Skartax Purple Beam
