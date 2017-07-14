@@ -41,6 +41,7 @@ target_include_directories(game
 target_link_libraries(game
   PUBLIC
     shared
+    plugins
     Detour)
 
 set_target_properties(game

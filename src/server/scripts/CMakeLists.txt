@@ -34,6 +34,7 @@ if(SCRIPTS)
   PrepareScripts(Northrend PRIVATE_SOURCES)
   PrepareScripts(Events PRIVATE_SOURCES)
   PrepareScripts(Pet PRIVATE_SOURCES)
+  PrepareScripts(Plugins PRIVATE_SOURCES)
 endif()
 
 message(STATUS "SCRIPT PREPARATION COMPLETE")
@@ -63,6 +64,7 @@ target_include_directories(scripts
 
 target_link_libraries(scripts
   PUBLIC
+    plugins
     game)
 
 set_target_properties(scripts

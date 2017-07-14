@@ -38,9 +38,9 @@
 #include "SpellHistory.h"
 #include "Transport.h"
 
-#include "../../../plugins/ahbot/AhBot.h"
-#include "../../../plugins/playerbot/playerbot.h"
-#include "../../../plugins/playerbot/GuildTaskMgr.h"
+#include "AhBot.h"
+#include "playerbot.h"
+#include "GuildTaskMgr.h"
 
 class misc_commandscript : public CommandScript
 {
