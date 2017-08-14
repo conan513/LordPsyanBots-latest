@@ -1101,6 +1101,10 @@ MinPetitionSigns = 9
 
 MaxGroupXPDistance = 74
 
+MonsterSight = 50.000000
+
+GuarderSight = 50.000000
+
 #
 #    MaxRecruitAFriendBonusDistance
 #        Description: Max distance between character and and group to gain the Recruit-A-Friend
