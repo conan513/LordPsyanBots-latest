@@ -49,6 +49,7 @@ target_link_libraries(worldserver
   PUBLIC
     plugins
     scripts
+    game
     gsoap
     readline)
 

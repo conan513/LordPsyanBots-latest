@@ -1348,8 +1348,8 @@ HotSwap.ScriptDir = "scripts"
 #        Description: Enables the dynamic script recompiler.
 #                     Watches your script source directories and recompiles the
 #                     script modules on changes.
-#        Default:     0 - (Disabled)
-#                     1 - (Enabled)
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
 
 HotSwap.EnableReCompiler = 1
 
@@ -3337,7 +3337,6 @@ AuctionHouseBot.Class.Quest = 1
 AuctionHouseBot.Class.Key = 1
 AuctionHouseBot.Class.Misc = 5
 AuctionHouseBot.Class.Glyph = 3
-
 
 #
 ###################################################################################################

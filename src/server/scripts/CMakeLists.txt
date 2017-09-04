@@ -207,7 +207,7 @@ add_library(scripts STATIC
 target_link_libraries(scripts
   PUBLIC
     plugins
-    game)
+    game-interface)
 target_include_directories(scripts
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR})
