@@ -26,7 +26,7 @@ bool AhBotConfig::Initialize()
 {
     string error;
 	vector<string> args;
-    if (!config.LoadInitial("ahbot.conf", error))
+    if (!config.LoadInitial("ahbot.conf", std::vector<std::string>(args), error))
     {
         sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled. Unable to open configuration file ahbot.conf");
         return false;

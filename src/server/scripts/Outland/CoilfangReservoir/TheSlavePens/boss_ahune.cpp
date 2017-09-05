@@ -542,6 +542,7 @@ public:
         npc_earthen_ring_flamecallerAI(Creature* creature) : ScriptedAI(creature)
         {
             _instance = me->GetInstanceScript();
+            _mySpot = 0;
         }
 
         void Reset() override
@@ -888,7 +889,7 @@ public:
             GetCaster()->CastSpell(GetHitUnit(), SPELL_SUMMON_ICE_SPEAR_BUNNY, true);
         }
 
-        void Register()
+        void Register() override
         {
             OnEffectHitTarget += SpellEffectFn(spell_ice_spear_target_picker_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
