@@ -2974,12 +2974,17 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
         }
 
     // don't allow channeled spells / spells with cast time to be cast while moving
+    // exception are only channeled spells that have no casttime and SPELL_ATTR5_CAN_CHANNEL_WHEN_MOVING
     // (even if they are interrupted on moving, spells with almost immediate effect get to have their effect processed before movement interrupter kicks in)
     if ((m_spellInfo->IsChanneled() || m_casttime) && m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->isMoving() && m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
     {
-        SendCastResult(SPELL_FAILED_MOVING);
-        finish(false);
-        return;
+        // 1. Is a channel spell, 2. Has no casttime, 3. And has flag to allow movement during channel
+        if (!(m_spellInfo->IsChanneled() && !m_casttime && m_spellInfo->HasAttribute(SPELL_ATTR5_CAN_CHANNEL_WHEN_MOVING)))
+        {
+            SendCastResult(SPELL_FAILED_MOVING);
+            finish(false);
+            return;
+        }
     }
 
     // set timer base at cast time
@@ -3516,11 +3521,11 @@ void Spell::update(uint32 difftime)
 
     // check if the player caster has moved before the spell finished
     if ((m_caster->GetTypeId() == TYPEID_PLAYER && m_timer != 0) &&
-        m_caster->isMoving() && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT) &&
-        (m_spellInfo->Effects[0].Effect != SPELL_EFFECT_STUCK || !m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_FAR)))
+        m_caster->isMoving() && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT &&
+        (m_spellInfo->Effects[0].Effect != SPELL_EFFECT_STUCK || !m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING_FAR))))
     {
         // don't cancel for melee, autorepeat, triggered and instant spells
-        if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !IsTriggered())
+        if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !IsTriggered() && !(IsChannelActive() && m_spellInfo->HasAttribute(SPELL_ATTR5_CAN_CHANNEL_WHEN_MOVING)))
             cancel();
     }
 
@@ -3787,6 +3792,9 @@ void Spell::SendCastResult(SpellCastResult result)
     if (m_caster->ToPlayer()->GetSession()->PlayerLoading())  // don't send cast results at loading time
         return;
 
+    if (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR)
+        result = SPELL_FAILED_DONT_REPORT;
+
     SendCastResult(m_caster->ToPlayer(), m_spellInfo, m_cast_count, result, m_customError);
 }
 
@@ -3802,6 +3810,9 @@ void Spell::SendPetCastResult(SpellCastResult result)
     Player* player = owner->ToPlayer();
     if (!player)
         return;
+
+    if (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR)
+        result = SPELL_FAILED_DONT_REPORT;
 
     WorldPacket data(SMSG_PET_CAST_FAILED, 1 + 4 + 1);
     WriteCastResultInfo(data, player, m_spellInfo, m_cast_count, result, m_customError);
@@ -4846,9 +4857,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SpellCastResult(condInfo.mLastFailedCondition->ErrorType);
             }
 
-            if (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR)
-                return SPELL_FAILED_DONT_REPORT;
-
             if (!condInfo.mLastFailedCondition || !condInfo.mLastFailedCondition->ConditionTarget)
                 return SPELL_FAILED_CASTER_AURASTATE;
             return SPELL_FAILED_BAD_TARGETS;
@@ -5499,7 +5507,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                     Battlefield* Bf = sBattlefieldMgr->GetBattlefieldToZoneId(m_originalCaster->GetZoneId());
                     if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(m_originalCaster->GetAreaId()))
                         if (area->flags & AREA_FLAG_NO_FLY_ZONE  || (Bf && !Bf->CanFlyIn()))
-                            return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NOT_HERE;
+                            return SPELL_FAILED_NOT_HERE;
                 }
                 break;
             }
@@ -5800,22 +5808,22 @@ SpellCastResult Spell::CheckRange(bool strict)
         {
             // Because of lag, we can not check too strictly here.
             if (!m_caster->IsWithinMeleeRange(target, max_range))
-                return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_OUT_OF_RANGE : SPELL_FAILED_DONT_REPORT;
+                return SPELL_FAILED_OUT_OF_RANGE;
         }
         else if (!m_caster->IsWithinCombatRange(target, max_range))
-            return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_OUT_OF_RANGE : SPELL_FAILED_DONT_REPORT; //0x5A;
+            return SPELL_FAILED_OUT_OF_RANGE; //0x5A;
 
         if (range_type == SPELL_RANGE_RANGED)
         {
             if (m_caster->IsWithinMeleeRange(target))
-                return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
+                return SPELL_FAILED_TOO_CLOSE;
         }
         else if (min_range && m_caster->IsWithinCombatRange(target, min_range)) // skip this check if min_range = 0
-            return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
+            return SPELL_FAILED_TOO_CLOSE;
 
         if (m_caster->GetTypeId() == TYPEID_PLAYER &&
             (m_spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc(static_cast<float>(M_PI), target))
-            return !(_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_UNIT_NOT_INFRONT : SPELL_FAILED_DONT_REPORT;
+            return SPELL_FAILED_UNIT_NOT_INFRONT;
     }
 
     if (m_targets.HasDst() && !m_targets.HasTraj())
@@ -6348,11 +6356,11 @@ SpellCastResult Spell::CheckItems()
 
             // skip spell if no weapon in slot or broken
             if (!item || item->IsBroken())
-                return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
 
             // skip spell if weapon not fit to triggered spell
             if (!item->IsFitToSpellRequirements(m_spellInfo))
-                return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
         }
 
         // offhand hand weapon required
@@ -6362,11 +6370,11 @@ SpellCastResult Spell::CheckItems()
 
             // skip spell if no weapon in slot or broken
             if (!item || item->IsBroken())
-                return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
 
             // skip spell if weapon not fit to triggered spell
             if (!item->IsFitToSpellRequirements(m_spellInfo))
-                return (_triggeredCastFlags & TRIGGERED_DONT_REPORT_CAST_ERROR) ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+                return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
         }
     }
 

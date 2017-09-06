@@ -66,6 +66,7 @@
 #include "WaypointMovementGenerator.h"
 #include "WeatherMgr.h"
 #include "WorldSession.h"
+#include "M2Stores.h"
 // Prepatch by LordPsyan
 // 01
 // 02
@@ -1478,6 +1479,9 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Initialize data stores...");
     LoadDBCStores(m_dataPath);
     DetectDBCLang();
+
+    // Load cinematic cameras
+    LoadM2Cameras(m_dataPath);
 
     std::vector<uint32> mapIds;
     for (uint32 mapId = 0; mapId < sMapStore.GetNumRows(); mapId++)
