@@ -206,7 +206,7 @@ class spell_ioc_parachute_ic : public SpellScriptLoader
 class StartLaunchEvent : public BasicEvent
 {
     public:
-        StartLaunchEvent(Position const& pos, ObjectGuid::LowType lowGuid) : _pos(&pos), _lowGuid(lowGuid)
+        StartLaunchEvent(Position const& pos, ObjectGuid::LowType lowGuid) : _pos(pos), _lowGuid(lowGuid)
         {
         }
 
@@ -218,15 +218,15 @@ class StartLaunchEvent : public BasicEvent
 
             player->AddAura(SPELL_LAUNCH_NO_FALLING_DAMAGE, player); // prevents falling damage
             float speedZ = 10.0f;
-            float dist = player->GetExactDist2d(_pos);
+            float dist = player->GetExactDist2d(&_pos);
 
             player->ExitVehicle();
-            player->GetMotionMaster()->MoveJump(*_pos, dist, speedZ, EVENT_JUMP, true);
+            player->GetMotionMaster()->MoveJump(_pos, dist, speedZ, EVENT_JUMP, true);
             return true;
         }
 
     private:
-        Position const* _pos;
+        Position _pos;
         ObjectGuid::LowType _lowGuid;
 };
 
