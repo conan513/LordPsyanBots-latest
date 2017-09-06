@@ -43,6 +43,7 @@
 #include "WardenWin.h"
 #include "MoveSpline.h"
 #include "WardenMac.h"
+#include "Metric.h"
 
 #include <zlib.h>
 
@@ -397,6 +398,8 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         GetPlayer()->GetPlayerbotMgr()->UpdateSessions(0);
     // end of playerbot mod
 
+    TC_METRIC_VALUE("processed_packets", processedPackets);
+
     _recvQueue.readd(requeuePackets.begin(), requeuePackets.end());
 
     if (m_Socket && m_Socket->IsOpen() && _warden)
@@ -558,6 +561,8 @@ void WorldSession::LogoutPlayer(bool save)
 
         //! Call script hook before deletion
         sScriptMgr->OnPlayerLogout(_player);
+
+        TC_METRIC_EVENT("player_events", "Logout", _player->GetName());
 
         //! Remove the player from the world
         // the player may not be in the world when logging out
