@@ -481,7 +481,6 @@ enum SMART_ACTION
     SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL            = 43,     // Creature_template entry(param1) OR ModelId (param2) (or 0 for both to dismount)
     SMART_ACTION_SET_INGAME_PHASE_MASK              = 44,     // mask
     SMART_ACTION_SET_DATA                           = 45,     // Field, Data (only creature @todo)
-    SMART_ACTION_MOVE_FORWARD                       = 46,     // distance
     SMART_ACTION_SET_VISIBILITY                     = 47,     // on/off
     SMART_ACTION_SET_ACTIVE                         = 48,     // on/off
     SMART_ACTION_ATTACK_START                       = 49,     //
@@ -549,10 +548,11 @@ enum SMART_ACTION
     SMART_ACTION_GAME_EVENT_STOP                    = 111,    // GameEventId
     SMART_ACTION_GAME_EVENT_START                   = 112,    // GameEventId
     SMART_ACTION_START_CLOSEST_WAYPOINT             = 113,    // wp1, wp2, wp3, wp4, wp5, wp6, wp7
-    SMART_ACTION_RISE_UP                            = 114,    // distance
+    SMART_ACTION_MOVE_OFFSET                        = 114,
     SMART_ACTION_RANDOM_SOUND                       = 115,    // soundId1, soundId2, soundId3, soundId4, soundId5, onlySelf
+    SMART_ACTION_SET_CORPSE_DELAY                   = 116,    // timer
 
-    SMART_ACTION_END                                = 116
+    SMART_ACTION_END                                = 117
 };
 
 struct SmartAction
@@ -1035,6 +1035,11 @@ struct SmartAction
             std::array<uint32, SMART_ACTION_PARAM_COUNT - 1> sounds;
             uint32 onlySelf;
         } randomSound;
+
+        struct
+        {
+            uint32 timer;
+        } corpseDelay;
 
         //! Note for any new future actions
         //! All parameters must have type uint32
