@@ -1,5 +1,5 @@
 #pragma once
-#include "ItemPrototype.h"
+#include "ItemTemplate.h"
 
 using namespace std;
 

@@ -2,7 +2,7 @@
 #include "playerbot.h"
 #include "PlayerbotFactory.h"
 #include "GuildMgr.h"
-#include "ItemPrototype.h"
+#include "ItemTemplate.h"
 #include "PlayerbotAIConfig.h"
 #include "DBCStore.h"
 #include "SharedDefines.h"

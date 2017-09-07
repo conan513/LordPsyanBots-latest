@@ -2496,6 +2496,14 @@ Battleground.RewardLoserHonorFirst  = 5
 Battleground.RewardLoserHonorLast   = 5
 
 #
+#    Battleground.ReportAFK
+#        Description: Number of reports needed to kick someone AFK from Battleground.
+#        Range:       1-9
+#        Default:     3
+
+Battleground.ReportAFK = 3
+
+#
 ###################################################################################################
 
 ###################################################################################################
@@ -3670,6 +3678,7 @@ Logger.mmaps=3,Server
 #Logger.bg.arena=3,Console Server
 #Logger.bg.battlefield=3,Console Server
 #Logger.bg.battleground=3,Console Server
+#Logger.bg.reportpvpafk=3,Console Server
 #Logger.chat.log=3,Console Server
 #Logger.calendar=3,Console Server
 #Logger.chat.system=3,Console Server
