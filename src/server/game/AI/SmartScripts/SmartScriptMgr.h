@@ -551,8 +551,9 @@ enum SMART_ACTION
     SMART_ACTION_MOVE_OFFSET                        = 114,
     SMART_ACTION_RANDOM_SOUND                       = 115,    // soundId1, soundId2, soundId3, soundId4, soundId5, onlySelf
     SMART_ACTION_SET_CORPSE_DELAY                   = 116,    // timer
+    SMART_ACTION_DISABLE_EVADE                      = 117,    // 0/1 (1 = disabled, 0 = enabled)
 
-    SMART_ACTION_END                                = 117
+    SMART_ACTION_END                                = 118
 };
 
 struct SmartAction
@@ -1041,6 +1042,11 @@ struct SmartAction
             uint32 timer;
         } corpseDelay;
 
+        struct
+        {
+            uint32 disable;
+        } disableEvade;
+
         //! Note for any new future actions
         //! All parameters must have type uint32
 
@@ -1096,8 +1102,9 @@ enum SMARTAI_TARGETS
     SMART_TARGET_THREAT_LIST                    = 24,   // All units on creature's threat list
     SMART_TARGET_CLOSEST_ENEMY                  = 25,   // maxDist, playerOnly
     SMART_TARGET_CLOSEST_FRIENDLY               = 26,   // maxDist, playerOnly
+    SMART_TARGET_LOOT_RECIPIENTS                = 27,   // all players that have tagged this creature (for kill credit)
 
-    SMART_TARGET_END                            = 27
+    SMART_TARGET_END                            = 28
 };
 
 struct SmartTarget

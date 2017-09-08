@@ -259,9 +259,7 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
     if (!me->IsAlive())
         return false;
 
-    // don't remove vehicle auras, passengers aren't supposed to drop off the vehicle
-    // don't remove clone caster on evade (to be verified)
-    me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE, SPELL_AURA_CLONE_CASTER);
+    me->RemoveAurasOnEvade();
 
     // sometimes bosses stuck in combat?
     me->DeleteThreatList();
@@ -278,11 +276,11 @@ bool CreatureAI::_EnterEvadeMode(EvadeReason /*why*/)
     return true;
 }
 
-const uint32 BOUNDARY_VISUALIZE_CREATURE = 15425;
-const float BOUNDARY_VISUALIZE_CREATURE_SCALE = 0.25f;
-const int8 BOUNDARY_VISUALIZE_STEP_SIZE = 1;
-const int32 BOUNDARY_VISUALIZE_FAILSAFE_LIMIT = 750;
-const float BOUNDARY_VISUALIZE_SPAWN_HEIGHT = 5.0f;
+static const uint32 BOUNDARY_VISUALIZE_CREATURE = 15425;
+static const float BOUNDARY_VISUALIZE_CREATURE_SCALE = 0.25f;
+static const int8 BOUNDARY_VISUALIZE_STEP_SIZE = 1;
+static const int32 BOUNDARY_VISUALIZE_FAILSAFE_LIMIT = 750;
+static const float BOUNDARY_VISUALIZE_SPAWN_HEIGHT = 5.0f;
 int32 CreatureAI::VisualizeBoundary(uint32 duration, Unit* owner, bool fill) const
 {
     typedef std::pair<int32, int32> coordinate;
