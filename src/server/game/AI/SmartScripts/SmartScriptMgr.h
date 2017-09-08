@@ -442,11 +442,11 @@ enum SMART_ACTION
     SMART_ACTION_SOUND                              = 4,      // SoundId, onlySelf
     SMART_ACTION_PLAY_EMOTE                         = 5,      // EmoteId
     SMART_ACTION_FAIL_QUEST                         = 6,      // QuestID
-    SMART_ACTION_ADD_QUEST                          = 7,      // QuestID
+    SMART_ACTION_OFFER_QUEST                        = 7,      // QuestID, directAdd
     SMART_ACTION_SET_REACT_STATE                    = 8,      // state
     SMART_ACTION_ACTIVATE_GOBJECT                   = 9,      //
     SMART_ACTION_RANDOM_EMOTE                       = 10,     // EmoteId1, EmoteId2, EmoteId3...
-    SMART_ACTION_CAST                               = 11,     // SpellId, CastFlags
+    SMART_ACTION_CAST                               = 11,     // SpellId, CastFlags, TriggeredFlags
     SMART_ACTION_SUMMON_CREATURE                    = 12,     // CreatureID, summonType, duration in ms, attackInvoker
     SMART_ACTION_THREAT_SINGLE_PCT                  = 13,     // Threat%
     SMART_ACTION_THREAT_ALL_PCT                     = 14,     // Threat%
@@ -598,6 +598,12 @@ struct SmartAction
 
         struct
         {
+            uint32 questID;
+            uint32 directAdd;
+        } questOffer;
+
+        struct
+        {
             uint32 state;
         } react;
 
@@ -614,12 +620,19 @@ struct SmartAction
         struct
         {
             uint32 spell;
-            uint32 flags;
+            uint32 castFlags;
+            uint32 triggerFlags;
+        } cast;
+
+        struct
+        {
+            uint32 spell;
+            uint32 castFlags;
             uint32 targetType;
             uint32 targetParam1;
             uint32 targetParam2;
             uint32 targetParam3;
-        } cast;
+        } crossCast;
 
         struct
         {
@@ -727,6 +740,7 @@ struct SmartAction
         struct
         {
             uint32 creature;
+            uint32 updateLevel;
         } updateTemplate;
 
         struct
