@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -150,7 +149,7 @@ static inline Position const& GetRandomMinionSpawnPoint()
 // uniformly distribute on the circle
 static Position GetRandomPositionOnCircle(Position const& center, float radius)
 {
-    double angle = rand_norm() * M_2_PI;
+    double angle = rand_norm() * 2.0 * M_PI;
     double relDistance = rand_norm() + rand_norm();
     if (relDistance > 1)
         relDistance = 1 - relDistance;
@@ -643,7 +642,7 @@ struct npc_kelthuzad_minionAI : public ScriptedAI
             return 0;
         }
         
-        void MovementInform(uint32 /*type*/, uint32 id)
+        void MovementInform(uint32 /*type*/, uint32 id) override
         {
             if (id == MOVEMENT_MINION_RANDOM)
                 _movementTimer = urandms(2, 10) + urandms(2, 10);
@@ -681,7 +680,7 @@ public:
     {
         npc_kelthuzad_skeletonAI(Creature* creature) : npc_kelthuzad_minionAI(creature) { }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
             UpdateRandomMovement(diff);
 
@@ -707,7 +706,7 @@ public:
     {
         npc_kelthuzad_bansheeAI(Creature* creature) : npc_kelthuzad_minionAI(creature) { }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
             UpdateRandomMovement(diff);
 
@@ -733,7 +732,7 @@ public:
     {
         npc_kelthuzad_abominationAI(Creature* creature) : npc_kelthuzad_minionAI(creature), _woundTimer(urandms(10, 20)) { }
 
-        void UpdateAI(uint32 diff)
+        void UpdateAI(uint32 diff) override
         {
             UpdateRandomMovement(diff);
 
