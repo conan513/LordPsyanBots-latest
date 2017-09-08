@@ -223,7 +223,7 @@ public:
                     case EVENT_KILL_ZOMBIE_SINGLE:
                     {
                         Creature* zombieToBeEaten = ObjectAccessor::GetCreature(*me, zombieToBeEatenGUID);
-                        if (zombieToBeEaten && zombieToBeEaten->IsAlive() && zombieToBeEaten->IsWithinDistInMap(me, 10.0)) 
+                        if (zombieToBeEaten && zombieToBeEaten->IsAlive() && zombieToBeEaten->IsWithinDistInMap(me, 10.0))
                             DoCast(zombieToBeEaten, SPELL_ZOMBIE_CHOW_SEARCH_SINGLE); // do the killing + healing in done inside by spell script see below.
 
                         zombieToBeEatenGUID = ObjectGuid::Empty;
@@ -247,15 +247,18 @@ public:
                             if (zombie && zombie->IsAlive() && zombie->GetExactDist2d(me) > 18.0)
                                 zombie = nullptr;
                         }
-                            
+
                         if (zombie) // cast the aoe spell only if at least one zombie is found nearby
                         {
                             Talk(EMOTE_DEVOURS_ALL);
-                            DoCastAOE(SPELL_ZOMBIE_CHOW_SEARCH_MULTI); 
+                            DoCastAOE(SPELL_ZOMBIE_CHOW_SEARCH_MULTI);
                         }
                         break;
                     }
                 }
+
+                if (me->HasUnitState(UNIT_STATE_CASTING))
+                    return;
             }
 
             DoMeleeAttackIfReady();
@@ -267,7 +270,7 @@ public:
                 me->GetMotionMaster()->MoveIdle();
                 events.ScheduleEvent(EVENT_KILL_ZOMBIE_SINGLE, Seconds(1));
             }
-            
+
         }
 
         void DoAction(int32 action) override
@@ -433,11 +436,10 @@ public:
                 {
                     me->SetReactState(ReactStates::REACT_PASSIVE);
                     me->AttackStop();
-                    me->SetTarget(ObjectGuid::Empty); 
+                    me->SetTarget(ObjectGuid::Empty);
                     // at this point, the zombie should be non attacking and non moving.
 
-                    me->SetWalk(true); // it doesnt seem to work with MoveFollow() (but it does work with MovePoint()). 
-                    //me->SetSpeed(UnitMoveType::MOVE_RUN, baseMoveSpeed[UnitMoveType::MOVE_WALK] / baseMoveSpeed[UnitMoveType::MOVE_RUN]); // Hack to stay in run mode but with walk speed in case using MoveFollow()
+                    me->SetWalk(true); // it doesnt seem to work with MoveFollow() (but it does work with MovePoint()).
 
                     timer = 1000;
                 }
