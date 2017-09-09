@@ -823,10 +823,9 @@ class npc_grandmother : public CreatureScript
                     CloseGossipMenuFor(player);
 
                     if (Creature* pBigBadWolf = me->SummonCreature(CREATURE_BIG_BAD_WOLF, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation(), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, HOUR*2*IN_MILLISECONDS))
-                    {
                         pBigBadWolf->AI()->AttackStart(player);
-                        me->DespawnOrUnsummon();
-                    }
+
+                    me->DespawnOrUnsummon();
                 }
             }
         };

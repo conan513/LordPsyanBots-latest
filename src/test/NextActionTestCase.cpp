@@ -6,20 +6,20 @@ using namespace ai;
 
 class NextActionTestCase : public CPPUNIT_NS::TestFixture
 {
-	CPPUNIT_TEST_SUITE( NextActionTestCase );
-	CPPUNIT_TEST( array );
+    CPPUNIT_TEST_SUITE( NextActionTestCase );
+    CPPUNIT_TEST( array );
     CPPUNIT_TEST( clone );
     CPPUNIT_TEST( merge );
     CPPUNIT_TEST( cloneNull );
     CPPUNIT_TEST( mergeWithNull );
-	CPPUNIT_TEST_SUITE_END();
+    CPPUNIT_TEST_SUITE_END();
 
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
     void array()
@@ -30,22 +30,22 @@ protected:
         NextAction::destroy(actions);
     }
 
-	void clone()
-	{
-		NextAction** actions = new NextAction*[3];
+    void clone()
+    {
+        NextAction** actions = new NextAction*[3];
         actions[0] = new NextAction("1", 1);
         actions[1] = new NextAction("2", 2);
         actions[2] = NULL;
 
         NextAction** cloned = NextAction::clone(actions);
 
-		CPPUNIT_ASSERT(!cloned[2]);
-		CPPUNIT_ASSERT(cloned[0]->getName() == "1");
+        CPPUNIT_ASSERT(!cloned[2]);
+        CPPUNIT_ASSERT(cloned[0]->getName() == "1");
         CPPUNIT_ASSERT(cloned[1]->getName() == "2");
 
         // check memory
         NextAction::destroy(cloned);
-	}
+    }
 
     void merge()
     {

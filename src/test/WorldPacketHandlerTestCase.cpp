@@ -42,8 +42,8 @@ class WorldPacketHandlerTestCase : public MockedAiObjectContextTestCase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "default", NULL);
+        EngineTestBase::setUp();
+        setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "default", NULL);
     }
 
 protected:

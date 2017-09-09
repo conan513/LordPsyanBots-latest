@@ -24,6 +24,7 @@ bool CheckMailAction::Execute(Event event)
         if (!mail || mail->state == MAIL_STATE_DELETED)
             continue;
 
+        //Player* owner = ObjectAccessor::FindPlayerByLowGUID(mail->sender);
         Player* owner = sObjectMgr->GetPlayerByLowGUID(mail->sender);
         if (!owner)
             continue;

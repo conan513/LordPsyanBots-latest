@@ -88,4 +88,3 @@ std::string &rtrim(std::string &s) {
 std::string &trim(std::string &s) {
         return ltrim(rtrim(s));
 }
-

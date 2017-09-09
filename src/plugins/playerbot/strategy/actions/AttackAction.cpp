@@ -84,8 +84,8 @@ bool AttackAction::Attack(Unit* target)
     {
         pet->SetTarget(target->GetGUID());
         pet->AI()->EnterCombat(target);
-		pet->GetCharmInfo()->SetIsCommandAttack(true);
-		pet->AI()->AttackStart(target);
+        pet->GetCharmInfo()->SetIsCommandAttack(true);
+        pet->AI()->AttackStart(target);
     }
 
     bot->Attack(target, true);

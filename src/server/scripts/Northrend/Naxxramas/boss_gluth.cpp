@@ -74,9 +74,14 @@ enum States
     STATE_ZOMBIE_TOBE_EATEN             = 3
 };
 
+enum SummonGroups
+{
+    SUMMON_GROUP_CHOW_10MAN = 1,
+    SUMMON_GROUP_CHOW_25MAN = 2
+};
+
 enum Misc
 {
-    NPC_ZOMBIE_CHOW                     = 16360,
     EVENT_GLUTH_ZOMBIE_BEHAVIOR         = 10495, // unused. event handled by spell_gluth_decimate_SpellScript::HandleEvent
     DATA_ZOMBIE_STATE                   = 1,
     ACTION_DECIMATE_EVENT               = 2,
@@ -103,7 +108,7 @@ public:
             zombieToBeEatenGUID.Clear();
             state = STATE_GLUTH_NORMAL;
             me->SetReactState(REACT_AGGRESSIVE);
-            me->SetSpeed(UnitMoveType::MOVE_RUN, 12.0f / baseMoveSpeed[MOVE_RUN]);
+            me->SetSpeed(UnitMoveType::MOVE_RUN, 12.0f);
         }
 
         void EnterCombat(Unit* /*who*/) override
@@ -177,12 +182,9 @@ public:
                         break;
                     case EVENT_SUMMON:
                         if (Is25ManRaid()) // one wave each 10s. one wave=1 zombie in 10man and 2 zombies in 25man.
-                        {
-                            DoSummon(NPC_ZOMBIE_CHOW, PosSummon[1]);
-                            DoSummon(NPC_ZOMBIE_CHOW, PosSummon[2]);
-                        }
+                            me->SummonCreatureGroup(SUMMON_GROUP_CHOW_25MAN);
                         else
-                            DoSummon(NPC_ZOMBIE_CHOW, PosSummon[0]);
+                            me->SummonCreatureGroup(SUMMON_GROUP_CHOW_10MAN);
                         events.Repeat(Seconds(10));
                         break;
                     case EVENT_SEARCH_ZOMBIE_SINGLE:
@@ -191,19 +193,19 @@ public:
                         for (SummonList::const_iterator itr = summons.begin(); !zombie && itr != summons.end(); ++itr)
                         {
                             zombie=ObjectAccessor::GetCreature(*me, *itr);
-                            if (zombie == nullptr || !zombie->IsAlive() || !zombie->IsWithinDistInMap(me, 10.0))
+                            if (!zombie || !zombie->IsAlive() || !zombie->IsWithinDistInMap(me, 10.0))
                                 zombie = nullptr;
                         }
 
                         if (zombie)
                         {
-                            zombieToBeEatenGUID = zombie->GetGUID(); // save for later use// the soon-to-be-eaten zombie should stop moving and stop attacking
-                            
+                            zombieToBeEatenGUID = zombie->GetGUID(); // save for later use
+
                             // the soon-to-be-eaten zombie should stop moving and stop attacking
                             zombie->AI()->SetData(DATA_ZOMBIE_STATE, STATE_ZOMBIE_TOBE_EATEN);
 
                             // gluth should stop AAs on his primary target and turn toward the zombie (2 yards away). He then pauses for a few seconds.
-                            me->SetSpeed(MOVE_RUN, 36.0f / baseMoveSpeed[MOVE_RUN]);
+                            me->SetSpeed(MOVE_RUN, 36.0f);
 
                             me->SetReactState(ReactStates::REACT_PASSIVE);
                             me->AttackStop();
@@ -228,7 +230,7 @@ public:
 
                         zombieToBeEatenGUID = ObjectGuid::Empty;
                         state = STATE_GLUTH_NORMAL;
-                        me->SetSpeed(UnitMoveType::MOVE_RUN, 12.0f / baseMoveSpeed[MOVE_RUN]);
+                        me->SetSpeed(UnitMoveType::MOVE_RUN, 12.0f);
 
                         // and then return on primary target
                         me->SetReactState(REACT_AGGRESSIVE);
@@ -324,10 +326,7 @@ public:
 
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            if (sSpellMgr->GetSpellInfo(SPELL_DECIMATE_DMG))
-                return true;
-            else
-                return false;
+            return (sSpellMgr->GetSpellInfo(SPELL_DECIMATE_DMG) != nullptr);
         }
 
         void Register() override

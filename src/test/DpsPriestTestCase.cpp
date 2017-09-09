@@ -19,8 +19,8 @@ class DpsPriestTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new PriestAiObjectContext(ai), "dps", "dps debuff", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new PriestAiObjectContext(ai), "dps", "dps debuff", NULL);
 
         addAura("power word: fortitude");
         addAura("divine spirit");

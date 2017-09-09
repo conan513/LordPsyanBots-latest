@@ -17,11 +17,11 @@ namespace ai
             if (!grp)
                 return false;
 
-            Player* inviter = sObjectMgr->GetPlayerByLowGUID(grp->GetLeaderGUID());
+            Player* inviter = ObjectAccessor::FindPlayer(grp->GetLeaderGUID());
             if (!inviter)
                 return false;
 
-			if (!ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, inviter))
+            if (!ai->GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, false, inviter))
             {
                 WorldPacket data(SMSG_GROUP_DECLINE, 10);
                 data << bot->GetName();

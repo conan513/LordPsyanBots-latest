@@ -196,14 +196,13 @@ ObjectGuid::LowType WorldSession::GetGUIDLow() const
 void WorldSession::SendPacket(WorldPacket const* packet)
 {
     ASSERT(packet->GetOpcode() != NULL_OPCODE);
-
-    // Playerbot mod: send packet to bot AI
-    if (GetPlayer()) {
-        if (GetPlayer()->GetPlayerbotAI())
-            GetPlayer()->GetPlayerbotAI()->HandleBotOutgoingPacket(*packet);
-        else if (GetPlayer()->GetPlayerbotMgr())
-            GetPlayer()->GetPlayerbotMgr()->HandleMasterOutgoingPacket(*packet);
-    }
+     // Playerbot mod: send packet to bot AI
+     if (GetPlayer()) {
+         if (GetPlayer()->GetPlayerbotAI())
+             GetPlayer()->GetPlayerbotAI()->HandleBotOutgoingPacket(*packet);
+         else if (GetPlayer()->GetPlayerbotMgr())
+             GetPlayer()->GetPlayerbotMgr()->HandleMasterOutgoingPacket(*packet);
+     }
 
     if (!m_Socket)
         return;
@@ -320,6 +319,11 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
                         sScriptMgr->OnPacketReceive(this, *packet);
                         opHandle->Call(this, *packet);
                         LogUnprocessedTail(packet);
+
+                            // playerbot mod
+                            if (_player && _player->GetPlayerbotMgr())
+                                _player->GetPlayerbotMgr()->HandleMasterIncomingPacket(*packet);
+                            // playerbot mod end
                     }
                     // lag can cause STATUS_LOGGEDIN opcodes to arrive after the player started a transfer
                     break;
@@ -403,14 +407,14 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
             break;
     }
 
+    TC_METRIC_VALUE("processed_packets", processedPackets);
+
+    _recvQueue.readd(requeuePackets.begin(), requeuePackets.end());
+
     // playerbot mod
     if (GetPlayer() && GetPlayer()->GetPlayerbotMgr())
         GetPlayer()->GetPlayerbotMgr()->UpdateSessions(0);
     // end of playerbot mod
-
-    TC_METRIC_VALUE("processed_packets", processedPackets);
-
-    _recvQueue.readd(requeuePackets.begin(), requeuePackets.end());
 
     if (m_Socket && m_Socket->IsOpen() && _warden)
         _warden->Update();
@@ -1625,6 +1629,8 @@ void WorldSession::HandleBotPackets()
     while (_recvQueue.next(packet))
     {
         ClientOpcodeHandler const* opHandle = opcodeTable[static_cast<OpcodeClient>(packet->GetOpcode())];
+        //OpcodeHandler& opHandle = opcodeTable[packet->GetOpcode()];
+        //(this->*opHandle->handler)(*packet);
         opHandle->Call(this, *packet);
         delete packet;
     }

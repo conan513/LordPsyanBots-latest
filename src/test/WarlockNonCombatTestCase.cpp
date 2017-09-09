@@ -27,15 +27,15 @@ protected:
         tick();
         addAura("fel armor");
 
-		itemAvailable("soul shard", 2);
-		tick();
-		itemAvailable("healthstone", 1);
+        itemAvailable("soul shard", 2);
+        tick();
+        itemAvailable("healthstone", 1);
 
-		tick();
-		itemAvailable("firestone", 1);
+        tick();
+        itemAvailable("firestone", 1);
 
-		tick();
-		itemAvailable("spellstone", 1);
+        tick();
+        itemAvailable("spellstone", 1);
 
         tick();
         addAura("spellstone");

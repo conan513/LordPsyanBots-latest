@@ -32,23 +32,23 @@ protected:
         return spellInfo;
     }
 
- 	void lvl19_frost()
-	{
+     void lvl19_frost()
+    {
         setupEngine(new MageAiObjectContext(ai), "frost", NULL);
         run(lvl19(), 888);
-	}
+    }
 
- 	void lvl19_fire()
-	{
+     void lvl19_fire()
+    {
         setupEngine(new MageAiObjectContext(ai), "fire", NULL);
         run(lvl19(), 888);
-	}
+    }
 
- 	void lvl19_arcane()
-	{
+     void lvl19_arcane()
+    {
         setupEngine(new MageAiObjectContext(ai), "arcane", NULL);
         run(lvl19(), 888);
-	}
+    }
 
 };
 

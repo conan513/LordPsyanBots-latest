@@ -17,15 +17,15 @@ class ArcaneMageTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new MageAiObjectContext(ai), "arcane", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new MageAiObjectContext(ai), "arcane", NULL);
     }
 
 protected:
- 	void combatVsMelee()
-	{
+     void combatVsMelee()
+    {
         tick();
-		addAura("arcane blast");
+        addAura("arcane blast");
 
         tick();
 
@@ -35,15 +35,15 @@ protected:
         tick();
 
         assertActions(">T:arcane blast>T:arcane barrage>T:arcane missiles>T:arcane missiles>T:shoot");
-	}
+    }
 
- 	void avoid_melee()
- 	{
-		tickInMeleeRange();
-		tickInMeleeRange();
+     void avoid_melee()
+     {
+        tickInMeleeRange();
+        tickInMeleeRange();
 
-		assertActions(">T:frost nova>S:flee");
-	}
+        assertActions(">T:frost nova>S:flee");
+    }
 
     void stress()
     {

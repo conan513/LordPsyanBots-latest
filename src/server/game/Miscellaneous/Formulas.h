@@ -207,6 +207,7 @@ namespace Trinity
 
                     xpMod *= creature->GetCreatureTemplate()->ModExperience;
                 }
+
             if(sConfigMgr->GetBoolDefault("PrepatchGI.Added", false))
                 {
                     // Prepatch by LordPsyan

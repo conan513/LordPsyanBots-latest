@@ -5,7 +5,7 @@ using namespace ai;
 
 class MockedAiObjectContextTestCase : public EngineTestBase
 {
-  
+
 protected:
     MockAiObjectContext* context;
 

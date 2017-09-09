@@ -126,7 +126,6 @@ class spell_pal_ardent_defender : public SpellScriptLoader
             {
                 healPct = GetSpellInfo()->Effects[EFFECT_1].CalcValue();
                 absorbPct = GetSpellInfo()->Effects[EFFECT_0].CalcValue();
-
                 return GetUnitOwner()->GetTypeId() == TYPEID_PLAYER;
             }
 
@@ -141,7 +140,6 @@ class spell_pal_ardent_defender : public SpellScriptLoader
                 Unit* victim = GetTarget();
                 int32 remainingHealth = victim->GetHealth() - dmgInfo.GetDamage();
                 uint32 allowedHealth = victim->CountPctFromMaxHealth(35);
-
                 // If damage kills us
                 if (remainingHealth <= 0 && !victim->GetSpellHistory()->HasCooldown(PAL_SPELL_ARDENT_DEFENDER_HEAL))
                 {

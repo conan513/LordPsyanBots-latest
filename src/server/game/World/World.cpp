@@ -86,18 +86,19 @@
 // 15
 // 16
 // 17
-// playerbot mod
-#include "../../plugins/ahbot/AhBot.h"
-#include "../../plugins/playerbot/PlayerbotAIConfig.h"
-#include "../../plugins/playerbot/RandomPlayerbotMgr.h"
+// 18
 // 19
 // 20
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
 //
 // End of prepatch
-
 TC_GAME_API std::atomic<bool> World::m_stopEvent(false);
 TC_GAME_API uint8 World::m_ExitCode = SHUTDOWN_EXIT_CODE;
+// playerbot mod
+#include "../../plugins/ahbot/AhBot.h"
+#include "../../plugins/playerbot/PlayerbotAIConfig.h"
+#include "../../plugins/playerbot/RandomPlayerbotMgr.h"
+
 
 TC_GAME_API std::atomic<uint32> World::m_worldLoopCounter(0);
 
@@ -1345,9 +1346,6 @@ void World::LoadConfigSettings(bool reload)
         m_timers[WUPDATE_AUTOBROADCAST].Reset();
     }
 
-    // RandomBot AutoLogin
-    m_bool_configs[CONFIG_RANDOMBOTAUTOLOGIN] = sConfigMgr->GetBoolDefault("RandomBotAutoLogin.On", true);
-
     // MySQL ping time interval
     m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfigMgr->GetIntDefault("MaxPingTime", 30);
 
@@ -1389,6 +1387,7 @@ void World::LoadConfigSettings(bool reload)
 
     m_bool_configs[CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Creature.Zone.Area.Data", false);
     m_bool_configs[CONFIG_CALCULATE_GAMEOBJECT_ZONE_AREA_DATA] = sConfigMgr->GetBoolDefault("Calculate.Gameoject.Zone.Area.Data", false);
+
     // HotSwap
     m_bool_configs[CONFIG_HOTSWAP_ENABLED] = sConfigMgr->GetBoolDefault("HotSwap.Enabled", true);
     m_bool_configs[CONFIG_HOTSWAP_RECOMPILER_ENABLED] = sConfigMgr->GetBoolDefault("HotSwap.EnableReCompiler", true);
@@ -1399,6 +1398,7 @@ void World::LoadConfigSettings(bool reload)
 
     // prevent character rename on character customization
     m_bool_configs[CONFIG_PREVENT_RENAME_CUSTOMIZATION] = sConfigMgr->GetBoolDefault("PreventRenameCharacterOnCustomization", false);
+
 // Prepatch by LordPsyan
 // 01
 // 02
@@ -2046,13 +2046,6 @@ void World::SetInitialWorldSettings()
     auctionbot.Init();
 
     sPlayerbotAIConfig.Initialize();
-    uint8 randomBotAutologin = sWorld->getBoolConfig(CONFIG_RANDOMBOTAUTOLOGIN);
-    if (randomBotAutologin == 0)
-    {
-        return;
-    } else {
-        sRandomPlayerbotMgr.UpdateAIInternal(0);
-    }
 }
 
 void World::DetectDBCLang()
@@ -2239,11 +2232,11 @@ void World::Update(uint32 diff)
     }
 
     /// <li> Handle AHBot operations
-    if (m_timers[WUPDATE_AHBOT].Passed())
-    {
-        sAuctionBot->Update();
-        m_timers[WUPDATE_AHBOT].Reset();
-    }
+    // if (m_timers[WUPDATE_AHBOT].Passed())
+    //{
+    //    sAuctionBot->Update();
+    //    m_timers[WUPDATE_AHBOT].Reset();
+    //}
     // end of playerbot mod
 
     /// <li> Handle file changes

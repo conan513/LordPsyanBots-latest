@@ -27,10 +27,10 @@ class BearTankDruidTestCase : public EngineTestBase
 public:
     virtual void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new DruidAiObjectContext(ai), "bear", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new DruidAiObjectContext(ai), "bear", NULL);
 
-		addAura("thorns");
+        addAura("thorns");
         addTargetAura("faerie fire (feral)");
         set<uint8>("rage", "self target", 100);
     }
@@ -38,18 +38,18 @@ public:
 protected:
     void bearFormIfDireNotAvailable()
     {
-		tickWithSpellUnavailable("dire bear form");
+        tickWithSpellUnavailable("dire bear form");
 
-		assertActions(">S:bear form");
+        assertActions(">S:bear form");
     }
 
     void druidMustHoldAggro()
     {
         addAura("dire bear form");
 
-		tickWithNoAggro();
+        tickWithNoAggro();
 
-		assertActions(">T:growl");
+        assertActions(">T:growl");
     }
 
     void startMeleeCombat()
@@ -73,13 +73,13 @@ protected:
         addAura("dire bear form");
 
         tickInMeleeRange();
-		tick();
-		tick();
-		tick();
+        tick();
+        tick();
+        tick();
 
-		tickWithSpellAvailable("lacerate");
-		tick();
-		tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tick();
+        tickWithSpellAvailable("lacerate");
         tick();
 
         spellAvailable("lacerate");
@@ -87,12 +87,12 @@ protected:
         spellAvailable("maul");
         spellAvailable("faerie fire (feral)");
 
-		tickWithSpellAvailable("lacerate");
-		tickWithSpellAvailable("lacerate");
-		tickWithSpellAvailable("lacerate");
-		tickWithSpellAvailable("lacerate");
-		tickWithSpellAvailable("lacerate");
-		tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
+        tickWithSpellAvailable("lacerate");
 
         assertActions(">T:lacerate>T:mangle (bear)>T:maul>T:feral charge - bear>T:faerie fire (feral)>T:melee>T:lacerate>T:melee>T:faerie fire (feral)>T:lacerate>T:mangle (bear)>T:maul>T:melee>T:lacerate");
     }
@@ -101,11 +101,11 @@ protected:
     {
         addAura("dire bear form");
 
-		tickWithLowHealth(59);
-		tickWithLowHealth(59);
+        tickWithLowHealth(59);
+        tickWithLowHealth(59);
 
-		tickWithLowHealth(39);
-		tickWithLowHealth(39);
+        tickWithLowHealth(39);
+        tickWithLowHealth(39);
 
         addAura("dire bear form");
         spellAvailable("healing touch");
@@ -123,9 +123,9 @@ protected:
     void intensiveHealing()
     {
         addAura("dire bear form");
-		tickWithLowHealth(1);
+        tickWithLowHealth(1);
 
-		assertActions(">S:survival instincts");
+        assertActions(">S:survival instincts");
     }
 
     void healOthers()
@@ -148,56 +148,56 @@ protected:
         tickWithPartyLowHealth(1);
         tickWithPartyLowHealth(1);
 
-		assertActions(">S:dire bear form>S:caster form>P:regrowth on party>S:caster form>P:regrowth on party>P:healing touch on party");
+        assertActions(">S:dire bear form>S:caster form>P:regrowth on party>S:caster form>P:regrowth on party>P:healing touch on party");
     }
     void curePoison()
     {
         tick();
         addAura("dire bear form");
 
-		tickWithAuraToDispel(DISPEL_POISON);
-		tickWithAuraToDispel(DISPEL_POISON);
+        tickWithAuraToDispel(DISPEL_POISON);
+        tickWithAuraToDispel(DISPEL_POISON);
 
-		spellAvailable("abolish poison");
-		tickWithPartyAuraToDispel(DISPEL_POISON);
+        spellAvailable("abolish poison");
+        tickWithPartyAuraToDispel(DISPEL_POISON);
 
-		tickWithAuraToDispel(DISPEL_POISON);
+        tickWithAuraToDispel(DISPEL_POISON);
 
-		spellAvailable("cure poison");
-		tickWithPartyAuraToDispel(DISPEL_POISON);
+        spellAvailable("cure poison");
+        tickWithPartyAuraToDispel(DISPEL_POISON);
 
-		assertActions(">S:dire bear form>S:caster form>S:abolish poison>P:abolish poison on party>S:cure poison>P:cure poison on party");
+        assertActions(">S:dire bear form>S:caster form>S:abolish poison>P:abolish poison on party>S:cure poison>P:cure poison on party");
     }
     void interruptSpells()
     {
         addAura("dire bear form");
         tickInMeleeRange();
-		tickWithTargetIsCastingNonMeleeSpell();
+        tickWithTargetIsCastingNonMeleeSpell();
 
         assertActions(">T:lacerate>T:bash");
     }
-	void buff()
-	{
+    void buff()
+    {
         removeAura("thorns");
         tick();
 
         removeTargetAura("faerie fire (feral)");
         tickInMeleeRange();
-		addAura("dire bear form");
+        addAura("dire bear form");
 
         assertActions(">S:thorns>S:dire bear form");
-	}
+    }
 
     void aoe()
     {
         addAura("dire bear form");
-		tickInMeleeRange();
-		tickWithAttackerCount(2);
-		tickWithAttackerCount(3);
+        tickInMeleeRange();
+        tickWithAttackerCount(2);
+        tickWithAttackerCount(3);
         spellAvailable("swipe (bear)");
-		tickWithAttackerCount(3);
+        tickWithAttackerCount(3);
 
-		assertActions(">T:lacerate>T:swipe (bear)>T:demoralizing roar>T:swipe (bear)");
+        assertActions(">T:lacerate>T:swipe (bear)>T:demoralizing roar>T:swipe (bear)");
     }
 
     void incompatibles()

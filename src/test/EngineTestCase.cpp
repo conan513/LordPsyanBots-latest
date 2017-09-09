@@ -40,18 +40,18 @@ int AlternativeAction::destroyed = 0;
 class RepeatingAction : public Action
 {
 public:
-	RepeatingAction(PlayerbotAI* const ai) : Action(ai) {}
+    RepeatingAction(PlayerbotAI* const ai) : Action(ai) {}
 
-	virtual ~RepeatingAction()
-	{
-		destroyed++;
-	}
+    virtual ~RepeatingAction()
+    {
+        destroyed++;
+    }
 
     bool Execute(Event event) { executed++; return TRUE; }
     string  getName() {return "RepeatingAction"; }
     bool isPossible() { return available; }
 
-	static int destroyed;
+    static int destroyed;
     static int executed;
     static int available;
 };
@@ -63,13 +63,13 @@ int RepeatingAction::executed = 0;
 class TriggeredAction : public Action
 {
 public:
-	TriggeredAction(PlayerbotAI* const ai) : Action(ai) { fired = false; }
-	virtual ~TriggeredAction() {}
+    TriggeredAction(PlayerbotAI* const ai) : Action(ai) { fired = false; }
+    virtual ~TriggeredAction() {}
 
     bool Execute(Event event) { param = event.getParam(); fired = TRUE; return true; }
     string  getName() {return "TriggeredAction"; }
 
-	static int fired;
+    static int fired;
     static string param;
 };
 
@@ -79,18 +79,18 @@ string TriggeredAction::param;
 class TestTrigger : public Trigger
 {
 public:
-	TestTrigger(PlayerbotAI* const ai) : Trigger(ai) {count = 0;}
+    TestTrigger(PlayerbotAI* const ai) : Trigger(ai) {count = 0;}
     virtual Event Check()
     {
         return IsActive() ? Event(getName(), "test") : Event();
     }
-	virtual bool IsActive()
-	{
-		return ++count==3;
-	}
+    virtual bool IsActive()
+    {
+        return ++count==3;
+    }
 
 private:
-	int count;
+    int count;
 };
 
 class TestMultiplier : public Multiplier
@@ -236,23 +236,23 @@ class EngineTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
-	void engineMustRepeatActions()
-	{
-		MockPlayerbotAIBase mock;
-		Engine engine(&mock, new TestAiObjectContext(&mock));
-		engine.testMode = true;
+    void engineMustRepeatActions()
+    {
+        MockPlayerbotAIBase mock;
+        Engine engine(&mock, new TestAiObjectContext(&mock));
+        engine.testMode = true;
         engine.addStrategy("TestStrategy");
         engine.Init();
 
-		for (int i=0; i<6; i++)
-			engine.DoNextAction(NULL);
+        for (int i=0; i<6; i++)
+            engine.DoNextAction(NULL);
 
-		CPPUNIT_ASSERT(TriggeredAction::fired);
+        CPPUNIT_ASSERT(TriggeredAction::fired);
         CPPUNIT_ASSERT(TestMultiplier::asked);
         CPPUNIT_ASSERT_EQUAL(5, RepeatingAction::executed);
 
@@ -261,11 +261,11 @@ protected:
         engine.DoNextAction(NULL);
         CPPUNIT_ASSERT(AlternativeAction::executed);
         CPPUNIT_ASSERT(PrerequisiteAction::executed);
-	}
+    }
 
     void addRemoveStrategies()
     {
-		MockPlayerbotAIBase mock;
+        MockPlayerbotAIBase mock;
         Engine engine(&mock, new TestAiObjectContext(&mock));
         engine.testMode = true;
         engine.addStrategy("AnotherTestStrategy");
@@ -281,7 +281,7 @@ protected:
 
     void listStrategies()
     {
-		MockPlayerbotAIBase mock;
+        MockPlayerbotAIBase mock;
         Engine engine(&mock, new TestAiObjectContext(&mock));
         engine.testMode = true;
         engine.addStrategy("AnotherTestStrategy");

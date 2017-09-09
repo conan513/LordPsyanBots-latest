@@ -17,36 +17,36 @@ class LootObjectStackTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
-	void duplicates()
-	{
-	    LootTargetList data;
-	    data.insert(LootTarget(ObjectGuid(uint64(2))));
-	    data.insert(LootTarget(ObjectGuid(uint64(2))));
+    void duplicates()
+    {
+        LootTargetList data;
+        data.insert(LootTarget(ObjectGuid(uint64(2))));
+        data.insert(LootTarget(ObjectGuid(uint64(2))));
 
-	    CPPUNIT_ASSERT(data.size() == 1);
-	}
-
-	void shrink()
-	{
-	    LootTargetList data;
-	    LootTarget t1 = LootTarget(ObjectGuid(uint64(2)));
-	    t1.asOfTime = 10;
-	    LootTarget t2 = LootTarget(ObjectGuid(uint64(3)));
-	    t2.asOfTime = 5;
-
-	    data.insert(t1);
-	    data.insert(t2);
-	    CPPUNIT_ASSERT(data.size() == 2);
-
-	    data.shrink(7);
         CPPUNIT_ASSERT(data.size() == 1);
-	    CPPUNIT_ASSERT(data.begin()->asOfTime == 10);
-	}
+    }
+
+    void shrink()
+    {
+        LootTargetList data;
+        LootTarget t1 = LootTarget(ObjectGuid(uint64(2)));
+        t1.asOfTime = 10;
+        LootTarget t2 = LootTarget(ObjectGuid(uint64(3)));
+        t2.asOfTime = 5;
+
+        data.insert(t1);
+        data.insert(t2);
+        CPPUNIT_ASSERT(data.size() == 2);
+
+        data.shrink(7);
+        CPPUNIT_ASSERT(data.size() == 1);
+        CPPUNIT_ASSERT(data.begin()->asOfTime == 10);
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LootObjectStackTestCase );

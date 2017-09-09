@@ -2,7 +2,7 @@
 #include "PlayerbotAIConfig.h"
 #include "playerbot.h"
 #include "RandomPlayerbotFactory.h"
-#include "AccountMgr.h"
+#include "../../game/Accounts/AccountMgr.h"
 
 using namespace std;
 
@@ -30,7 +30,7 @@ bool PlayerbotAIConfig::Initialize()
 
     string error;
     vector<string> args;
-    if (!config.LoadInitial("aiplayerbot.conf", std::vector<std::string>(args), error))
+    if (!config.LoadInitial("aiplayerbot.conf", args, error))
     {
         sLog->outMessage("playerbot", LOG_LEVEL_INFO, "AI Playerbot is Disabled. Unable to open configuration file aiplayerbot.conf");
         return false;
@@ -106,10 +106,8 @@ bool PlayerbotAIConfig::Initialize()
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
-    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat");
+    randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+attack weak,-threat");
     randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+grind,+move random,+loot");
-    combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
-    nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say");
 
     commandPrefix = config.GetStringDefault("AiPlayerbot.CommandPrefix", "");
 

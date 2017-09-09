@@ -5,8 +5,26 @@
 
 using namespace ai;
 
+class TankPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+{
+public:
+    TankPaladinStrategyActionNodeFactory()
+    {
+        creators["blessing of sanctuary"] = &blessing_of_sanctuary;
+    }
+private:
+    static ActionNode* blessing_of_sanctuary(PlayerbotAI* ai)
+    {
+        return new ActionNode ("blessing of sanctuary",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("blessing of kings"), NULL),
+            /*C*/ NULL);
+    }
+};
+
 TankPaladinStrategy::TankPaladinStrategy(PlayerbotAI* ai) : GenericPaladinStrategy(ai)
 {
+    actionNodeFactories.Add(new TankPaladinStrategyActionNodeFactory());
 }
 
 NextAction** TankPaladinStrategy::getDefaultActions()
@@ -42,9 +60,9 @@ void TankPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "lose aggro",
         NextAction::array(0, new NextAction("hand of reckoning", ACTION_HIGH + 7), NULL)));
 
-	triggers.push_back(new TriggerNode(
-		"holy shield",
-		NextAction::array(0, new NextAction("holy shield", ACTION_HIGH + 7), NULL)));
+    triggers.push_back(new TriggerNode(
+        "holy shield",
+        NextAction::array(0, new NextAction("holy shield", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blessing",

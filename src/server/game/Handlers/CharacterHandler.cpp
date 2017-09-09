@@ -82,11 +82,13 @@ public:
 void PlayerbotHolder::AddPlayerBot(uint64 playerGuid, uint32 masterAccount)
 {
     // has bot already been added?
-	Player* bot = sObjectMgr->GetPlayerByLowGUID(playerGuid);
+    //Player* bot = ObjectAccessor::FindPlayerByLowGUID(playerGuid);
+    Player* bot = sObjectMgr->GetPlayerByLowGUID(playerGuid);
 
-	if (bot && bot->IsInWorld())
+    if (bot && bot->IsInWorld())
         return;
 
+    //uint32 accountId = sCharacterCache->GetCharacterAccountIdByGuid(ObjectGuid(playerGuid));
     uint32 accountId = sObjectMgr->GetPlayerAccountIdByGUID(ObjectGuid(playerGuid));
     if (accountId == 0)
         return;
@@ -104,19 +106,20 @@ void PlayerbotHolder::AddPlayerBot(uint64 playerGuid, uint32 masterAccount)
     WorldSession* masterSession = masterAccount ? sWorld->FindSession(masterAccount) : NULL;
     uint32 botAccountId = holder->GetAccountId();
     std::string accountName;
-	AccountMgr::GetName(botAccountId, accountName);
-	WorldSession *botSession = new WorldSession(botAccountId, std::move(accountName), NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
+    AccountMgr::GetName(botAccountId, accountName);
+    WorldSession *botSession = new WorldSession(botAccountId, std::move(accountName), NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
+    //WorldSession *botSession = new WorldSession(botAccountId, "bot", NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
 
     botSession->HandlePlayerLogin(holder); // will delete lqh
 
-	bot = botSession->GetPlayer();
-	if (!bot)
-		return;
+    bot = botSession->GetPlayer();
+    if (!bot)
+        return;
 
-	PlayerbotMgr *mgr = bot->GetPlayerbotMgr();
-	bot->SetPlayerbotMgr(NULL);
-	delete mgr;
-	sRandomPlayerbotMgr.OnPlayerLogout(bot);
+    PlayerbotMgr *mgr = bot->GetPlayerbotMgr();
+    bot->SetPlayerbotMgr(NULL);
+    delete mgr;
+    sRandomPlayerbotMgr.OnPlayerLogout(bot);
 
     bool allowed = false;
     if (botAccountId == masterAccount)
@@ -811,6 +814,8 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recvData)
     m_playerLoading = true;
     ObjectGuid playerGuid;
 
+    TC_LOG_DEBUG("network", "WORLD: Recvd Player Logon Message");
+
     recvData >> playerGuid;
 
     if (!IsLegitCharacterForAccount(playerGuid))
@@ -899,10 +904,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         data.put(0, linecount);
 
         SendPacket(&data);
+        TC_LOG_DEBUG("network", "WORLD: Sent motd (SMSG_MOTD)");
 
         // send server info
         if (sWorld->getIntConfig(CONFIG_ENABLE_SINFO_LOGIN) == 1)
             chH.PSendSysMessage(GitRevision::GetFullVersion());
+
+        TC_LOG_DEBUG("network", "WORLD: Sent server info");
     }
 
     //QueryResult* result = CharacterDatabase.PQuery("SELECT guildid, rank FROM guild_member WHERE guid = '%u'", pCurrChar->GetGUID().GetCounter());

@@ -7,19 +7,19 @@
 CFG=cppunit_dll - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cppunit_dll.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cppunit_dll.mak" CFG="cppunit_dll - Win32 Debug"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "cppunit_dll - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "cppunit_dll - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -61,7 +61,7 @@ TargetPath=.\ReleaseDll\cppunit_dll.dll
 TargetName=cppunit_dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copying target to lib/
-PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).dll	copy "$(TargetDir)\$(TargetName).lib" ..\..\lib\$(TargetName).lib
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).dll    copy "$(TargetDir)\$(TargetName).lib" ..\..\lib\$(TargetName).lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "cppunit_dll - Win32 Debug"
@@ -97,10 +97,10 @@ TargetPath=.\DebugDll\cppunitd_dll.dll
 TargetName=cppunitd_dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copying target to lib/
-PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).dll	copy "$(TargetDir)\$(TargetName).lib" ..\..\lib\$(TargetName).lib
+PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).dll    copy "$(TargetDir)\$(TargetName).lib" ..\..\lib\$(TargetName).lib
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 

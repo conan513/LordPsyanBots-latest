@@ -7,19 +7,19 @@
 CFG=CPPUNIT - WIN32 DEBUG
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cppunit.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "cppunit.mak" CFG="CPPUNIT - WIN32 DEBUG"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "cppunit - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "cppunit - Win32 Debug" (based on "Win32 (x86) Static Library")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -88,7 +88,7 @@ PostBuild_Desc=Copying target to lib/
 PostBuild_Cmds=copy "$(TargetPath)" ..\..\lib\$(TargetName).lib
 # End Special Build Tool
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
@@ -299,7 +299,7 @@ SOURCE=.\XmlOutputter.cpp
 
 # ADD CPP /W3
 
-!ENDIF 
+!ENDIF
 
 # End Source File
 # Begin Source File

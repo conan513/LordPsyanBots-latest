@@ -16,44 +16,44 @@ class CatDpsDruidTestCase : public EngineTestBase
     CPPUNIT_TEST( boost );
     CPPUNIT_TEST( cower );
     CPPUNIT_TEST( buff );
-	CPPUNIT_TEST( aoe );
-	CPPUNIT_TEST( stress );
+    CPPUNIT_TEST( aoe );
+    CPPUNIT_TEST( stress );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     virtual void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new DruidAiObjectContext(ai), "cat", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new DruidAiObjectContext(ai), "cat", NULL);
 
-		addAura("cat form");
+        addAura("cat form");
         addAura("thorns");
-		addTargetAura("faerie fire (feral)");
+        addTargetAura("faerie fire (feral)");
     }
 
 protected:
 
     void combatVsMelee()
     {
-		tickInMeleeRange();
+        tickInMeleeRange();
 
-		tick();
+        tick();
 
         tickWithComboPoints(5);
         tickWithComboPoints(5);
 
-		assertActions(">T:rake>T:mangle (cat)>T:ferocious bite>T:rip");
+        assertActions(">T:rake>T:mangle (cat)>T:ferocious bite>T:rip");
     }
 
-	void healHimself()
-	{
-		addAura("cat form");
+    void healHimself()
+    {
+        addAura("cat form");
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
         spellAvailable("rejuvenation");
-		tickWithLowHealth(39);
-		tickWithLowHealth(39);
+        tickWithLowHealth(39);
+        tickWithLowHealth(39);
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
@@ -64,13 +64,13 @@ protected:
         tickWithLowHealth(1);
 
         assertActions(">S:caster form>S:regrowth>S:survival instincts>S:barskin>S:regrowth>S:healing touch");
-	}
+    }
 
     void intensiveHealing()
     {
-		tickWithLowHealth(1);
+        tickWithLowHealth(1);
 
-		assertActions(">S:survival instincts");
+        assertActions(">S:survival instincts");
     }
 
     void healOthers()
@@ -95,16 +95,16 @@ protected:
 
     void boost()
     {
-		tickWithBalancePercent(49);
+        tickWithBalancePercent(49);
 
-		assertActions(">S:tiger's fury");
+        assertActions(">S:tiger's fury");
     }
 
     void cower()
     {
-		tickWithMyAttackerCount(2);
+        tickWithMyAttackerCount(2);
 
-		assertActions(">S:cower");
+        assertActions(">S:cower");
     }
 
     void buff()
@@ -124,10 +124,10 @@ protected:
     {
         engine->addStrategy("cat aoe");
 
-		tickInMeleeRange();
-		tickWithAttackerCount(3);
+        tickInMeleeRange();
+        tickWithAttackerCount(3);
 
-		assertActions(">T:rake>T:swipe (cat)");
+        assertActions(">T:rake>T:swipe (cat)");
     }
 
     void stress()

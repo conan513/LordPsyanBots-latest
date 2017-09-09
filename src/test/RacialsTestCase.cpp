@@ -14,23 +14,23 @@ class RacialsTestCase : public EngineTestBase
     CPPUNIT_TEST_SUITE_END();
 
 public:
-	virtual void setUp()
-	{
-		EngineTestBase::setUp();
-		setupEngine(new WarriorAiObjectContext(ai), "tank", NULL);
+    virtual void setUp()
+    {
+        EngineTestBase::setUp();
+        setupEngine(new WarriorAiObjectContext(ai), "tank", NULL);
 
-		engine->addStrategy("racials");
+        engine->addStrategy("racials");
         set<float>("distance", "current target", 0.0f);
-		
-		addAura("battle shout");
-		addAura("defensive stance");
+
+        addAura("battle shout");
+        addAura("defensive stance");
     }
- 
+
 protected:
     void healing()
     {
-		tickWithLowHealth(39);
-		tickWithLowHealth(39);
+        tickWithLowHealth(39);
+        tickWithLowHealth(39);
 
         tickWithLowMana(39);
 

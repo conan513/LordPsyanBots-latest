@@ -27,17 +27,17 @@ protected:
         return spellInfo;
     }
 
- 	void lvl19_shadow()
-	{
+     void lvl19_shadow()
+    {
         setupEngine(new PriestAiObjectContext(ai), "shadow", "aoe", NULL);
         run(lvl19(), 777);
-	}
+    }
 
- 	void lvl19_holy()
-	{
+     void lvl19_holy()
+    {
         setupEngine(new PriestAiObjectContext(ai), "holy", "aoe", NULL);
         run(lvl19(), 777);
-	}
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( PriestEfficiencyTestCase );

@@ -108,7 +108,6 @@
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
 //
 // End of prepatch
-
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
 #define PLAYER_SKILL_INDEX(x)       (PLAYER_SKILL_INFO_1_1 + ((x)*3))
@@ -1576,7 +1575,6 @@ void Player::Update(uint32 p_time)
     //because we don't want player's ghost teleported from graveyard
     if (IsHasDelayedTeleport() && IsAlive())
         TeleportTo(m_teleport_dest, m_teleport_options);
-
     // Prepatch by LordPsyan
     // 81
     // 82
@@ -1584,11 +1582,7 @@ void Player::Update(uint32 p_time)
     // 84
     // 85
     // 86
-    // Playerbot mod
-    if (m_playerbotAI)
-       m_playerbotAI->UpdateAI(p_time);
-    if (m_playerbotMgr)
-       m_playerbotMgr->UpdateAI(p_time);
+    // 87
     // 88
     // 89
     // 90
@@ -1601,7 +1595,11 @@ void Player::Update(uint32 p_time)
     // 97
     // 98
     // 99
-    // 100
+    // Playerbot mod
+    if (m_playerbotAI)
+       m_playerbotAI->UpdateAI(p_time);
+    if (m_playerbotMgr)
+       m_playerbotMgr->UpdateAI(p_time);
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
@@ -2724,7 +2722,6 @@ void Player::RemoveFromGroup(Group* group, ObjectGuid guid, RemoveMethod method 
     if (!group)
         return;
 
-    if (group)
     group->RemoveMember(guid, method, kicker, reason);
 }
 
@@ -14945,6 +14942,8 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
         // add to Quest Tracker
         CharacterDatabase.Execute(stmt);
     }
+
+    sScriptMgr->OnQuestStatusChange(this, quest_id);
 }
 
 void Player::CompleteQuest(uint32 quest_id)
@@ -15210,6 +15209,8 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
     //lets remove flag for delayed teleports
     SetCanDelayTeleport(false);
+
+    sScriptMgr->OnQuestStatusChange(this, quest_id);
 }
 
 void Player::FailQuest(uint32 questId)
@@ -15870,7 +15871,7 @@ void Player::SetQuestStatus(uint32 questId, QuestStatus status, bool update /*= 
     if (update)
         SendQuestUpdate(questId);
 
-    sScriptMgr->OnQuestStatusChange(this, questId, status);
+    sScriptMgr->OnQuestStatusChange(this, questId);
 }
 
 void Player::RemoveActiveQuest(uint32 questId, bool update /*= true*/)

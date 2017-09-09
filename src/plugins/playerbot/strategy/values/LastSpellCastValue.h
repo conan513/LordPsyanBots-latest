@@ -3,7 +3,7 @@
 
 namespace ai
 {
-    class LastSpellCast 
+    class LastSpellCast
     {
     public:
         LastSpellCast() : id(0),time(0) {}
@@ -15,7 +15,7 @@ namespace ai
             this->target = target;
             this->time = time;
         }
-        
+
         void Reset()
         {
             id = 0;
@@ -27,10 +27,10 @@ namespace ai
         ObjectGuid target;
         time_t time;
     };
-   
+
     class LastSpellCastValue : public ManualSetValue<LastSpellCast&>
-	{
-	public:
+    {
+    public:
         LastSpellCastValue(PlayerbotAI* ai) : ManualSetValue<LastSpellCast&>(ai, data) {}
 
     private:

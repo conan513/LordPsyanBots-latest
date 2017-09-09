@@ -60,7 +60,7 @@ namespace ai
                 return WorldLocation();
 
             float range = sPlayerbotAIConfig.lootDistance * (float)(rand() % 10) / 10;
-			float angle = GetFollowAngle();
+            float angle = GetFollowAngle();
             float x = master->GetPositionX() + cos(angle) * range;
             float y = master->GetPositionY() + sin(angle) * range;
             float z = master->GetPositionZ();
@@ -88,7 +88,7 @@ namespace ai
                 target = master;
 
             if (!target)
-				return Formation::NullLocation;
+                return Formation::NullLocation;
 
             switch (bot->getClass())
             {
@@ -253,7 +253,7 @@ bool SetFormationAction::Execute(Event event)
 {
     string formation = event.getParam();
 
-	Value<Formation*>* value = context->GetValue<Formation*>("formation");
+    Value<Formation*>* value = context->GetValue<Formation*>("formation");
     if (formation == "?" || formation.empty())
     {
         ostringstream str; str << "Formation: |cff00ff00" << value->Get()->getName();

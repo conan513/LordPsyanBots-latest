@@ -10,16 +10,16 @@ class HolyPriestTestCase : public EngineTestBase
 {
     CPPUNIT_TEST_SUITE( HolyPriestTestCase );
     CPPUNIT_TEST( combat );
-	CPPUNIT_TEST( incompatibles );
-	CPPUNIT_TEST( flee );
-	CPPUNIT_TEST( stress );
+    CPPUNIT_TEST( incompatibles );
+    CPPUNIT_TEST( flee );
+    CPPUNIT_TEST( stress );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new PriestAiObjectContext(ai), "holy", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new PriestAiObjectContext(ai), "holy", NULL);
 
         addAura("power word: fortitude");
         addAura("divine spirit");
@@ -31,11 +31,11 @@ public:
 protected:
     void combat()
     {
-		tick();
-		tick();
-		tick();
+        tick();
+        tick();
+        tick();
 
-		assertActions(">T:holy fire>T:smite>T:shoot");
+        assertActions(">T:holy fire>T:smite>T:shoot");
     }
 
     void flee()

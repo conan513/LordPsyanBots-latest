@@ -63,7 +63,6 @@
 // Visit http://www.realmsofwarcraft.com/bb for forums and information
 //
 // End of prepatch
-
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
     uint32 type;
@@ -345,19 +344,18 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (receiver->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_WHISPER_LEVEL_REQ) ||
                 (HasPermission(rbac::RBAC_PERM_CAN_FILTER_WHISPERS) && !sender->isAcceptWhispers() && !sender->IsInWhisperWhiteList(receiver->GetGUID())))
                 sender->AddWhisperWhiteList(receiver->GetGUID());
-
-            // Playerbot mod: handle whispered command to bot
-            if (receiver->GetPlayerbotAI() && lang != LANG_ADDON)
-            {
-                receiver->GetPlayerbotAI()->HandleCommand(type, msg, *GetPlayer());
-                receiver->m_speakTime = 0;
-                receiver->m_speakCount = 0;
-            }
-            else
-            {
-                GetPlayer()->Whisper(msg, Language(lang), receiver);
-            }
-            // END Playerbot mod
+             // Playerbot mod: handle whispered command to bot
+             if (receiver->GetPlayerbotAI() && lang != LANG_ADDON)
+             {
+                 receiver->GetPlayerbotAI()->HandleCommand(type, msg, *GetPlayer());
+                 receiver->m_speakTime = 0;
+                 receiver->m_speakCount = 0;
+             }
+             else
+             {
+                 GetPlayer()->Whisper(msg, Language(lang), receiver);
+             }
+             // END Playerbot mod
             break;
         }
         case CHAT_MSG_PARTY:
@@ -565,11 +563,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             {
                 if (Channel* chn = cMgr->GetChannel(channel, sender))
                 {
-                    // Playerbot mod: broadcast message to bot members
-                    if (_player->GetPlayerbotMgr() && lang != LANG_ADDON && chn->GetFlags() & 0x18)
-                    {
-                        _player->GetPlayerbotMgr()->HandleCommand(type, msg);
-                    }
+                // Playerbot mod: broadcast message to bot members
+                if (_player->GetPlayerbotMgr() && lang != LANG_ADDON && chn->GetFlags() & 0x18)
+                {
+                    _player->GetPlayerbotMgr()->HandleCommand(type, msg);
+                }
                     sRandomPlayerbotMgr.HandleCommand(type, msg, *_player);
                     // END Playerbot mod
                     sScriptMgr->OnPlayerChat(sender, type, lang, msg, chn);

@@ -12,14 +12,14 @@ class HunterNonCombatTestCase : public EngineTestBase
     CPPUNIT_TEST( buff );
     CPPUNIT_TEST( lowMana );
     CPPUNIT_TEST( summonPet );
-	CPPUNIT_TEST( buffIfPackUnavailable );
+    CPPUNIT_TEST( buffIfPackUnavailable );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new HunterAiObjectContext(ai), "nc", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new HunterAiObjectContext(ai), "nc", NULL);
 
         set<uint8>("attacker count", 0);
     }
@@ -27,14 +27,14 @@ public:
 protected:
     void buff()
     {
-		engine->addStrategy("bspeed");
+        engine->addStrategy("bspeed");
 
-		tick();
+        tick();
         addAura("aspect of the pack");
         tick();
 
         engine->addStrategy("bdps");
-		tickWithAttackerCount(1);
+        tickWithAttackerCount(1);
 
         assertActions(">S:aspect of the pack>S:trueshot aura>S:aspect of the hawk");
     }
@@ -45,7 +45,7 @@ protected:
 
         engine->addStrategy("bmana");
 
-		tick();
+        tick();
         addAura("aspect of the viper");
 
         assertActions(">S:aspect of the viper");
@@ -55,19 +55,19 @@ protected:
     {
         tickWithNoPet();
 
-		tickWithPetDead();
-		tickWithPetLowHealth(30);
+        tickWithPetDead();
+        tickWithPetLowHealth(30);
 
-		assertActions(">S:call pet>S:revive pet>Pet:mend pet");
-	}
+        assertActions(">S:call pet>S:revive pet>Pet:mend pet");
+    }
 
     void buffIfPackUnavailable()
     {
-		engine->addStrategy("bspeed");
+        engine->addStrategy("bspeed");
 
         tickWithSpellUnavailable("aspect of the pack");
 
-		assertActions(">S:aspect of the cheetah");
+        assertActions(">S:aspect of the cheetah");
     }
 };
 

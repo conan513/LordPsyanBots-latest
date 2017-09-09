@@ -14,18 +14,18 @@ class HealShamanTestCase : public EngineTestBase
     CPPUNIT_TEST( aoe_heal );
     CPPUNIT_TEST( buff );
     CPPUNIT_TEST( interruptSpell );
-	CPPUNIT_TEST( dispel );
-	CPPUNIT_TEST( cure );
-	CPPUNIT_TEST( lowMana );
-	CPPUNIT_TEST( range );
-	CPPUNIT_TEST( aoe );
+    CPPUNIT_TEST( dispel );
+    CPPUNIT_TEST( cure );
+    CPPUNIT_TEST( lowMana );
+    CPPUNIT_TEST( range );
+    CPPUNIT_TEST( aoe );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new ShamanAiObjectContext(ai), "heal", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new ShamanAiObjectContext(ai), "heal", NULL);
 
         addAura("water shield");
     }
@@ -34,7 +34,7 @@ protected:
     void healHimself()
     {
         tickWithLowHealth(45);
-		tickWithLowHealth(35);
+        tickWithLowHealth(35);
         tickWithLowHealth(35);
 
         assertActions(">S:lesser healing wave>S:riptide>S:healing wave");
@@ -44,7 +44,7 @@ protected:
     {
         tickWithPartyLowHealth(45);
         tickWithPartyLowHealth(35);
-		tickWithPartyLowHealth(35);
+        tickWithPartyLowHealth(35);
 
         assertActions(">P:lesser healing wave on party>P:riptide on party>P:healing wave on party");
     }
@@ -83,40 +83,40 @@ protected:
     {
         tickWithTargetIsCastingNonMeleeSpell();
 
-		assertActions(">T:wind shear");
+        assertActions(">T:wind shear");
     }
 
-	void dispel()
-	{
-		tickWithTargetAuraToDispel(DISPEL_MAGIC);
+    void dispel()
+    {
+        tickWithTargetAuraToDispel(DISPEL_MAGIC);
 
-		assertActions(">T:purge");
-	}
+        assertActions(">T:purge");
+    }
 
-	void cure()
-	{
-		tickWithAuraToDispel(DISPEL_CURSE);
-		spellAvailable("cleanse spirit");
-		tickWithAuraToDispel(DISPEL_DISEASE);
+    void cure()
+    {
+        tickWithAuraToDispel(DISPEL_CURSE);
         spellAvailable("cleanse spirit");
-		tickWithAuraToDispel(DISPEL_POISON);
+        tickWithAuraToDispel(DISPEL_DISEASE);
+        spellAvailable("cleanse spirit");
+        tickWithAuraToDispel(DISPEL_POISON);
         spellAvailable("cleanse spirit");
 
         tickWithPartyAuraToDispel(DISPEL_CURSE);
-		spellAvailable("cleanse spirit");
-		tickWithPartyAuraToDispel(DISPEL_DISEASE);
         spellAvailable("cleanse spirit");
-		tickWithPartyAuraToDispel(DISPEL_POISON);
+        tickWithPartyAuraToDispel(DISPEL_DISEASE);
+        spellAvailable("cleanse spirit");
+        tickWithPartyAuraToDispel(DISPEL_POISON);
         spellAvailable("cleanse spirit");
 
-		assertActions(">S:cleanse spirit>S:cleanse spirit>S:cleanse spirit>P:cleanse spirit curse on party>P:cleanse spirit disease on party>P:cleanse spirit poison on party");
-	}
+        assertActions(">S:cleanse spirit>S:cleanse spirit>S:cleanse spirit>P:cleanse spirit curse on party>P:cleanse spirit disease on party>P:cleanse spirit poison on party");
+    }
 
-	void lowMana()
-	{
-	    tickWithLowMana(1);
-		assertActions(">S:mana tide totem");
-	}
+    void lowMana()
+    {
+        tickWithLowMana(1);
+        assertActions(">S:mana tide totem");
+    }
 
     void range()
     {

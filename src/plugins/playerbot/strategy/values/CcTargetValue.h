@@ -4,10 +4,10 @@
 
 namespace ai
 {
-   
+
     class CcTargetValue : public TargetValue, public Qualified
-	{
-	public:
+    {
+    public:
         CcTargetValue(PlayerbotAI* ai) : TargetValue(ai) {}
 
     public:

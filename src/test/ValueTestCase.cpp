@@ -57,18 +57,18 @@ class ValueTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
     void empty()
-	{
+    {
         MockPlayerbotAIBase ai;
         TestValue value(&ai);
         CPPUNIT_ASSERT(value == 1);
-	}
-    
+    }
+
     void calculate()
     {
         MockPlayerbotAIBase ai;
@@ -76,13 +76,13 @@ protected:
 
         value.Update();
         CPPUNIT_ASSERT(value == 1);
-        
+
         value.Update();
         CPPUNIT_ASSERT(value == 1);
-    
+
         value.Update();
         CPPUNIT_ASSERT(value == 2);
-    
+
         value.Update();
         CPPUNIT_ASSERT(value == 2);
     }

@@ -10,16 +10,16 @@ class DpsPaladinTestCase : public EngineTestBase
 {
     CPPUNIT_TEST_SUITE( DpsPaladinTestCase );
     CPPUNIT_TEST( buff );
-	CPPUNIT_TEST( combatVsMelee );
-	CPPUNIT_TEST( stress );
+    CPPUNIT_TEST( combatVsMelee );
+    CPPUNIT_TEST( stress );
     CPPUNIT_TEST_SUITE_END();
 
 public:
-	virtual void setUp()
-	{
-		EngineTestBase::setUp();
-		setupEngine(new PaladinAiObjectContext(ai), "dps", NULL);
-		engine->addStrategy("bdps");
+    virtual void setUp()
+    {
+        EngineTestBase::setUp();
+        setupEngine(new PaladinAiObjectContext(ai), "dps", NULL);
+        engine->addStrategy("bdps");
 
         addAura("retribution aura");
         addAura("seal of vengeance");
@@ -54,20 +54,20 @@ protected:
 
     void combatVsMelee()
     {
-		tickOutOfMeleeRange();
+        tickOutOfMeleeRange();
 
         tick();
-		tick();
-		addTargetAura("judgement of wisdom");
+        tick();
+        addTargetAura("judgement of wisdom");
 
-		tick();
+        tick();
 
-		tickWithAttackerCount(3);
-		tickWithAttackerCount(3);
+        tickWithAttackerCount(3);
+        tickWithAttackerCount(3);
 
-		tickWithTargetLowHealth(19);
+        tickWithTargetLowHealth(19);
 
-		assertActions(">T:reach melee>T:judgement of wisdom>T:judgement of light>T:crusader strike>S:divine storm>T:consecration>T:hammer of wrath");
+        assertActions(">T:reach melee>T:judgement of wisdom>T:judgement of light>T:crusader strike>S:divine storm>T:consecration>T:hammer of wrath");
     }
 
     void stress()

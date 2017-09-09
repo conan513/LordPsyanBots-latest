@@ -843,8 +843,9 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellInfo const* spellProto, Spell
                 return false;
         }
         /// Aura must have negative or neutral(PROC_FLAG_DONE_PERIODIC only) procflags for a DOT to proc
+        /// Traps are negative spells but not always do damage (only hunter traps set PROC_FLAG_DONE_TRAP_ACTIVATION)
         else if (EventProcFlag != PROC_FLAG_DONE_PERIODIC)
-            if (!(EventProcFlag & (PROC_FLAG_DONE_SPELL_MAGIC_DMG_CLASS_NEG | PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG)))
+            if (!(EventProcFlag & (PROC_FLAG_DONE_SPELL_MAGIC_DMG_CLASS_NEG | PROC_FLAG_DONE_SPELL_NONE_DMG_CLASS_NEG | PROC_FLAG_DONE_TRAP_ACTIVATION)))
                 return false;
     }
 
@@ -3121,13 +3122,11 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 17941: // Shadow Trance
             case 22008: // Netherwind Focus
             case 31834: // Light's Grace
-            case 34754: // Clearcasting
             case 34936: // Backlash
             case 48108: // Hot Streak
             case 51124: // Killing Machine
             case 54741: // Firestarter
             case 57761: // Fireball!
-            case 39805: // Lightning Overload
             case 64823: // Item - Druid T8 Balance 4P Bonus
             case 34477: // Misdirection
             case 44401: // Missile Barrage

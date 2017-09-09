@@ -26,25 +26,6 @@ PrepatchGI.Added = 0
 ###################################################################################################
 
 ###################################################################################################
-#
-# Random Playerbot Configuration
-#
-#
-# If you want random bots to automatically enter world, you must set
-# this to 1.
-#
-# RandomBotAutoLogin.On
-#         default = 0 (Bot will not enter world)
-#                   1 (Random bots spawned)
-
-RandomBotAutoLogin.On = 1
-
-#
-
-#
-###################################################################################################
-
-###################################################################################################
 # SECTION INDEX
 #
 #    EXAMPLE CONFIG
@@ -1108,10 +1089,6 @@ MinPetitionSigns = 9
 #        Default:     74
 
 MaxGroupXPDistance = 74
-
-MonsterSight = 50.000000
-
-GuarderSight = 50.000000
 
 #
 #    MaxRecruitAFriendBonusDistance
@@ -3775,7 +3752,6 @@ PacketSpoof.BanDuration = 86400
 #
 ###################################################################################################
 
-#
 ###################################################################################################
 # METRIC SETTINGS
 #

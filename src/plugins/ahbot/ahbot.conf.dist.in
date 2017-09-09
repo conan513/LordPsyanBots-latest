@@ -15,10 +15,10 @@ AuctionHouseBot.Seller.Enabled = 0
 AuctionHouseBot.Buyer.Enabled = 0
 
 # Replace with the new AhBot
-AhBot.Enabled = 0
+AhBot.Enabled = 1
 
 # Should be used only if random bots are disabled
-AhBot.GUID = 0
+# AhBot.GUID = 0
 
 # 199 for 80, 80 for 70, 70 for 60, ..., 25 for 20
 AhBot.MaxItemLevel = 199
@@ -207,9 +207,3 @@ AhBot.PriceMultiplier.Buy.OtherTrade = 1.0
 AhBot.PriceMultiplier.Sell.projectile = 1.0
 AhBot.PriceMultiplier.Buy.projectile = 1.0
 AhBot.PricingStrategy.projectile = buyOnlyRare
-
-# Extras
-AhBot.UpdateIntervalInSeconds = 300
-AhBot.History.Days = 30
-AhBot.MaxSellInterval = 28800
-AhBot.UnderPriceProbability = 0.050000

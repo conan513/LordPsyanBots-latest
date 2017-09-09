@@ -2290,6 +2290,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         std::string GetMapAreaAndZoneString() const;
         std::string GetCoordsMapAreaAndZoneString() const;
+
     // Prepatch by LordPsyan
     // 01
     // 02
@@ -2314,6 +2315,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
     // Visit http://www.realmsofwarcraft.com/bb for forums and information
     //
     // End of prepatch
+
     protected:
         // Gamemaster whisper whitelist
         GuidList WhisperList;

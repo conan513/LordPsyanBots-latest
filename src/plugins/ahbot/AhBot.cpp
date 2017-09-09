@@ -2,12 +2,12 @@
 #include "Category.h"
 #include "ItemBag.h"
 #include "AhBot.h"
-#include "../World/World.h"
-#include "../Chat.h"
+#include "World.h"
+#include "Chat.h"
 #include "AhBotConfig.h"
-#include "../AuctionHouse/AuctionHouseMgr.h"
-#include "../WorldSession.h"
-#include "../../game/Entities/Player/Player.h"
+#include "AuctionHouseMgr.h"
+#include "WorldSession.h"
+#include "Player.h"
 #include "../playerbot/PlayerbotAIConfig.h"
 #include "../playerbot/playerbot.h"
 
@@ -656,7 +656,7 @@ void AhBot::Expire(int auction)
     {
         if (IsBotAuction(itr->second->owner))
         {
-            itr->second->expire_time = sWorld->GetGameTime();
+            itr->second->expire_time = sWorld->GetGameTime(); /*GameTime::GetGameTime()*/
             count++;
         }
 

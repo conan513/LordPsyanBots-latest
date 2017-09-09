@@ -11,8 +11,10 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
 
     bot->ModifyMoney(-int32(cost));
     if (tSpell->IsCastable())
+        //bot->CastSpell(bot, tSpell->SpellID, true);
         bot->CastSpell(bot, tSpell->spell, true);
     else
+        //bot->LearnSpell(tSpell->ReqAbility[0], false, false);
         bot->LearnSpell(tSpell->learnedSpell[0], false, false);
 
     msg << " - learned";
@@ -33,6 +35,7 @@ void TrainerAction::List(Creature* creature, TrainerSpellAction action, SpellIds
         if (!tSpell)
             continue;
 
+        //if (!tSpell->ReqAbility && !bot->IsSpellFitByClassAndRace(tSpell->ReqAbility[0]))
         if (!tSpell->learnedSpell && !bot->IsSpellFitByClassAndRace(tSpell->learnedSpell[0]))
             continue;
 
@@ -40,17 +43,20 @@ void TrainerAction::List(Creature* creature, TrainerSpellAction action, SpellIds
         if (state != TRAINER_SPELL_GREEN)
             continue;
 
+        //uint32 spellId = tSpell->SpellID;
         uint32 spellId = tSpell->spell;
         const SpellInfo *const pSpellInfo =  sSpellMgr->GetSpellInfo(spellId);
         if (!pSpellInfo)
             continue;
 
+        //uint32 cost = uint32(floor(tSpell->MoneyCost *  fDiscountMod));
         uint32 cost = uint32(floor(tSpell->spellCost *  fDiscountMod));
         totalCost += cost;
 
         ostringstream out;
         out << chat->formatSpell(pSpellInfo) << chat->formatMoney(cost);
 
+        //if (action && (spells.empty() || spells.find(tSpell->SpellID) != spells.end() || spells.find(tSpell->ReqAbility[0]) != spells.end()))
         if (action && (spells.empty() || spells.find(tSpell->spell) != spells.end() || spells.find(tSpell->learnedSpell[0]) != spells.end()))
             (this->*action)(cost, tSpell, out);
 

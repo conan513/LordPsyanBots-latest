@@ -12,8 +12,11 @@ class NonCombatEngineTestCase : public EngineTestBase
       CPPUNIT_TEST( stay );
       CPPUNIT_TEST( eatDrink );
       CPPUNIT_TEST( dpsAssist );
+      CPPUNIT_TEST( tankAssist );
+      CPPUNIT_TEST( attackWeak );
       CPPUNIT_TEST( doNotGrindIfLowMpHp );
       CPPUNIT_TEST( grindIfNoMana );
+      CPPUNIT_TEST( attackRti );
       CPPUNIT_TEST( loot );
       CPPUNIT_TEST( loot_failed );
       CPPUNIT_TEST( gather );
@@ -27,27 +30,27 @@ class NonCombatEngineTestCase : public EngineTestBase
   CPPUNIT_TEST_SUITE_END();
 
 public:
-	void setUp()
-	{
-		EngineTestBase::setUp();
-		setupEngine(new AiObjectContext(ai), NULL);
-	}
+    void setUp()
+    {
+        EngineTestBase::setUp();
+        setupEngine(new AiObjectContext(ai), NULL);
+    }
 
 protected:
     void runaway()
     {
         engine->addStrategy("runaway");
-		tickWithAttackerCount(0);
-		tickInMeleeRange();
+        tickWithAttackerCount(0);
+        tickInMeleeRange();
         assertActions(">S:runaway>S:runaway");
     }
 
     void stay()
     {
-		engine->addStrategy("stay");
+        engine->addStrategy("stay");
 
-		tickWithAttackerCount(0);
-		assertActions(">S:stay");
+        tickWithAttackerCount(0);
+        assertActions(">S:stay");
     }
 
     void dpsAssist()
@@ -55,35 +58,73 @@ protected:
         engine->addStrategy("stay");
         engine->addStrategy("dps assist");
 
-		tickWithNoTarget();
-        set<Unit*>("current target", MockedTargets::GetTargetForDps());
-		tick();
+        tick();
+        tickWithNoTarget();
 
-		assertActions(">Dps:dps assist>S:stay");
+        assertActions(">S:stay>Dps:dps assist");
     }
 
-	void pvp()
-	{
-		engine->addStrategy("stay");
-		engine->addStrategy("pvp");
+
+    void tankAssist()
+    {
+        engine->addStrategy("stay");
+        engine->addStrategy("tank assist");
+
+        tick();
+        tickWithNoTarget();
+
+        assertActions(">S:stay>Tank:tank assist");
+    }
+
+    void attackRti()
+    {
+        engine->addStrategy("stay");
+        engine->addStrategy("attack rti");
+
+        tick();
+        tickWithNoTarget();
+
+        assertActions(">S:stay>Rti:attack rti target");
+    }
+
+    void attackWeak()
+    {
+        engine->addStrategy("stay");
+        engine->addStrategy("attack weak");
+
+        set<Unit*>("current target", MockedTargets::GetLeastHpTarget());
+        tick();
+
+        tickWithNoTarget();
+
+        set<Unit*>("current target", MockedTargets::GetCurrentTarget()); // means any other
+        tick();
+
+        assertActions(">S:stay>LeastHp:attack least hp target>LeastHp:attack least hp target");
+    }
+
+    void pvp()
+    {
+        engine->addStrategy("stay");
+        engine->addStrategy("pvp");
 
         set<Unit*>("current target", MockedTargets::GetEnemyPlayer());
-		tick();
+        tick();
 
-		tickWithNoTarget();
+        tickWithNoTarget();
 
-		set<Unit*>("current target", MockedTargets::GetCurrentTarget()); // means any other
-		tick();
+        set<Unit*>("current target", MockedTargets::GetCurrentTarget()); // means any other
+        tick();
 
-		assertActions(">S:stay>Enemy:attack enemy player>Enemy:attack enemy player");
-	}
+        assertActions(">S:stay>Enemy:attack enemy player>Enemy:attack enemy player");
+    }
 
     void loot()
     {
-		engine->addStrategy("stay");
-		engine->addStrategy("loot");
+        engine->addStrategy("stay");
+        engine->addStrategy("loot");
 
-		tickWithLootAvailable();
+        tickWithLootAvailable();
 
         set<float>("distance", "loot target", 15.0f);
         tick();
@@ -104,10 +145,10 @@ protected:
 
     void loot_failed()
     {
-		engine->addStrategy("follow");
-		engine->addStrategy("loot");
+        engine->addStrategy("follow");
+        engine->addStrategy("loot");
 
-		tickWithLootAvailable();
+        tickWithLootAvailable();
 
         set<float>("distance", "loot target", 15.0f);
         tick();
@@ -124,12 +165,12 @@ protected:
 
     void gather()
     {
-		engine->addStrategy("stay");
-		engine->addStrategy("gather");
-		engine->addStrategy("loot");
+        engine->addStrategy("stay");
+        engine->addStrategy("gather");
+        engine->addStrategy("loot");
 
-		set<list<ObjectGuid>>("possible targets", list<ObjectGuid>());
-		tick();
+        set<list<ObjectGuid>>("possible targets", list<ObjectGuid>());
+        tick();
 
         tickWithLootAvailable();
 
@@ -157,7 +198,7 @@ protected:
         engine->addStrategy("passive");
 
         tick();
-		tickWithNoTarget();
+        tickWithNoTarget();
 
         assertActions(">S:stay>S:check mount state");
     }

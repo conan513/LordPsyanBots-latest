@@ -11,35 +11,35 @@ class HealDruidTestCase : public EngineTestBase
     CPPUNIT_TEST_SUITE( HealDruidTestCase );
     CPPUNIT_TEST( healHimself );
     CPPUNIT_TEST( healOthers );
-	CPPUNIT_TEST( aoe );
-	CPPUNIT_TEST( range );
+    CPPUNIT_TEST( aoe );
+    CPPUNIT_TEST( range );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     virtual void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new DruidAiObjectContext(ai), "heal", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new DruidAiObjectContext(ai), "heal", NULL);
 
-		addAura("moonkin form");
+        addAura("moonkin form");
     }
 
 protected:
 
-	void healHimself()
+    void healHimself()
     {
-	    tick();
+        tick();
         addAura("tree of life");
 
-		tickWithLowHealth(79);
+        tickWithLowHealth(79);
         spellAvailable("rejuvenation");
 
-		tickWithLowHealth(59);
+        tickWithLowHealth(59);
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
         spellAvailable("rejuvenation");
-		tickWithLowHealth(39);
+        tickWithLowHealth(39);
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
@@ -50,7 +50,7 @@ protected:
         assertActions(">S:tree of life>S:rejuvenation>S:regrowth>S:regrowth>S:regrowth>S:healing touch");
     }
 
-	void healOthers()
+    void healOthers()
     {
         addAura("tree of life");
 
@@ -77,7 +77,7 @@ protected:
     {
         tickWithAoeHeal("medium");
 
-		assertActions(">P:tranquility");
+        assertActions(">P:tranquility");
     }
 
     void range()

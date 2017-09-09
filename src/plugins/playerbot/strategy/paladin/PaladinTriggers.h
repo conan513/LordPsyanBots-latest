@@ -3,29 +3,29 @@
 
 namespace ai
 {
-	BUFF_TRIGGER(HolyShieldTrigger, "holy shield", "holy shield")
+    BUFF_TRIGGER(HolyShieldTrigger, "holy shield", "holy shield")
     BUFF_TRIGGER(RighteousFuryTrigger, "righteous fury", "righteous fury")
 
     BUFF_TRIGGER(RetributionAuraTrigger, "retribution aura", "retribution aura")
 
-	class CrusaderAuraTrigger : public BuffTrigger
-	{
-	public:
-		CrusaderAuraTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "crusader aura") {}
-		virtual bool IsActive();
-	};
+    class CrusaderAuraTrigger : public BuffTrigger
+    {
+    public:
+        CrusaderAuraTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "crusader aura") {}
+        virtual bool IsActive();
+    };
 
-	class SealTrigger : public BuffTrigger
-	{
-	public:
-		SealTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "seal of justice") {}
-		virtual bool IsActive();
-	};
+    class SealTrigger : public BuffTrigger
+    {
+    public:
+        SealTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "seal of justice") {}
+        virtual bool IsActive();
+    };
 
     DEBUFF_TRIGGER(JudgementOfLightTrigger, "judgement of light", "judgement of light")
     DEBUFF_TRIGGER(JudgementOfWisdomTrigger, "judgement of wisdom", "judgement of wisdom")
 
-    BUFF_ON_PARTY_TRIGGER(BlessingOnPartyTrigger, "blessing of", "blessing of kings on party")
+    BUFF_ON_PARTY_TRIGGER(BlessingOfKingsOnPartyTrigger, "blessing of kings", "blessing of kings on party")
     BUFF_TRIGGER(BlessingTrigger, "blessing of sanctuary", "blessing of sanctuary")
 
     class HammerOfJusticeInterruptSpellTrigger : public InterruptSpellTrigger

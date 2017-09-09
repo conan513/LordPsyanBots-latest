@@ -45,19 +45,19 @@ class QualifiedValueTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
     void qualifier()
-	{
+    {
         MockPlayerbotAIBase ai;
         TestQualifiedValueAiObjectContext context(&ai);
-        
+
         Value<string > *value = context.GetValue<string >("value", "data");
         CPPUNIT_ASSERT(value->Get() == "data");
-	}
+    }
 
     void empty()
     {
@@ -75,7 +75,7 @@ protected:
 
         Value<string > *value = context.GetValue<string >("value", 5);
         CPPUNIT_ASSERT(value->Get() == "5");
-    
+
         value = context.GetValue<string >("value", "5");
         CPPUNIT_ASSERT(value->Get() == "5");
     }

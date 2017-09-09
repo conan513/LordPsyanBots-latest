@@ -145,7 +145,6 @@ enum WorldBoolConfigs
     CONFIG_SHOW_MUTE_IN_WORLD,
     CONFIG_SHOW_BAN_IN_WORLD,
     CONFIG_AUTOBROADCAST,
-    CONFIG_RANDOMBOTAUTOLOGIN,
     CONFIG_ALLOW_TICKETS,
     CONFIG_DELETE_CHARACTER_TICKET_TRACE,
     CONFIG_DBC_ENFORCE_ITEM_ATTRIBUTES,
@@ -463,30 +462,6 @@ enum WorldIntConfigs
     CONFIG_AUCTION_GETALL_DELAY,
     CONFIG_AUCTION_SEARCH_DELAY,
     CONFIG_TALENTS_INSPECTING,
-    // Prepatch by LordPsyan
-    // 81
-    // 82
-    // 83
-    // 84
-    // 85
-    // 86
-    // 87
-    // 88
-    // 89
-    // 90
-    // 91
-    // 92
-    // 93
-    // 94
-    // 95
-    // 96
-    // 97
-    // 98
-    // 99
-    // 100
-    // Visit http://www.realmsofwarcraft.com/bb for forums and information
-    //
-    // End of prepatch
     INT_CONFIG_VALUE_COUNT
 };
 

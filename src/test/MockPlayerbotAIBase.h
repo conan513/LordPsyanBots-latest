@@ -4,15 +4,15 @@
 
 namespace ai
 {
-	class MockPlayerbotAIBase : public PlayerbotAI
-	{
-	public:
-		MockPlayerbotAIBase() : PlayerbotAI() 
+    class MockPlayerbotAIBase : public PlayerbotAI
+    {
+    public:
+        MockPlayerbotAIBase() : PlayerbotAI()
         {
             targetIsCastingNonMeleeSpell = false;
         }
         void SetContext(AiObjectContext* context) { this->aiObjectContext = context; }
-	
+
         virtual uint32 GetSpellId(string args) { return 1; }
         virtual void InterruptSpell();
         virtual void RemoveAura(string name);

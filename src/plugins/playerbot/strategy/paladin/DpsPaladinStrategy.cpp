@@ -69,11 +69,15 @@ void DpsPaladinStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         "judgement of wisdom",
         NextAction::array(0, new NextAction("judgement of wisdom", ACTION_NORMAL + 2), NULL)));
 
-	triggers.push_back(new TriggerNode(
-		"medium aoe",
-		NextAction::array(0, new NextAction("divine storm", ACTION_HIGH + 1), new NextAction("consecration", ACTION_HIGH + 1), NULL)));
+    triggers.push_back(new TriggerNode(
+        "blessing",
+        NextAction::array(0, new NextAction("blessing of might", ACTION_HIGH + 8), NULL)));
 
-	triggers.push_back(new TriggerNode(
-		"art of war",
-		NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 2), NULL)));
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("divine storm", ACTION_HIGH + 1), new NextAction("consecration", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "art of war",
+        NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 2), NULL)));
 }

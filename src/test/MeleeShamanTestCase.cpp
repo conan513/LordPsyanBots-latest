@@ -10,8 +10,8 @@ class MeleeShamanTestCase : public EngineTestBase
 {
     CPPUNIT_TEST_SUITE( MeleeShamanTestCase );
     CPPUNIT_TEST( combat );
-	CPPUNIT_TEST( buff );
-	CPPUNIT_TEST( incompatibles );
+    CPPUNIT_TEST( buff );
+    CPPUNIT_TEST( incompatibles );
     CPPUNIT_TEST( aoe );
     CPPUNIT_TEST( boost );
     CPPUNIT_TEST( interruptSpell );
@@ -22,8 +22,8 @@ class MeleeShamanTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new ShamanAiObjectContext(ai), "melee", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new ShamanAiObjectContext(ai), "melee", NULL);
 
         addAura("lightning shield");
     }
@@ -31,15 +31,15 @@ public:
 protected:
     void combat()
     {
-		tickInMeleeRange();
+        tickInMeleeRange();
 
         tick();
         tick();
         addTargetAura("earth shock");
 
         tick();
-		tick();
-		tick();
+        tick();
+        tick();
 
         assertActions(">S:searing totem>T:earth shock>T:flame shock>T:stormstrike>T:lava lash>T:melee");
     }

@@ -14,23 +14,23 @@ class KiteTestCase : public EngineTestBase
     CPPUNIT_TEST_SUITE_END();
 
 public:
-	virtual void setUp()
-	{
-		EngineTestBase::setUp();
-		setupEngine(new WarriorAiObjectContext(ai), "tank", NULL);
+    virtual void setUp()
+    {
+        EngineTestBase::setUp();
+        setupEngine(new WarriorAiObjectContext(ai), "tank", NULL);
 
-		engine->addStrategy("kite");
+        engine->addStrategy("kite");
         set<float>("distance", "current target", 0.0f);
-		
-		addAura("battle shout");
-		addAura("defensive stance");
+
+        addAura("battle shout");
+        addAura("defensive stance");
     }
- 
+
 protected:
     void kite()
     {
         set<bool>("has aggro", "current target", true);
-		tick();
+        tick();
 
         assertActions(">S:runaway");
     }

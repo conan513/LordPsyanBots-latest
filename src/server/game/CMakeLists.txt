@@ -52,7 +52,6 @@ target_include_directories(game
 
 target_link_libraries(game
   PUBLIC
-    plugins
     game-interface
   PRIVATE
     efsw)
@@ -74,7 +73,7 @@ if( BUILD_SHARED_LIBS )
   endif()
 endif()
 
-add_dependencies(game plugins revision_data.h)
+add_dependencies(game plugins)
 # Generate precompiled header
 if (USE_COREPCH)
   add_cxx_pch(game ${PRIVATE_PCH_HEADER} ${PRIVATE_PCH_SOURCE})

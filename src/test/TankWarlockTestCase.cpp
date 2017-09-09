@@ -30,7 +30,7 @@ protected:
         tickWithNoPet();
         tickWithNoPet();
 
-		assertActions(">S:summon felguard>S:summon voidwalker");
+        assertActions(">S:summon felguard>S:summon voidwalker");
     }
 
     void cc()

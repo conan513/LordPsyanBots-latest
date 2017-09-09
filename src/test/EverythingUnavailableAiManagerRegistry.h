@@ -6,9 +6,9 @@ namespace ai
     {
     public:
         EverythingUnavailablePlayerbotAI() : MockPlayerbotAIBase()
-		{
-			managers[AiSpellManagerType] = new EverythingUnavailableAiSpellManager(ai, this, &buffer);
-		}
+        {
+            managers[AiSpellManagerType] = new EverythingUnavailableAiSpellManager(ai, this, &buffer);
+        }
         virtual bool CanCastSpell(string  name, Unit* target) { return false; }
     };
 

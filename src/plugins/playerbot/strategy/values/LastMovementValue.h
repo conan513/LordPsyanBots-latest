@@ -6,7 +6,7 @@ namespace ai
     class LastMovement
     {
     public:
-        LastMovement() 
+        LastMovement()
         {
             lastMoveToX = 0;
             lastMoveToY = 0;
@@ -26,7 +26,7 @@ namespace ai
             lastMoveToZ = other.lastMoveToZ;
             lastMoveToOri = other.lastMoveToOri;
         }
-        
+
         void Set(Unit* lastFollow)
         {
             Set(0.0f, 0.0f, 0.0f, 0.0f);
@@ -51,8 +51,8 @@ namespace ai
     };
 
     class LastMovementValue : public ManualSetValue<LastMovement&>
-	{
-	public:
+    {
+    public:
         LastMovementValue(PlayerbotAI* ai) : ManualSetValue<LastMovement&>(ai, data) {}
 
     private:

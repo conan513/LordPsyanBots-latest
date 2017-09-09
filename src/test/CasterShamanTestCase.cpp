@@ -10,8 +10,8 @@ class CasterShamanTestCase : public EngineTestBase
 {
     CPPUNIT_TEST_SUITE( CasterShamanTestCase );
     CPPUNIT_TEST( combat );
-	CPPUNIT_TEST( buff );
-	CPPUNIT_TEST( incompatibles );
+    CPPUNIT_TEST( buff );
+    CPPUNIT_TEST( incompatibles );
     CPPUNIT_TEST( aoe );
     CPPUNIT_TEST( snare );
     CPPUNIT_TEST_SUITE_END();
@@ -19,8 +19,8 @@ class CasterShamanTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new ShamanAiObjectContext(ai), "caster", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new ShamanAiObjectContext(ai), "caster", NULL);
 
         addAura("water shield");
         addTargetAura("earth shock");
@@ -31,12 +31,12 @@ protected:
     {
         removeTargetAura("earth shock");
 
-		tick();
+        tick();
         tick();
         addTargetAura("flame shock");
 
-		tick();
-		tick();
+        tick();
+        tick();
 
         assertActions(">T:earth shock>T:flame shock>S:searing totem>T:lightning bolt");
     }

@@ -4,10 +4,10 @@
 
 namespace ai
 {
-   
+
     class GrindTargetValue : public TargetValue
-	{
-	public:
+    {
+    public:
         GrindTargetValue(PlayerbotAI* ai) : TargetValue(ai) {}
 
     public:

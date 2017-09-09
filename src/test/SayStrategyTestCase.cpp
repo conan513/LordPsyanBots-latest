@@ -24,9 +24,9 @@ class SayStrategyTestCase : public MockedAiObjectContextTestCase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
+        EngineTestBase::setUp();
 
-		CustomStrategy::actionLinesCache["say"] = R"(
+        CustomStrategy::actionLinesCache["say"] = R"(
 (NULL, 'say', 'critical health>say::critical health|99'),
 (NULL, 'say', 'low health>say::low health|99'),
 (NULL, 'say', 'low mana>say::low mana|99'),

@@ -43,23 +43,23 @@ class ExternalEventHelperTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
-	void externalEvent()
-	{
+    void externalEvent()
+    {
         MockPlayerbotAIBase ai;
         ExternalEventTestAiObjectContext aiObjectContext(&ai);
         ExternalEventHelper helper(&aiObjectContext);
-        
+
         helper.ParseChatCommand("message from chat");
-        
+
         Event event = aiObjectContext.GetTrigger("message from")->Check();
         CPPUNIT_ASSERT(event);
         CPPUNIT_ASSERT(event.getParam() == "chat");
-	
+
         event = aiObjectContext.GetTrigger("message")->Check();
         CPPUNIT_ASSERT(!event);
     }

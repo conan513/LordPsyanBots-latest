@@ -527,7 +527,7 @@ class spell_sapphiron_frost_breath : public SpellScriptLoader
             void HandleTargets(std::list<WorldObject*>& targetList)
             {
                 std::list<GameObject*> blocks;
-                if(GetCaster())
+                if (GetCaster())
                     GetCaster()->GetGameObjectListWithEntryInGrid(blocks, GO_ICEBLOCK, 200.0f);
 
                 std::vector<Unit*> toRemove;

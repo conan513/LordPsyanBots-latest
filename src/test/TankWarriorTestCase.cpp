@@ -15,7 +15,7 @@ class TankWarriorTestCase : public EngineTestBase
     CPPUNIT_TEST( warriorMustHoldAggro );
     CPPUNIT_TEST( aoe );
     CPPUNIT_TEST( healing );
-	CPPUNIT_TEST( snare );
+    CPPUNIT_TEST( snare );
     CPPUNIT_TEST( interruptSpells );
     CPPUNIT_TEST( incompatibles );
     CPPUNIT_TEST( interrupt_enemy_healer );
@@ -37,7 +37,7 @@ public:
 protected:
     void interruptSpells()
     {
-		tickWithTargetIsCastingNonMeleeSpell();
+        tickWithTargetIsCastingNonMeleeSpell();
 
         tick(); // rend
 
@@ -50,10 +50,10 @@ protected:
         tickWithLowHealth(50); // shield wall
         tickWithLowHealth(50); // shield block
 
-		tickWithLowHealth(4);
-		tickWithLowHealth(4);
+        tickWithLowHealth(4);
+        tickWithLowHealth(4);
 
-		assertActions(">S:defensive stance>T:shield wall>S:shield block>S:last stand>T:intimidating shout");
+        assertActions(">S:defensive stance>T:shield wall>S:shield block>S:last stand>T:intimidating shout");
     }
 
     void buff()
@@ -66,7 +66,7 @@ protected:
 
         tickInSpellRange();
 
-		assertActions(">S:battle shout>S:bloodrage");
+        assertActions(">S:battle shout>S:bloodrage");
 
     }
 
@@ -74,13 +74,13 @@ protected:
     {
         addAura("defensive stance");
 
-		tickWithAttackerCount(3);
-		tickWithAttackerCount(3);
+        tickWithAttackerCount(3);
+        tickWithAttackerCount(3);
 
-		spellAvailable("cleave");
-		tickWithAttackerCount(2);
-		tickWithAttackerCount(2);
-		tickWithAttackerCount(2);
+        spellAvailable("cleave");
+        tickWithAttackerCount(2);
+        tickWithAttackerCount(2);
+        tickWithAttackerCount(2);
 
         assertActions(">T:shockwave>T:thunder clap>T:demoralizing shout>T:cleave>T:devastate");
     }
@@ -89,10 +89,10 @@ protected:
     {
         addAura("defensive stance");
 
-		tickWithNoAggro();
-		tickWithNoAggro();
+        tickWithNoAggro();
+        tickWithNoAggro();
 
-		assertActions(">T:taunt>T:mocking blow");
+        assertActions(">T:taunt>T:mocking blow");
     }
 
     void startMeleeCombat()
@@ -126,10 +126,10 @@ protected:
         tickWithSpellAvailable("heroic strike");
 
         addAura("sword and board");
-		tickWithSpellAvailable("devastate");
+        tickWithSpellAvailable("devastate");
         tickWithSpellAvailable("shield slam");
 
-		assertActions(">T:devastate>T:revenge>T:rend>T:disarm>T:sunder armor>T:melee>T:shield slam>T:heroic strike>T:melee>T:shield slam");
+        assertActions(">T:devastate>T:revenge>T:rend>T:disarm>T:sunder armor>T:melee>T:shield slam>T:heroic strike>T:melee>T:shield slam");
     }
 
     void revengeIfDodge()
@@ -139,16 +139,16 @@ protected:
         tick(); // defensive stance
         tick(); // revenge
 
-		assertActions(">T:melee>S:defensive stance>T:revenge");
+        assertActions(">T:melee>S:defensive stance>T:revenge");
     }
 
-	void snare()
-	{
-		tick();
-		tickWithTargetIsMoving();
+    void snare()
+    {
+        tick();
+        tickWithTargetIsMoving();
 
-		assertActions(">S:defensive stance>T:concussion blow");
-	}
+        assertActions(">S:defensive stance>T:concussion blow");
+    }
 
 
     void incompatibles()

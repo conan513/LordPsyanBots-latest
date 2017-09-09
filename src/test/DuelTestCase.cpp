@@ -18,8 +18,8 @@ class DuelTestCase : public MockedAiObjectContextTestCase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "default", "duel", NULL);
+        EngineTestBase::setUp();
+        setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "default", "duel", NULL);
     }
 
 protected:

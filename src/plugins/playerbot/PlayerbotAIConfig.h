@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.h"
+#include "../../common/Configuration/Config.h"
 
 class Player;
 class PlayerbotMgr;
@@ -51,7 +51,6 @@ public:
     uint32 randomBotTeleLevel;
     bool logInGroupOnly, logValuesPerTick;
     bool fleeingEnabled;
-    std::string combatStrategies, nonCombatStrategies;
     std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;

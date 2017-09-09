@@ -19,16 +19,16 @@ class EventTestCase : public CPPUNIT_NS::TestFixture
 protected:
 
 public:
-	void setUp()
-	{
-	}
+    void setUp()
+    {
+    }
 
 protected:
-	void emptyEvent()
-	{
+    void emptyEvent()
+    {
         Event event;
         CPPUNIT_ASSERT(!event);
-	}
+    }
 
     void eventHandling()
     {

@@ -68,21 +68,20 @@ class ChatCommandTestCase : public MockedAiObjectContextTestCase
       CPPUNIT_TEST( max_dps );
       CPPUNIT_TEST( tell_attackers );
       CPPUNIT_TEST( formation );
-      CPPUNIT_TEST( sendmail );
   CPPUNIT_TEST_SUITE_END();
 
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "chat", NULL);
+        EngineTestBase::setUp();
+        setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "chat", NULL);
     }
 
 protected:
- 	void stats()
-	{
+     void stats()
+    {
         assertCommand("stats");
-	}
+    }
 
     void leave()
     {
@@ -448,13 +447,6 @@ protected:
         trigger("formation");
         tick();
         assertActions(">S:formation");
-    }
-
-    void sendmail()
-    {
-        trigger("sendmail");
-        tick();
-        assertActions(">S:sendmail");
     }
 
 };

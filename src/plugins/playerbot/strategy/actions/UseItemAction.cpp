@@ -267,7 +267,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
                 continue;
             }
 
-			if (replace && enchantEntry->GemID != gem->GetTemplate()->ItemId)
+            if (replace && enchantEntry->GemID != gem->GetTemplate()->ItemId)
             {
                 *packet << gem->GetGUID();
                 fits = true;

@@ -27,12 +27,12 @@ protected:
         return spellInfo;
     }
 
- 	void lvl19_caster()
-	{
+     void lvl19_caster()
+    {
         setupEngine(new DruidAiObjectContext(ai), "caster", "aoe", NULL);
         addTargetAura("faerie fire");
         run(lvl19(), 600);
-	}
+    }
 
 };
 

@@ -24,12 +24,12 @@ public:
     }
 
 protected:
- 	void combatVsMelee()
-	{
- 	    tick();
- 	    addTargetAura("immolate");
+     void combatVsMelee()
+    {
+         tick();
+         addTargetAura("immolate");
 
- 	    tick();
+         tick();
 
         tick();
         addTargetAura("corruption");
@@ -42,28 +42,28 @@ protected:
 
         tick();
 
-		tickWithTargetLowHealth(19);
+        tickWithTargetLowHealth(19);
 
         set<uint8>("item count", "soul shard", 2);
-		spellAvailable("drain soul");
-		tick();
-
-		spellAvailable("shadow bolt");
-		addAura("shadow trance");
-		tick();
+        spellAvailable("drain soul");
+        tick();
 
         spellAvailable("shadow bolt");
-		addAura("backlash");
-		tick();
+        addAura("shadow trance");
+        tick();
 
-		assertActions(">T:immolate>T:conflagrate>T:corruption>T:curse of agony>T:incinirate>T:drain life>T:shadow bolt>T:drain soul>T:shoot>T:shadow bolt>T:shadow bolt");
-	}
+        spellAvailable("shadow bolt");
+        addAura("backlash");
+        tick();
+
+        assertActions(">T:immolate>T:conflagrate>T:corruption>T:curse of agony>T:incinirate>T:drain life>T:shadow bolt>T:drain soul>T:shoot>T:shadow bolt>T:shadow bolt");
+    }
 
     void low_mana()
     {
         tickWithLowMana(1);
 
-		assertActions(">S:life tap");
+        assertActions(">S:life tap");
     }
 
     void aoe()
@@ -80,7 +80,7 @@ protected:
         set<Unit*>("attacker without aura", "corruption", NULL);
         tick();
 
-		assertActions(">T:shadowfury>T:seed of corruption>T:rain of fire>A:corruption on attacker>T:immolate");
+        assertActions(">T:shadowfury>T:seed of corruption>T:rain of fire>A:corruption on attacker>T:immolate");
     }
 
     void cc()

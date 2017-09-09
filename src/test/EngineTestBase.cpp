@@ -74,7 +74,7 @@ private:
 
 void EngineTestBase::setUp()
 {
-	ai = new MockPlayerbotAIBase();
+    ai = new MockPlayerbotAIBase();
 }
 
 void EngineTestBase::tearDown()
@@ -87,16 +87,16 @@ void EngineTestBase::tearDown()
 
 void EngineTestBase::va_generic(void (EngineTestBase::*callback)(const char*), va_list vl)
 {
-	const char* cur;
-	do
-	{
-		cur = va_arg(vl, const char*);
-		if (cur)
-			(this->*callback)(cur);
-	}
-	while (cur);
+    const char* cur;
+    do
+    {
+        cur = va_arg(vl, const char*);
+        if (cur)
+            (this->*callback)(cur);
+    }
+    while (cur);
 
-	va_end(vl);
+    va_end(vl);
 }
 
 
@@ -105,25 +105,25 @@ void EngineTestBase::setupEngine(AiObjectContext* aiObjectContext, ...)
     context = new AiObjectContextWrapper(ai, aiObjectContext);
     ai->SetContext(context);
     engine = new Engine(ai, context);
-	engine->testMode = true;
+    engine->testMode = true;
     engine->AddActionExecutionListener(new TestActionExecutionListener(ai));
 
-	va_list vl;
-	va_start(vl, aiObjectContext);
+    va_list vl;
+    va_start(vl, aiObjectContext);
 
-	va_generic(&EngineTestBase::setupEngineCallback, vl);
+    va_generic(&EngineTestBase::setupEngineCallback, vl);
 
-	engine->Init();
+    engine->Init();
 }
 
 void EngineTestBase::setupEngineCallback(const char* name)
 {
-	engine->addStrategy(name);
+    engine->addStrategy(name);
 }
 
 void EngineTestBase::tick()
 {
-	engine->DoNextAction(NULL);
+    engine->DoNextAction(NULL);
 }
 
 void EngineTestBase::ticks(int count)
@@ -137,14 +137,14 @@ void EngineTestBase::ticks(int count)
 
 void EngineTestBase::assertActions(string  expected)
 {
-	bool pass = ai->buffer == expected;
-	if (!pass)
-	{
-		std::cout << "\n===\n";
-		std::cout << "Exp: " << expected << "\n";
-		std::cout << "Act: " << ai->buffer << "\n";
-		std::cout << "===\n";
-	}
+    bool pass = ai->buffer == expected;
+    if (!pass)
+    {
+        std::cout << "\n===\n";
+        std::cout << "Exp: " << expected << "\n";
+        std::cout << "Act: " << ai->buffer << "\n";
+        std::cout << "===\n";
+    }
     CPPUNIT_ASSERT(pass);
 }
 
@@ -153,7 +153,7 @@ void EngineTestBase::tickWithNoTarget()
     context->GetValue<Unit*>("current target")->Set(NULL);
     set<uint8>("my attacker count", 0);
 
-	tick();
+    tick();
 
     set<uint8>("my attacker count", 1);
     context->GetValue<Unit*>("current target")->Set(MockedTargets::GetCurrentTarget());
@@ -161,19 +161,19 @@ void EngineTestBase::tickWithNoTarget()
 
 void EngineTestBase::spellUnavailable(string  spell)
 {
-	ai->spellCooldowns.push_back(spell);
+    ai->spellCooldowns.push_back(spell);
 }
 
 void EngineTestBase::tickWithSpellUnavailable(string  spell)
 {
-	spellUnavailable(spell);
-	tick();
+    spellUnavailable(spell);
+    tick();
 }
 
 void EngineTestBase::tickWithSpellAvailable(string  spell)
 {
-	spellAvailable(spell);
-	tick();
+    spellAvailable(spell);
+    tick();
 }
 
 void EngineTestBase::spellAvailable(string  spell)
@@ -191,12 +191,12 @@ void EngineTestBase::spellAvailable(string  spell)
 
 void EngineTestBase::addAura(string  spell)
 {
-	ai->auras[MockedTargets::GetSelf()].push_back(spell);
+    ai->auras[MockedTargets::GetSelf()].push_back(spell);
 }
 
 void EngineTestBase::removeAura(string  spell)
 {
-	ai->auras[MockedTargets::GetSelf()].remove(spell);
+    ai->auras[MockedTargets::GetSelf()].remove(spell);
 }
 
 void EngineTestBase::tickOutOfSpellRange()
@@ -221,7 +221,7 @@ void EngineTestBase::setInMeleeRange()
 void EngineTestBase::tickInMeleeRange()
 {
     set<float>("distance", "current target", ATTACK_DISTANCE - 1);
-	tick();
+    tick();
 }
 
 void EngineTestBase::tickWithNoAggro()
@@ -241,66 +241,66 @@ void EngineTestBase::tickWithRage(int amount)
 void EngineTestBase::tickWithEnergy(int amount)
 {
     set<uint8>("energy", "self target", amount);
-	tick();
+    tick();
     set<uint8>("energy", "self target", 0);
 }
 
 void EngineTestBase::tickWithAttackerCount(int count)
 {
     set<uint8>("attacker count", count);
-	tick();
+    tick();
     set<uint8>("attacker count", 1);
 }
 
 void EngineTestBase::tickWithMyAttackerCount(int count)
 {
     set<uint8>("my attacker count", count);
-	tickWithAttackerCount(count + 1);
+    tickWithAttackerCount(count + 1);
     set<uint8>("my attacker count", 1);
 }
 
 void EngineTestBase::tickWithLowHealth(int amount)
 {
-	lowHealth(amount);
-	tick();
-	healthRestored();
+    lowHealth(amount);
+    tick();
+    healthRestored();
 }
 
 void EngineTestBase::tickWithPartyLowHealth(int amount)
 {
     set<uint8>("health", "party member to heal", amount);
-	tick();
+    tick();
     set<uint8>("health", "party member to heal", 100);
 }
 
 void EngineTestBase::tickWithAoeHeal(string type, int amount)
 {
     set<uint8>("health", "party member to heal", 45);
-	set<uint8>("aoe heal", "medium", amount);
-	tick();
-	set<uint8>("aoe heal", "medium", 0);
+    set<uint8>("aoe heal", "medium", amount);
+    tick();
+    set<uint8>("aoe heal", "medium", 0);
     set<uint8>("health", "party member to heal", 100);
 }
 
 void EngineTestBase::tickWithAuraToDispel(uint32 type)
 {
-	ai->dispels[MockedTargets::GetSelf()] = type;
-	tick();
-	ai->dispels[MockedTargets::GetSelf()] = 0;
+    ai->dispels[MockedTargets::GetSelf()] = type;
+    tick();
+    ai->dispels[MockedTargets::GetSelf()] = 0;
 }
 
 void EngineTestBase::tickWithPartyAuraToDispel(uint32 type)
 {
-	ai->dispels[MockedTargets::GetPartyMember()] = type;
-	tick();
-	ai->dispels[MockedTargets::GetPartyMember()] = 0;
+    ai->dispels[MockedTargets::GetPartyMember()] = type;
+    tick();
+    ai->dispels[MockedTargets::GetPartyMember()] = 0;
 }
 
 void EngineTestBase::tickWithTargetAuraToDispel(uint32 type)
 {
-	ai->dispels[MockedTargets::GetCurrentTarget()] = type;
-	tick();
-	ai->dispels[MockedTargets::GetCurrentTarget()] = 0;
+    ai->dispels[MockedTargets::GetCurrentTarget()] = type;
+    tick();
+    ai->dispels[MockedTargets::GetCurrentTarget()] = 0;
 }
 
 void EngineTestBase::lowHealth(int amount)
@@ -321,7 +321,7 @@ void EngineTestBase::healthRestored()
 void EngineTestBase::tickWithComboPoints(int amount)
 {
     set<uint8>("combo", "current target", amount);
-	tick();
+    tick();
     set<uint8>("combo", "current target", 0);
 }
 
@@ -335,21 +335,21 @@ void EngineTestBase::tickWithTargetIsCastingNonMeleeSpell()
 void EngineTestBase::tickWithBalancePercent(int percent)
 {
     set<uint8>("balance", percent);
-	tick();
+    tick();
     set<uint8>("balance", 100);
 }
 
 void EngineTestBase::tickWithNoPet()
 {
     context->GetValue<Unit*>("pet target")->Set(NULL);
-	tick();
+    tick();
     context->GetValue<Unit*>("pet target")->Set(MockedTargets::GetPet());
 }
 
 void EngineTestBase::tickWithPetLowHealth(int amount)
 {
     set<uint8>("health", "pet target", amount);
-	tick();
+    tick();
     set<uint8>("health", "pet target", 100);
 }
 
@@ -392,7 +392,7 @@ void EngineTestBase::tickInSpellRange()
 
 void EngineTestBase::addTargetAura(string  spell)
 {
-	ai->auras[MockedTargets::GetCurrentTarget()].push_back(spell);
+    ai->auras[MockedTargets::GetCurrentTarget()].push_back(spell);
 }
 
 void EngineTestBase::removeTargetAura(string  spell)
@@ -413,7 +413,7 @@ void EngineTestBase::removePartyAura(string  spell)
 void EngineTestBase::tickWithLootAvailable()
 {
     set<bool>("has available loot", true);
-	tick();
+    tick();
     set<bool>("has available loot", false);
 }
 
@@ -422,9 +422,9 @@ void EngineTestBase::tickWithNoDrink()
     list<Item*> items;
     set<list<Item*> >("inventory items", "drink", items);
 
-	tick();
+    tick();
 
-	items.push_back((Item*)(void*)0x01);
+    items.push_back((Item*)(void*)0x01);
     set<list<Item*> >("inventory items", "drink", items);
 }
 
@@ -433,9 +433,9 @@ void EngineTestBase::tickWithNoFood()
     list<Item*> items;
     set<list<Item*> >("inventory items", "food", items);
 
-	tick();
+    tick();
 
-	items.push_back((Item*)(void*)0x01);
+    items.push_back((Item*)(void*)0x01);
     set<list<Item*> >("inventory items", "food", items);
 }
 
@@ -447,7 +447,7 @@ void EngineTestBase::itemAvailable(string  item, int amount)
 void EngineTestBase::tickWithDeadPartyMember()
 {
     context->GetValue<Unit*>("party member to resurrect")->Set(MockedTargets::GetPartyMember());
-	tick();
+    tick();
     context->GetValue<Unit*>("party member to resurrect")->Set(NULL);
 }
 

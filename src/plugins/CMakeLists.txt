@@ -23,7 +23,7 @@ set(plugins_STAT_SRCS
 if (USE_COREPCH)
   set(PRIVATE_PCH_HEADER pch/pch.h)
   set(PRIVATE_PCH_SOURCE pch/pch.cpp)
-endif ()
+endif()
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -126,7 +126,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Movement/Waypoints
   ${CMAKE_SOURCE_DIR}/src/server/game/OutdoorPvP
   ${CMAKE_SOURCE_DIR}/src/server/game/Pools
-  ${CMAKE_SOURCE_DIR}/src/server/game/PrecompiledHeaders
+  ${CMAKE_SOURCE_DIR}/src/server/game/pch
   ${CMAKE_SOURCE_DIR}/src/server/game/Quests
   ${CMAKE_SOURCE_DIR}/src/server/game/Reputation
   ${CMAKE_SOURCE_DIR}/src/server/game/Scripting
@@ -142,7 +142,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Warden/Modules
   ${CMAKE_SOURCE_DIR}/src/server/game/Weather
   ${CMAKE_SOURCE_DIR}/src/server/game/World
-  ${CMAKE_SOURCE_DIR}/src/server/scripts/PrecompiledHeaders
+  ${CMAKE_SOURCE_DIR}/src/server/scripts/pch
   ${MYSQL_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
 )
@@ -151,6 +151,7 @@ add_library(plugins STATIC
   ${plugins_STAT_SRCS}
   ${plugins_STAT_PCH_SRC}
 )
+
 
 # Do NOT add any extra include directory unless it does not create unneeded extra dependencies,
 # and specially, not add any dependency to neither of these: shared, game, scripts

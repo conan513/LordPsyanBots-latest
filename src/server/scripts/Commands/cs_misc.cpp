@@ -38,9 +38,9 @@
 #include "SpellHistory.h"
 #include "Transport.h"
 
-#include "AhBot.h"
-#include "playerbot.h"
-#include "GuildTaskMgr.h"
+#include "../../../plugins/ahbot/AhBot.h"
+#include "../../../plugins/playerbot/playerbot.h"
+#include "../../../plugins/playerbot/GuildTaskMgr.h"
 
 class misc_commandscript : public CommandScript
 {
@@ -103,10 +103,10 @@ public:
             { "wchange",          rbac::RBAC_PERM_COMMAND_WCHANGE,          false, &HandleChangeWeather,           "" },
             { "mailbox",          rbac::RBAC_PERM_COMMAND_MAILBOX,          false, &HandleMailBoxCommand,          "" },
             // playerbot mod
-            { "ahbot",            rbac::RBAC_PERM_COMMAND_GM,                true,  &ahbot::AhBot::HandleAhBotCommand, "" },
-            { "rndbot",           rbac::RBAC_PERM_COMMAND_GM,                true,  &RandomPlayerbotMgr::HandlePlayerbotConsoleCommand, "" },
-            { "bot",              195                       ,               false, &PlayerbotMgr::HandlePlayerbotMgrCommand, "" },
-            { "gtask",            rbac::RBAC_PERM_COMMAND_GM,                true,  &GuildTaskMgr::HandleConsoleCommand, "" },
+            { "ahbot",            rbac::RBAC_PERM_COMMAND_GM       ,          true,  &ahbot::AhBot::HandleAhBotCommand,                      "" },
+            { "rndbot",           rbac::RBAC_PERM_COMMAND_GM       ,          true,  &RandomPlayerbotMgr::HandlePlayerbotConsoleCommand,     "" },
+            { "bot",              195                              ,          false, &PlayerbotMgr::HandlePlayerbotMgrCommand,               "" },
+            { "gtask",            rbac::RBAC_PERM_COMMAND_GM       ,          true,  &GuildTaskMgr::HandleConsoleCommand,           "" },
         };
         return commandTable;
     }

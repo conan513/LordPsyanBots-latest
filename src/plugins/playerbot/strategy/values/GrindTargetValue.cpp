@@ -59,22 +59,22 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
         if (GetTargetingPlayerCount(unit) > assistCount)
             continue;
 
-		if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
+        if (master && master->GetDistance(unit) >= sPlayerbotAIConfig.grindDistance && !sRandomPlayerbotMgr.IsRandomBot(bot))
             continue;
 
-		if ((int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetGUID().IsPlayer())
-		    continue;
+        if ((int)unit->getLevel() - (int)bot->getLevel() > 4 && !unit->GetGUID().IsPlayer())
+            continue;
 
-		Creature* creature = dynamic_cast<Creature*>(unit);
-		if (creature && creature->GetCreatureTemplate() && creature->GetCreatureTemplate()->rank > CREATURE_ELITE_NORMAL)
-		    continue;
+        Creature* creature = dynamic_cast<Creature*>(unit);
+        if (creature && creature->GetCreatureTemplate() && creature->GetCreatureTemplate()->rank > CREATURE_ELITE_NORMAL)
+            continue;
 
         if (group)
         {
             Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
             for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
             {
-                Player *member = sObjectMgr->GetPlayerByLowGUID(itr->guid);
+                Player *member = ObjectAccessor::FindPlayer(itr->guid);
                 if( !member || !member->IsAlive())
                     continue;
 
@@ -111,7 +111,7 @@ int GrindTargetValue::GetTargetingPlayerCount( Unit* unit )
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
-        Player *member = sObjectMgr->GetPlayerByLowGUID(itr->guid);
+        Player *member = ObjectAccessor::FindPlayer(itr->guid);
         if( !member || !member->IsAlive() || member == bot)
             continue;
 

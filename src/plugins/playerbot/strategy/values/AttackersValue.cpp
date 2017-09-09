@@ -19,13 +19,13 @@ list<ObjectGuid> AttackersValue::Calculate()
     RemoveNonThreating(targets);
 
     list<ObjectGuid> result;
-	for (set<Unit*>::iterator i = targets.begin(); i != targets.end(); i++)
-		result.push_back((*i)->GetGUID());
+    for (set<Unit*>::iterator i = targets.begin(); i != targets.end(); i++)
+        result.push_back((*i)->GetGUID());
 
     if (bot->duel && bot->duel->opponent)
         result.push_back(bot->duel->opponent->GetGUID());
 
-	return result;
+    return result;
 }
 
 void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
@@ -33,7 +33,7 @@ void AttackersValue::AddAttackersOf(Group* group, set<Unit*>& targets)
     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
     for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
     {
-        Player *member = sObjectMgr->GetPlayerByLowGUID(itr->guid);
+        Player *member = ObjectAccessor::FindPlayer(itr->guid);
         if (!member || !member->IsAlive() || member == bot)
             continue;
 

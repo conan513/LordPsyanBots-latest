@@ -15,11 +15,11 @@ class NonCombatEngineTestCase2 : public MockedAiObjectContextTestCase
   CPPUNIT_TEST_SUITE_END();
 
 public:
-	void setUp()
-	{
-		EngineTestBase::setUp();
+    void setUp()
+    {
+        EngineTestBase::setUp();
         setupEngine(context = new MockAiObjectContext(ai, new AiObjectContext(ai), &ai->buffer), "emote", NULL);
-	}
+    }
 
 protected:
     void emote()

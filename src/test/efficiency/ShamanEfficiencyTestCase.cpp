@@ -29,17 +29,17 @@ protected:
         return spellInfo;
     }
 
- 	void lvl19_melee()
-	{
+     void lvl19_melee()
+    {
         setupEngine(new ShamanAiObjectContext(ai), "melee", "melee aoe", NULL);
         run(lvl19(), 600);
-	}
+    }
 
- 	void lvl19_caster()
-	{
+     void lvl19_caster()
+    {
         setupEngine(new ShamanAiObjectContext(ai), "caster", "caster aoe", NULL);
         run(lvl19(), 600);
-	}
+    }
 
 };
 

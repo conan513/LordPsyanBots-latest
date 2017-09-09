@@ -27,17 +27,17 @@ protected:
         return spellInfo;
     }
 
- 	void lvl19_dps()
-	{
+     void lvl19_dps()
+    {
         setupEngine(new WarlockAiObjectContext(ai), "dps", "aoe", NULL);
         run(lvl19(), 888);
-	}
+    }
 
- 	void lvl19_tank()
-	{
+     void lvl19_tank()
+    {
         setupEngine(new WarlockAiObjectContext(ai), "tank", "aoe", NULL);
         run(lvl19(), 888);
-	}
+    }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( WarlockEfficiencyTestCase );

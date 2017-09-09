@@ -23,45 +23,45 @@ class DpsHunterEngineTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new HunterAiObjectContext(ai), "dps", "dps debuff", NULL);
-		engine->addStrategy("bdps");
+        EngineTestBase::setUp();
+        setupEngine(new HunterAiObjectContext(ai), "dps", "dps debuff", NULL);
+        engine->addStrategy("bdps");
 
         addAura("aspect of the hawk");
     }
 
 protected:
- 	void combatVsMelee()
-	{
+     void combatVsMelee()
+    {
         removeAura("aspect of the hawk");
 
-		tick();
+        tick();
         addAura("aspect of the hawk");
 
-		tick();
         tick();
-		tick();
-		addTargetAura("serpent sting");
-
-		tick();
-		tick();
-
-		tickInMeleeRange();
-		spellAvailable("wing clip");
-		addTargetAura("wing clip");
-		tickInMeleeRange();
-		tickInSpellRange();
-
-		// resetSpells
-		tickWithSpellUnavailable("aimed shot");
+        tick();
+        tick();
+        addTargetAura("serpent sting");
 
         tick();
         tick();
-		tickWithSpellAvailable("auto shot");
 
-		assertActions(">S:aspect of the hawk>T:hunter's mark>T:black arrow>T:serpent sting>T:explosive shot>T:auto shot>T:wing clip>S:flee>T:concussive shot>T:wyvern sting>T:chimera shot>T:auto shot>T:arcane shot");
+        tickInMeleeRange();
+        spellAvailable("wing clip");
+        addTargetAura("wing clip");
+        tickInMeleeRange();
+        tickInSpellRange();
 
-	}
+        // resetSpells
+        tickWithSpellUnavailable("aimed shot");
+
+        tick();
+        tick();
+        tickWithSpellAvailable("auto shot");
+
+        assertActions(">S:aspect of the hawk>T:hunter's mark>T:black arrow>T:serpent sting>T:explosive shot>T:auto shot>T:wing clip>S:flee>T:concussive shot>T:wyvern sting>T:chimera shot>T:auto shot>T:arcane shot");
+
+    }
 
     void lowMana()
     {
@@ -69,32 +69,32 @@ protected:
         spellUnavailable("concussive shot");
         removeAura("aspect of the hawk");
 
-		tickWithLowMana(30);
+        tickWithLowMana(30);
 
-		tick();
+        tick();
 
-		assertActions(">T:viper sting>S:aspect of the hawk");
+        assertActions(">T:viper sting>S:aspect of the hawk");
 
     }
 
     void summonPet()
     {
         tickWithNoPet();
-		tickWithPetLowHealth(30);
+        tickWithPetLowHealth(30);
 
-		assertActions(">S:call pet>Pet:mend pet");
-	}
+        assertActions(">S:call pet>Pet:mend pet");
+    }
 
 
     void boost()
     {
-		tick();
+        tick();
         spellUnavailable("serpent sting");
 
-		tickWithBalancePercent(1);
-		tickWithBalancePercent(1);
+        tickWithBalancePercent(1);
+        tickWithBalancePercent(1);
 
-		assertActions(">T:hunter's mark>S:rapid fire>S:readiness");
+        assertActions(">T:hunter's mark>S:rapid fire>S:readiness");
     }
 
 
@@ -109,11 +109,11 @@ protected:
     {
         engine->addStrategy("aoe");
 
-		addTargetAura("hunter's mark");
-		addTargetAura("black arrow");
-		addTargetAura("serpent sting");
+        addTargetAura("hunter's mark");
+        addTargetAura("black arrow");
+        addTargetAura("serpent sting");
         tickWithAttackerCount(3);
-		tickWithAttackerCount(4);
+        tickWithAttackerCount(4);
 
         set<Unit*>("attacker without aura", "serpent sting", MockedTargets::GetAttackerWithoutAura());
         tick();
@@ -121,21 +121,21 @@ protected:
         set<Unit*>("attacker without aura", "serpent sting", NULL);
         tick();
 
-		assertActions(">T:multi-shot>T:volley>A:serpent sting on attacker>T:explosive shot");
+        assertActions(">T:multi-shot>T:volley>A:serpent sting on attacker>T:explosive shot");
     }
 
-	void buff()
-	{
-		engine->removeStrategy("bdps");
-		engine->addStrategy("rnature");
-		removeAura("aspect of the hawk");
+    void buff()
+    {
+        engine->removeStrategy("bdps");
+        engine->addStrategy("rnature");
+        removeAura("aspect of the hawk");
 
-		tick();
-		addAura("aspect of the wild");
+        tick();
+        addAura("aspect of the wild");
 
-		assertActions(">S:aspect of the wild");
+        assertActions(">S:aspect of the wild");
 
-	}
+    }
 
     void incompatibles()
     {

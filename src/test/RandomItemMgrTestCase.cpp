@@ -48,8 +48,8 @@ public:
     }
 
 protected:
- 	void checkRandomItems(RandomItemType type)
-	{
+     void checkRandomItems(RandomItemType type)
+    {
         RandomItemList const& list = sRandomItemMgr.Query(type, NULL);
         CPPUNIT_ASSERT(!list.empty());
 
@@ -67,17 +67,17 @@ protected:
             CPPUNIT_ASSERT(id);
             Show(id);
         }
-	}
+    }
 
- 	void guildTaskItems()
- 	{
- 	   checkRandomItems(RANDOM_ITEM_GUILD_TASK);
-	}
+     void guildTaskItems()
+     {
+        checkRandomItems(RANDOM_ITEM_GUILD_TASK);
+    }
 
- 	void guildTaskRewardItems()
- 	{
- 	   checkRandomItems(RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP);
-	}
+     void guildTaskRewardItems()
+     {
+        checkRandomItems(RANDOM_ITEM_GUILD_TASK_REWARD);
+    }
 
 };
 

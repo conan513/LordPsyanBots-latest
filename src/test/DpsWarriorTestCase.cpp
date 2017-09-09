@@ -14,9 +14,9 @@ class DpsWarriorTestCase : public EngineTestBase
     CPPUNIT_TEST( boost );
     CPPUNIT_TEST( execute );
     CPPUNIT_TEST( hamstring );
-	CPPUNIT_TEST( victoryRush );
-	CPPUNIT_TEST( aoe );
-	CPPUNIT_TEST( stress );
+    CPPUNIT_TEST( victoryRush );
+    CPPUNIT_TEST( aoe );
+    CPPUNIT_TEST( stress );
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -25,7 +25,7 @@ public:
         EngineTestBase::setUp();
         setupEngine(new WarriorAiObjectContext(ai), "dps", NULL);
 
-		spellUnavailable("revenge");
+        spellUnavailable("revenge");
         addAura("battle shout");
         set<uint8>("rage", "self target", 20);
     }
@@ -36,23 +36,23 @@ protected:
         removeAura("battle shout");
 
         tickInSpellRange(); // reach melee
-		tickInMeleeRange();
+        tickInMeleeRange();
         tick();
 
-		assertActions(">S:battle shout>S:battle stance>T:charge");
+        assertActions(">S:battle shout>S:battle stance>T:charge");
 
     }
 
     void combatVsMelee()
     {
-		tickInSpellRange();
-		tickInSpellRange();
+        tickInSpellRange();
+        tickInSpellRange();
 
-		tickInMeleeRange();
+        tickInMeleeRange();
 
-		tickInSpellRange();
+        tickInSpellRange();
 
-		tickInMeleeRange();
+        tickInMeleeRange();
 
         tick();
         addTargetAura("rend");
@@ -62,48 +62,48 @@ protected:
         set<uint8>("rage", "self target", 0);
         tick();
 
-		assertActions(">S:battle stance>T:charge>T:bloodthirst>T:reach melee>T:rend>T:heroic strike>T:melee>S:bloodrage");
+        assertActions(">S:battle stance>T:charge>T:bloodthirst>T:reach melee>T:rend>T:heroic strike>T:melee>S:bloodrage");
     }
 
     void boost()
     {
         tickInMeleeRange(); // battle stance
 
-		tickWithBalancePercent(1);
-		tickWithBalancePercent(1);
+        tickWithBalancePercent(1);
+        tickWithBalancePercent(1);
 
-		assertActions(">S:battle stance>S:death wish>S:berserker rage");
+        assertActions(">S:battle stance>S:death wish>S:berserker rage");
     }
 
     void execute()
     {
         tickInMeleeRange(); // battle stance
 
-		tickWithTargetLowHealth(19);
+        tickWithTargetLowHealth(19);
 
-		assertActions(">S:battle stance>T:execute");
+        assertActions(">S:battle stance>T:execute");
     }
 
 
     void hamstring ()
     {
-		tickInMeleeRange(); // reach melee
+        tickInMeleeRange(); // reach melee
 
-		tickWithTargetIsMoving();
+        tickWithTargetIsMoving();
 
-		assertActions(">S:battle stance>T:hamstring");
+        assertActions(">S:battle stance>T:hamstring");
     }
 
 
-	void victoryRush()
-	{
-		tickInMeleeRange();
-		addAura("victory rush");
+    void victoryRush()
+    {
+        tickInMeleeRange();
+        addAura("victory rush");
 
-		tick();
+        tick();
 
-		assertActions(">S:battle stance>T:victory rush");
-	}
+        assertActions(">S:battle stance>T:victory rush");
+    }
 
     void aoe()
     {

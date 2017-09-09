@@ -24,68 +24,68 @@ class FrostMageTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new MageAiObjectContext(ai), "frost", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new MageAiObjectContext(ai), "frost", NULL);
     }
 
 protected:
- 	void combatVsMelee()
-	{
+     void combatVsMelee()
+    {
         tick();
         spellAvailable("frostbolt");
 
-		tickInMeleeRange();
-		tickInMeleeRange();
+        tickInMeleeRange();
+        tickInMeleeRange();
 
-		spellAvailable("frostbolt");
-		tickInSpellRange();
+        spellAvailable("frostbolt");
+        tickInSpellRange();
         tick();
 
-		tickWithLowHealth(19);
+        tickWithLowHealth(19);
 
-		context->GetValue<uint8>("speed", "current target")->Set(100);
+        context->GetValue<uint8>("speed", "current target")->Set(100);
         spellAvailable("frost nova");
         spellAvailable("frostbolt");
         tickInMeleeRange();
         tickInMeleeRange();
         context->GetValue<uint8>("speed", "current target")->Set(80);
 
-		assertActions(">T:frostbolt>T:frost nova>S:flee>T:frostbolt>T:shoot>S:ice block>T:frost nova>T:frostbolt");
-	}
+        assertActions(">T:frostbolt>T:frost nova>S:flee>T:frostbolt>T:shoot>S:ice block>T:frost nova>T:frostbolt");
+    }
 
     void dispel()
     {
         tick();
 
-		tickWithAuraToDispel(DISPEL_CURSE);
+        tickWithAuraToDispel(DISPEL_CURSE);
 
-		spellAvailable("remove curse");
-		tickWithPartyAuraToDispel(DISPEL_CURSE);
+        spellAvailable("remove curse");
+        tickWithPartyAuraToDispel(DISPEL_CURSE);
 
         tick();
 
-		tickWithTargetAuraToDispel(DISPEL_MAGIC);
+        tickWithTargetAuraToDispel(DISPEL_MAGIC);
 
-		assertActions(">T:frostbolt>S:remove curse>P:remove curse on party>T:shoot>T:spellsteal");
+        assertActions(">T:frostbolt>S:remove curse>P:remove curse on party>T:shoot>T:spellsteal");
     }
 
     void boost()
     {
         tick(); // frostbolt
 
-		tickWithBalancePercent(1);
+        tickWithBalancePercent(1);
 
         spellAvailable("frostbolt");
         tick(); // frostbolt
 
         tick(); // shoot
 
-		assertActions(">T:frostbolt>S:icy veins>T:frostbolt>T:shoot");
+        assertActions(">T:frostbolt>S:icy veins>T:frostbolt>T:shoot");
     }
 
     void interruptSpells()
     {
-		tickWithTargetIsCastingNonMeleeSpell();
+        tickWithTargetIsCastingNonMeleeSpell();
 
         tick(); // frostbolt
 
@@ -99,23 +99,23 @@ protected:
         assertActions(">Cc:polymorph");
     }
 
-   	void aoe()
-	{
+       void aoe()
+    {
         engine->addStrategy("frost aoe");
 
-		tick();
-		tickWithAttackerCount(4);
-		tick();
+        tick();
+        tickWithAttackerCount(4);
+        tick();
 
-		assertActions(">T:frostbolt>T:blizzard>T:shoot");
-	}
+        assertActions(">T:frostbolt>T:blizzard>T:shoot");
+    }
 
-   	void incompatibles()
-   	{
+       void incompatibles()
+       {
         engine->addStrategies("frost", "fire", NULL);
 
         CPPUNIT_ASSERT(engine->ListStrategies() == "Strategies: fire");
-   	}
+       }
 
     void low_mana()
     {

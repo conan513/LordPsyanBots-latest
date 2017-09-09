@@ -12,44 +12,44 @@ class CasterDruidTestCase : public EngineTestBase
     CPPUNIT_TEST( combat);
     CPPUNIT_TEST( healHimself );
     CPPUNIT_TEST( healOthers );
-	CPPUNIT_TEST( curePoison );
-	CPPUNIT_TEST( resurrect );
+    CPPUNIT_TEST( curePoison );
+    CPPUNIT_TEST( resurrect );
     CPPUNIT_TEST( cc );
-	CPPUNIT_TEST( aoe );
+    CPPUNIT_TEST( aoe );
     CPPUNIT_TEST_SUITE_END();
 
 public:
     virtual void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new DruidAiObjectContext(ai), "caster", "caster debuff", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new DruidAiObjectContext(ai), "caster", "caster debuff", NULL);
 
-		addAura("moonkin form");
+        addAura("moonkin form");
     }
 
 protected:
     void combat()
     {
-		removeAura("moonkin form");
-		tick();
-		addAura("moonkin form");
+        removeAura("moonkin form");
+        tick();
+        addAura("moonkin form");
 
-		tickOutOfSpellRange();
+        tickOutOfSpellRange();
 
-		tickInSpellRange();
-		addTargetAura("faerie fire");
-
-		tick();
-		addTargetAura("insect swarm");
-
-		tick();
-		addTargetAura("moonfire");
+        tickInSpellRange();
+        addTargetAura("faerie fire");
 
         tick();
-		tick();
+        addTargetAura("insect swarm");
 
-		spellAvailable("starfire");
-		tickInSpellRange();
+        tick();
+        addTargetAura("moonfire");
+
+        tick();
+        tick();
+
+        spellAvailable("starfire");
+        tickInSpellRange();
 
         tickWithBalancePercent(49);
 
@@ -61,27 +61,27 @@ protected:
         addAura("eclipse (solar)");
         tick();
 
-		assertActions(">S:moonkin form>T:reach spell>T:faerie fire>T:insect swarm>T:moonfire>T:starfire>T:wrath>T:starfire>S:nature's grasp>T:starfire>T:wrath");
+        assertActions(">S:moonkin form>T:reach spell>T:faerie fire>T:insect swarm>T:moonfire>T:starfire>T:wrath>T:starfire>S:nature's grasp>T:starfire>T:wrath");
     }
 
-	void healHimself()
+    void healHimself()
     {
-		tickWithLowHealth(79);
-		tickWithLowHealth(79);
+        tickWithLowHealth(79);
+        tickWithLowHealth(79);
         addAura("moonkin form");
         spellAvailable("rejuvenation");
 
-		tickWithLowHealth(59);
-		tickWithLowHealth(59);
-		tickWithLowHealth(59);
+        tickWithLowHealth(59);
+        tickWithLowHealth(59);
+        tickWithLowHealth(59);
 
-		addAura("moonkin form");
+        addAura("moonkin form");
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
         spellAvailable("rejuvenation");
-		tickWithLowHealth(39);
-		tickWithLowHealth(39);
+        tickWithLowHealth(39);
+        tickWithLowHealth(39);
 
         spellAvailable("healing touch");
         spellAvailable("regrowth");
@@ -92,7 +92,7 @@ protected:
         assertActions(">S:caster form>S:rejuvenation>S:caster form>S:regrowth>S:healing touch>S:caster form>S:regrowth>S:regrowth>S:healing touch");
     }
 
-	void healOthers()
+    void healOthers()
     {
         addAura("moonkin form");
 
@@ -123,28 +123,28 @@ protected:
         assertActions(">S:caster form>P:rejuvenation on party>S:caster form>P:regrowth on party>P:healing touch on party>S:caster form>P:regrowth on party>S:caster form>P:regrowth on party>P:healing touch on party");
     }
 
-	void curePoison()
-	{
-		tickWithAuraToDispel(DISPEL_POISON);
+    void curePoison()
+    {
+        tickWithAuraToDispel(DISPEL_POISON);
 
-		spellAvailable("abolish poison");
-		tickWithPartyAuraToDispel(DISPEL_POISON);
+        spellAvailable("abolish poison");
+        tickWithPartyAuraToDispel(DISPEL_POISON);
 
-		tickWithAuraToDispel(DISPEL_POISON);
+        tickWithAuraToDispel(DISPEL_POISON);
 
-		spellAvailable("cure poison");
-		tickWithPartyAuraToDispel(DISPEL_POISON);
+        spellAvailable("cure poison");
+        tickWithPartyAuraToDispel(DISPEL_POISON);
 
-		assertActions(">S:abolish poison>P:abolish poison on party>S:cure poison>P:cure poison on party");
-	}
+        assertActions(">S:abolish poison>P:abolish poison on party>S:cure poison>P:cure poison on party");
+    }
 
-	void resurrect()
-	{
-		tickWithDeadPartyMember();
-		tickWithDeadPartyMember();
+    void resurrect()
+    {
+        tickWithDeadPartyMember();
+        tickWithDeadPartyMember();
 
-		assertActions(">S:caster form>P:rebirth");
-	}
+        assertActions(">S:caster form>P:rebirth");
+    }
 
     void cc()
     {
@@ -159,7 +159,7 @@ protected:
         tickWithAttackerCount(4);
         tickWithAttackerCount(4);
 
-		assertActions(">T:starfall>T:hurricane");
+        assertActions(">T:starfall>T:hurricane");
     }
 };
 

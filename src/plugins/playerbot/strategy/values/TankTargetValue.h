@@ -4,10 +4,10 @@
 
 namespace ai
 {
-   
+
     class TankTargetValue : public TargetValue
-	{
-	public:
+    {
+    public:
         TankTargetValue(PlayerbotAI* ai) : TargetValue(ai) {}
 
     public:

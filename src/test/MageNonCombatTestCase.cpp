@@ -18,23 +18,23 @@ class MageNonCombatTestCase : public EngineTestBase
 public:
     void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new MageAiObjectContext(ai), "nc", NULL);
-		set<uint8>("item count", "food", 1);
-		set<uint8>("item count", "drink", 1);
+        EngineTestBase::setUp();
+        setupEngine(new MageAiObjectContext(ai), "nc", NULL);
+        set<uint8>("item count", "food", 1);
+        set<uint8>("item count", "drink", 1);
     }
 
 protected:
     void buff()
     {
-		tick();
+        tick();
         addAura("arcane intellect");
 
-		tickWithSpellAvailable("arcane intellect");
+        tickWithSpellAvailable("arcane intellect");
         addPartyAura("arcane intellect");
 
-		tickWithNoDrink();
-		tickWithNoFood();
+        tickWithNoDrink();
+        tickWithNoFood();
 
         assertActions(">S:arcane intellect>P:arcane intellect on party>S:conjure water>S:conjure food");
     }

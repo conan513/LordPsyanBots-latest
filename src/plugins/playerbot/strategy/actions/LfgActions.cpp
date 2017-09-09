@@ -94,14 +94,14 @@ uint8 LfgJoinAction::GetRoles()
 bool LfgJoinAction::SetRoles()
 {
     sLFGMgr->SetRoles(bot->GetGUID(), GetRoles());
-	return true;
+    return true;
 }
 
 bool LfgJoinAction::JoinProposal()
 {
     ItemCountByQuality visitor;
     IterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
-	bool heroic = urand(0, 100) < 50 && (visitor.count[ITEM_QUALITY_EPIC] >= 3 || visitor.count[ITEM_QUALITY_RARE] >= 10) && bot->getLevel() >= 70;
+    bool heroic = urand(0, 100) < 50 && (visitor.count[ITEM_QUALITY_EPIC] >= 3 || visitor.count[ITEM_QUALITY_RARE] >= 10) && bot->getLevel() >= 70;
     bool random = urand(0, 100) < 25;
     bool raid = !heroic && (urand(0, 100) < 50 && visitor.count[ITEM_QUALITY_EPIC] >= 5 && (bot->getLevel() == 60 || bot->getLevel() == 70 || bot->getLevel() == 80));
 
@@ -147,25 +147,25 @@ bool LfgJoinAction::JoinProposal()
 
     uint8 roles = GetRoles();
     if (random)
-	{
+    {
         list.insert(idx[urand(0, idx.size() - 1)]);
         sLFGMgr->JoinLfg(bot, roles, list, "bot");
 
         sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_RANDOM as %d", bot->GetName().c_str(), (uint32)roles);
-		return true;
-	}
+        return true;
+    }
     else if (heroic)
-	{
-		sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_HEROIC_DUNGEON as %d", bot->GetName().c_str(), (uint32)roles);
-	}
+    {
+        sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_HEROIC_DUNGEON as %d", bot->GetName().c_str(), (uint32)roles);
+    }
     else if (raid)
-	{
-		sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_RAID as %d", bot->GetName().c_str(), (uint32)roles);
-	}
+    {
+        sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_RAID as %d", bot->GetName().c_str(), (uint32)roles);
+    }
     else
-	{
-		sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_DUNGEON as %d", bot->GetName().c_str(), (uint32)roles);
-	}
+    {
+        sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "Bot %s joined to LFG_TYPE_DUNGEON as %d", bot->GetName().c_str(), (uint32)roles);
+    }
 
     sLFGMgr->JoinLfg(bot, roles, list, "bot");
     return true;
@@ -230,7 +230,7 @@ bool LfgLeaveAction::Execute(Event event)
         return false;
 
     sLFGMgr->LeaveLfg(bot->GetGUID());
-	return true;
+    return true;
 }
 
 bool LfgTeleportAction::Execute(Event event)
@@ -246,5 +246,5 @@ bool LfgTeleportAction::Execute(Event event)
 
     bot->ClearUnitState(UNIT_STATE_ALL_STATE_SUPPORTED);
     sLFGMgr->TeleportPlayer(bot, out);
-	return true;
+    return true;
 }

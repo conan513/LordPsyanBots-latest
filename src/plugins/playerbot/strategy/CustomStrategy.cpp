@@ -28,7 +28,7 @@ NextAction** toNextActionArray(string actions)
     {
         res[index++] = toNextAction(*i);
     }
-	res[index++] = NULL;
+    res[index++] = NULL;
     return res;
 }
 

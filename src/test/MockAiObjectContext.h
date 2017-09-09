@@ -12,7 +12,7 @@ namespace ai
     {
     public:
         MockAiObjectContext(PlayerbotAI* const ai, AiObjectContext *realContext, string* buffer);
-    
+
     public:
         virtual Strategy* GetStrategy(string  name);
         virtual Trigger* GetTrigger(string  name);
@@ -21,8 +21,8 @@ namespace ai
     private:
         void reportNotFound(string  what, string  name);
 
-	private:
-		string* buffer;
+    private:
+        string* buffer;
         AiObjectContext *realContext;
         map<string , Trigger*> triggers;
         map<string , Action*> actions;

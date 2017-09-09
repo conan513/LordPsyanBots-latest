@@ -67,13 +67,13 @@ enum CreatureFlagsExtra
     CREATURE_FLAG_EXTRA_NO_SKILLGAIN | CREATURE_FLAG_EXTRA_TAUNT_DIMINISH | CREATURE_FLAG_EXTRA_ALL_DIMINISH | \
     CREATURE_FLAG_EXTRA_GUARD | CREATURE_FLAG_EXTRA_IGNORE_PATHFINDING | CREATURE_FLAG_EXTRA_NO_PLAYER_DAMAGE_REQ | CREATURE_FLAG_EXTRA_IMMUNITY_KNOCKBACK)
 
-const uint32 CREATURE_REGEN_INTERVAL = 2 * IN_MILLISECONDS;
-const uint32 CREATURE_NOPATH_EVADE_TIME = 5 * IN_MILLISECONDS;
+static const uint32 CREATURE_REGEN_INTERVAL = 2 * IN_MILLISECONDS;
+static const uint32 CREATURE_NOPATH_EVADE_TIME = 5 * IN_MILLISECONDS;
 
-const uint8 MAX_KILL_CREDIT = 2;
-const uint32 MAX_CREATURE_MODELS = 4;
-const uint32 MAX_CREATURE_QUEST_ITEMS = 6;
-const uint32 MAX_CREATURE_SPELLS = 8;
+static const uint8 MAX_KILL_CREDIT = 2;
+static const uint32 MAX_CREATURE_MODELS = 4;
+static const uint32 MAX_CREATURE_QUEST_ITEMS = 6;
+static const uint32 MAX_CREATURE_SPELLS = 8;
 
 // from `creature_template` table
 struct TC_GAME_API CreatureTemplate
@@ -637,7 +637,13 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         virtual uint8 GetPetAutoSpellSize() const { return MAX_SPELL_CHARM; }
         virtual uint32 GetPetAutoSpellOnPos(uint8 pos) const;
 
-        void SetCannotReachTarget(bool cannotReach) { if (cannotReach == m_cannotReachTarget) return; m_cannotReachTarget = cannotReach; m_cannotReachTimer = 0; }
+        void SetCannotReachTarget(bool cannotReach)
+        {
+            if (cannotReach == m_cannotReachTarget)
+                return;
+            m_cannotReachTarget = cannotReach;
+            m_cannotReachTimer = 0;
+        }
         bool CanNotReachTarget() const { return m_cannotReachTarget; }
 
         void SetPosition(float x, float y, float z, float o);

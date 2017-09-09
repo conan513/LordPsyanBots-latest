@@ -10,8 +10,8 @@ class PaladinNonCombatTestCase : public EngineTestBase
 {
     CPPUNIT_TEST_SUITE( PaladinNonCombatTestCase );
         CPPUNIT_TEST( buff );
-		CPPUNIT_TEST( resurrect );
-		CPPUNIT_TEST( healing );
+        CPPUNIT_TEST( resurrect );
+        CPPUNIT_TEST( healing );
         CPPUNIT_TEST( curePoison );
         CPPUNIT_TEST( cureMagic );
         CPPUNIT_TEST( cureDisease );
@@ -21,8 +21,8 @@ class PaladinNonCombatTestCase : public EngineTestBase
 public:
     virtual void setUp()
     {
-		EngineTestBase::setUp();
-		setupEngine(new PaladinAiObjectContext(ai), "nc", NULL);
+        EngineTestBase::setUp();
+        setupEngine(new PaladinAiObjectContext(ai), "nc", NULL);
 
         set<uint8>("attacker count", 0);
     }
@@ -34,17 +34,17 @@ protected:
 
         engine->addStrategy("bspeed");
         set<bool>("mounted", "self target", true);
-		tick();
+        tick();
         set<bool>("mounted", "self target", false);
 
-		assertActions(">S:check mount state>S:crusader aura");
+        assertActions(">P:blessing of kings on party>S:crusader aura");
     }
 
-	void resurrect()
-	{
-		tickWithDeadPartyMember();
-		assertActions(">P:redemption");
-	}
+    void resurrect()
+    {
+        tickWithDeadPartyMember();
+        assertActions(">P:redemption");
+    }
 
     void healing()
     {
@@ -75,7 +75,7 @@ protected:
     void cureMagic()
     {
         cureKind(DISPEL_MAGIC);
-        assertActions(">S:cleanse>P:cleanse magic on party>S:check mount state>S:check mount state");
+        assertActions(">S:cleanse>P:cleanse magic on party>P:blessing of kings on party>S:check mount state");
     }
 
     void cureKind(DispelType type)
