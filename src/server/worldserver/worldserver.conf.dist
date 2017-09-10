@@ -3649,6 +3649,7 @@ Logger.commands.gm=3,Console GM
 Logger.scripts.hotswap=3,Console Server
 Logger.sql.sql=5,Console DBErrors
 Logger.sql.updates=3,Console Server
+Logger.playerbot=1,Console Server
 Logger.mmaps=3,Server
 
 #Logger.achievement=3,Console Server
