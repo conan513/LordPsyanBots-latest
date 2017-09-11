@@ -161,7 +161,7 @@ DamageInfo::DamageInfo(SpellNonMeleeDamage const& spellNonMeleeDamage, DamageEff
 
 void DamageInfo::ModifyDamage(int32 amount)
 {
-    amount = std::max(amount, -static_cast<int32>(m_damage));
+    amount = std::max(amount, -static_cast<int32>(GetDamage()));
     m_damage += amount;
 }
 
@@ -6581,7 +6581,7 @@ void Unit::SendHealSpellLog(HealInfo& healInfo, bool critical /*= false*/)
     // we guess size
     WorldPacket data(SMSG_SPELLHEALLOG, 8 + 8 + 4 + 4 + 4 + 4 + 1 + 1);
     data << healInfo.GetTarget()->GetPackGUID();
-    data << GetPackGUID();
+    data << healInfo.GetHealer()->GetPackGUID();
     data << uint32(healInfo.GetSpellInfo()->Id);
     data << uint32(healInfo.GetHeal());
     data << uint32(healInfo.GetHeal() - healInfo.GetEffectiveHeal());
@@ -8679,7 +8679,8 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
         return false;
 
     // can't attack invisible (ignore stealth for aoe spells) also if the area being looked at is from a spell use the dynamic object created instead of the casting unit. Ignore stealth if target is player and unit in combat with same player
-    if ((!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_CAN_TARGET_INVISIBLE)) && (obj ? !obj->CanSeeOrDetect(target, bySpell && bySpell->IsAffectingArea()) : !CanSeeOrDetect(target, (bySpell && bySpell->IsAffectingArea()) || (target->GetTypeId() == TYPEID_PLAYER && target->HasStealthAura() && target->IsInCombat() && IsInCombatWith(target)))))
+    // skip visibility check for GO casts, needs removal when go cast is implemented
+    if (GetEntry() != WORLD_TRIGGER && (!bySpell || !bySpell->HasAttribute(SPELL_ATTR6_CAN_TARGET_INVISIBLE)) && (obj ? !obj->CanSeeOrDetect(target, bySpell && bySpell->IsAffectingArea()) : !CanSeeOrDetect(target, (bySpell && bySpell->IsAffectingArea()) || (target->GetTypeId() == TYPEID_PLAYER && target->HasStealthAura() && target->IsInCombat() && IsInCombatWith(target)))))
         return false;
 
     // can't attack dead
