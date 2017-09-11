@@ -26,6 +26,7 @@
 #include "DatabaseEnv.h"
 #include "CellImpl.h"
 #include "Chat.h"
+#include "Channel.h"
 #include "ChannelMgr.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
@@ -559,10 +560,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 }
             }
 
-            if (ChannelMgr* cMgr = ChannelMgr::forTeam(sender->GetTeam()))
+            if (Channel* chn = ChannelMgr::GetChannelForPlayerByNamePart(channel, sender))
             {
-                if (Channel* chn = cMgr->GetChannel(channel, sender))
-                {
                 // Playerbot mod: broadcast message to bot members
                 if (_player->GetPlayerbotMgr() && lang != LANG_ADDON && chn->GetFlags() & 0x18)
                 {
@@ -572,7 +571,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                     // END Playerbot mod
                     sScriptMgr->OnPlayerChat(sender, type, lang, msg, chn);
                     chn->Say(sender->GetGUID(), msg.c_str(), lang);
-                }
             }
             break;
         }

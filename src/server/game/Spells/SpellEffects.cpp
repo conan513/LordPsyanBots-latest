@@ -4495,10 +4495,10 @@ void Spell::EffectAddExtraAttacks(SpellEffIndex effIndex)
     if (!unitTarget || !unitTarget->IsAlive())
         return;
 
-    if (unitTarget->HasExtraAttacksPending())
+    if (unitTarget->m_extraAttacks)
         return;
 
-    unitTarget->SetExtraAttacks(damage);
+    unitTarget->m_extraAttacks = damage;
 
     ExecuteLogEffectExtraAttacks(effIndex, unitTarget, damage);
 }
@@ -4757,7 +4757,7 @@ void Spell::EffectLeapBack(SpellEffIndex effIndex)
     float speedxy = m_spellInfo->Effects[effIndex].MiscValue / 10.f;
     float speedz = damage/ 10.f;
     //1891: Disengage
-    m_caster->JumpTo(speedxy, speedz, m_spellInfo->SpellIconID != 1891);
+    unitTarget->JumpTo(speedxy, speedz, m_spellInfo->SpellIconID != 1891);
 }
 
 void Spell::EffectQuestClear(SpellEffIndex effIndex)

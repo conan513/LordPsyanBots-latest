@@ -2517,15 +2517,12 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
                 effectMask &= ~(1 << effectNumber);
             else if (m_spellInfo->Effects[effectNumber].IsAura() && !m_spellInfo->IsPositiveEffect(effectNumber))
             {
-                int32 debuff_resist_chance = unit->GetMaxPositiveAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(m_spellInfo->Dispel));
-                debuff_resist_chance += unit->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(m_spellInfo->Dispel));
-
-                if (debuff_resist_chance > 0)
-                    if (irand(0, 10000) <= (debuff_resist_chance * 100))
-                    {
-                        effectMask &= ~(1 << effectNumber);
-                        returnVal = SPELL_MISS_RESIST;
-                    }
+                int32 debuff_resist_chance = unit->GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, static_cast<int32>(m_spellInfo->Dispel));
+                if (debuff_resist_chance > 0 && roll_chance_i(debuff_resist_chance))
+                {
+                    effectMask &= ~(1 << effectNumber);
+                    returnVal = SPELL_MISS_RESIST;
+                }
             }
         }
     }
@@ -3498,12 +3495,12 @@ void Spell::_handle_finish_phase()
             m_caster->m_playerMovingMe->GainSpellComboPoints(m_comboPointGain);
     }
 
-    if (m_caster->HasExtraAttacksPending() && m_spellInfo->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS))
+    if (m_caster->m_extraAttacks && m_spellInfo->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS))
     {
         if (Unit* victim = ObjectAccessor::GetUnit(*m_caster, m_targets.GetOrigUnitTargetGUID()))
             m_caster->HandleProcExtraAttackFor(victim);
         else
-            m_caster->SetExtraAttacks(0);
+            m_caster->m_extraAttacks = 0;
     }
 
     // Handle procs on finish
