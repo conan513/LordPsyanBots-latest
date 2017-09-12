@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -1288,26 +1288,31 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
             float angle = targetType.CalcDirectionAngle();
             float objSize = m_caster->GetObjectSize();
 
-            if (dist < objSize)
-                dist = objSize;
-
             switch (targetType.GetTarget())
             {
                 case TARGET_DEST_CASTER_SUMMON:
                     dist = PET_FOLLOW_DIST;
                     break;
                 case TARGET_DEST_CASTER_RANDOM:
-                    dist = objSize + (dist - objSize) * float(rand_norm());
+                    if (dist > objSize)
+                        dist = objSize + (dist - objSize) * float(rand_norm());
                     break;
                 case TARGET_DEST_CASTER_FRONT_LEFT:
                 case TARGET_DEST_CASTER_BACK_LEFT:
                 case TARGET_DEST_CASTER_FRONT_RIGHT:
                 case TARGET_DEST_CASTER_BACK_RIGHT:
-                    dist = dist + objSize;
+                {
+                    static float const DefaultTotemDistance = 3.0f;
+                    if (!m_spellInfo->Effects[effIndex].HasRadius())
+                        dist = DefaultTotemDistance;
                     break;
+                }
                 default:
                     break;
             }
+
+            if (dist < objSize)
+                dist = objSize;
 
             Position pos = dest._position;
             m_caster->MovePositionToFirstCollision(pos, dist, angle);
