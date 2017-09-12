@@ -1578,6 +1578,14 @@ bool WorldObject::CanSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
                             corpseVisibility = true;
                 }
             }
+
+            if (Unit const* target = obj->ToUnit())
+            {
+                // Don't allow to detect vehicle accessories if you can't see vehicle
+                if (Unit const* vehicle = target->GetVehicleBase())
+                    if (!thisPlayer->HaveAtClient(vehicle))
+                        return false;
+            }
         }
 
         WorldObject const* viewpoint = this;
@@ -1707,7 +1715,7 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     if (!HasInArc(float(M_PI), obj))
         return false;
 
-    GameObject const* go = ToGameObject();
+    GameObject const* go = obj->ToGameObject();
     for (uint32 i = 0; i < TOTAL_STEALTH_TYPES; ++i)
     {
         if (!(obj->m_stealth.GetFlags() & (1 << i)))
