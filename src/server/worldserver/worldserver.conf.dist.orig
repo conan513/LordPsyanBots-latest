@@ -3092,6 +3092,15 @@ PreventRenameCharacterOnCustomization = 0
 ###################################################################################################
 # AUCTION HOUSE BOT SETTINGS
 #
+#    AuctionHouseBot.Account
+#       Description: Account ID for AHBot characters. If non-zero, all auctions and bids associated
+#                    with the AHBot will randomly be assigned one of this account's characters.
+#       Default:     0
+#
+
+AuctionHouseBot.Account = 0
+
+#
 #    AuctionHouseBot.Update.Interval
 #       Description: Interval in seconds for AHBot to get updated
 #       Default:     20
@@ -3235,6 +3244,15 @@ AuctionHouseBot.ItemsPerCycle.Normal = 20
 #                    0 - (use BuyPrice)
 
 AuctionHouseBot.BuyPrice.Seller = 1
+
+#
+#    AuctionHouseBot.BidPrice.*
+#       Description: These values determine the range that the Bid Price will fall into, as a percentage of the Buy Price
+#       Default:     0.6 - (Min)
+#                    1.4 - (Max)
+
+AuctionHouseBot.BidPrice.Min = 0.6
+AuctionHouseBot.BidPrice.Max = 1.4
 
 #
 #    AuctionHouseBot.Alliance.Price.Ratio
