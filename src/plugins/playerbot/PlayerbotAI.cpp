@@ -3,10 +3,10 @@
 #include "playerbot.h"
 
 #include "AiFactory.h"
-//#include "../../../../server/game/Cache/CharacterCache.h"
-#include "../Grids/Notifiers/GridNotifiers.h"
-#include "../Grids/Notifiers/GridNotifiersImpl.h"
-#include "../Grids/Cells/CellImpl.h"
+#include "CharacterCache.h"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
 #include "strategy/values/LastMovementValue.h"
 #include "strategy/actions/LogLevelAction.h"
 #include "strategy/values/LastSpellCastValue.h"
@@ -15,9 +15,9 @@
 #include "PlayerbotAI.h"
 #include "PlayerbotFactory.h"
 #include "PlayerbotSecurity.h"
-#include "../Groups/Group.h"
-#include "../Entities/Pet/Pet.h"
-#include "../Spells/Auras/SpellAuraEffects.h"
+#include "Group.h"
+#include "Pet.h"
+#include "SpellAuraEffects.h"
 
 using namespace ai;
 using namespace std;
@@ -67,8 +67,7 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 {
     this->bot = bot;
 
-    //accountId = sCharacterCache->GetCharacterAccountIdByGuid(bot->GetGUID());
-    accountId = sObjectMgr->GetPlayerAccountIdByGUID(bot->GetGUID());
+    accountId = sCharacterCache->GetCharacterAccountIdByGuid(bot->GetGUID());
 
     aiObjectContext = AiFactory::createAiObjectContext(bot, this);
 

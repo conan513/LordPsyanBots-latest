@@ -29,6 +29,7 @@
 #include "BattlegroundMgr.h"
 #include "CalendarMgr.h"
 #include "Channel.h"
+#include "CharacterCache.h"
 #include "CharacterDatabaseCleaner.h"
 #include "Chat.h"
 #include "Config.h"
@@ -69,6 +70,7 @@
 #include "WeatherMgr.h"
 #include "WorldSession.h"
 #include "M2Stores.h"
+#include "WhoListStorage.h"
 // Prepatch by LordPsyan
 // 01
 // 02
@@ -1547,6 +1549,10 @@ void World::SetInitialWorldSettings()
     TC_LOG_INFO("server.loading", "Loading instances...");
     sInstanceSaveMgr->LoadInstances();
 
+    // Load before guilds and arena teams
+    TC_LOG_INFO("server.loading", "Loading character cache store...");
+    sCharacterCache->LoadCharacterCacheStorage();
+
     TC_LOG_INFO("server.loading", "Loading Broadcast texts...");
     sObjectMgr->LoadBroadcastTexts();
     sObjectMgr->LoadBroadcastTextLocales();
@@ -1949,6 +1955,8 @@ void World::SetInitialWorldSettings()
 
     m_timers[WUPDATE_CHECK_FILECHANGES].SetInterval(500);
 
+    m_timers[WUPDATE_WHO_LIST].SetInterval(5 * IN_MILLISECONDS); // update who list cache every 5 seconds
+
     //to set mailtimer to return mails every day between 4 and 5 am
     //mailtimer is increased when updating auctions
     //one second is 1000 -(tested on win system)
@@ -2028,8 +2036,6 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO("server.loading", "Calculate guild limitation(s) reset time...");
     InitGuildResetTime();
-
-    LoadCharacterInfoStore();
 
     // Preload all cells, if required for the base maps
     if (sWorld->getBoolConfig(CONFIG_BASEMAP_LOAD_GRIDS))
@@ -2185,6 +2191,13 @@ void World::Update(uint32 diff)
             m_timers[i].Update(diff);
         else
             m_timers[i].SetCurrent(0);
+    }
+
+    ///- Update Who List Storage
+    if (m_timers[WUPDATE_WHO_LIST].Passed())
+    {
+        m_timers[WUPDATE_WHO_LIST].Reset();
+        sWhoListStorageMgr->Update();
     }
 
     ///- Update the game time and check for shutdown time
@@ -2687,7 +2700,7 @@ bool World::RemoveBanAccount(BanMode mode, std::string const& nameOrIP)
         if (mode == BAN_ACCOUNT)
             account = AccountMgr::GetId(nameOrIP);
         else if (mode == BAN_CHARACTER)
-            account = sObjectMgr->GetPlayerAccountIdByPlayerName(nameOrIP);
+            account = sCharacterCache->GetCharacterAccountIdByName(nameOrIP);
 
         if (!account)
             return false;
@@ -2703,25 +2716,22 @@ bool World::RemoveBanAccount(BanMode mode, std::string const& nameOrIP)
 /// Ban an account or ban an IP address, duration will be parsed using TimeStringToSecs if it is positive, otherwise permban
 BanReturn World::BanCharacter(std::string const& name, std::string const& duration, std::string const& reason, std::string const& author)
 {
-    Player* pBanned = ObjectAccessor::FindConnectedPlayerByName(name);
+    Player* banned = ObjectAccessor::FindConnectedPlayerByName(name);
     ObjectGuid::LowType guid = 0;
 
     uint32 duration_secs = TimeStringToSecs(duration);
 
     /// Pick a player to ban if not online
-    if (!pBanned)
+    if (!banned)
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_GUID_BY_NAME);
-        stmt->setString(0, name);
-        PreparedQueryResult resultCharacter = CharacterDatabase.Query(stmt);
-
-        if (!resultCharacter)
+        ObjectGuid fullGuid = sCharacterCache->GetCharacterGuidByName(name);
+        if (fullGuid.IsEmpty())
             return BAN_NOTFOUND;                                    // Nobody to ban
 
-        guid = (*resultCharacter)[0].GetUInt32();
+        guid = fullGuid.GetCounter();
     }
     else
-        guid = pBanned->GetGUID().GetCounter();
+        guid = banned->GetGUID().GetCounter();
 
     // make sure there is only one active ban
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHARACTER_BAN);
@@ -2735,8 +2745,8 @@ BanReturn World::BanCharacter(std::string const& name, std::string const& durati
     stmt->setString(3, reason);
     CharacterDatabase.Execute(stmt);
 
-    if (pBanned)
-        pBanned->GetSession()->KickPlayer();
+    if (banned)
+        banned->GetSession()->KickPlayer();
 
     return BAN_SUCCESS;
 }
@@ -2744,23 +2754,20 @@ BanReturn World::BanCharacter(std::string const& name, std::string const& durati
 /// Remove a ban from a character
 bool World::RemoveBanCharacter(std::string const& name)
 {
-    Player* pBanned = ObjectAccessor::FindConnectedPlayerByName(name);
+    Player* banned = ObjectAccessor::FindConnectedPlayerByName(name);
     ObjectGuid::LowType guid = 0;
 
     /// Pick a player to ban if not online
-    if (!pBanned)
+    if (!banned)
     {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_GUID_BY_NAME);
-        stmt->setString(0, name);
-        PreparedQueryResult resultCharacter = CharacterDatabase.Query(stmt);
-
-        if (!resultCharacter)
+        ObjectGuid fullGuid = sCharacterCache->GetCharacterGuidByName(name);
+        if (fullGuid.IsEmpty())
             return false;
 
-        guid = (*resultCharacter)[0].GetUInt32();
+        guid = fullGuid.GetCounter();
     }
     else
-        guid = pBanned->GetGUID().GetCounter();
+        guid = banned->GetGUID().GetCounter();
 
     if (!guid)
         return false;
@@ -3365,107 +3372,6 @@ uint64 World::getWorldState(uint32 index) const
 void World::ProcessQueryCallbacks()
 {
     _queryProcessor.ProcessReadyQueries();
-}
-
-CharacterInfo const* World::GetCharacterInfo(ObjectGuid const& guid) const
-{
-    CharacterInfoContainer::const_iterator itr = _characterInfoStore.find(guid);
-    if (itr != _characterInfoStore.end())
-        return &itr->second;
-
-    return nullptr;
-}
-
-/**
-* @brief Loads several pieces of information on server startup with the GUID
-* There is no further database query necessary.
-* These are a number of methods that work into the calling function.
-*
-* @param guid Requires a guid to call
-* @return Name, Gender, Race, Class and Level of player character
-* Example Usage:
-* @code
-*    CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(GUID);
-*    if (!characterInfo)
-*        return;
-*
-*    std::string playerName = characterInfo->Name;
-*    uint8 playerGender = characterInfo->Sex;
-*    uint8 playerRace = characterInfo->Race;
-*    uint8 playerClass = characterInfo->Class;
-*    uint8 playerLevel = characterInfo->Level;
-* @endcode
-**/
-
-void World::LoadCharacterInfoStore()
-{
-    TC_LOG_INFO("server.loading", "Loading character info store");
-
-    _characterInfoStore.clear();
-
-    QueryResult result = CharacterDatabase.Query("SELECT guid, name, account, race, gender, class, level FROM characters");
-    if (!result)
-    {
-        TC_LOG_INFO("server.loading", "No character name data loaded, empty query");
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-        AddCharacterInfo(ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt32()), fields[2].GetUInt32(), fields[1].GetString(),
-            fields[4].GetUInt8() /*gender*/, fields[3].GetUInt8() /*race*/, fields[5].GetUInt8() /*class*/, fields[6].GetUInt8() /*level*/);
-    } while (result->NextRow());
-
-    TC_LOG_INFO("server.loading", "Loaded character infos for " SZFMTD " characters", _characterInfoStore.size());
-}
-
-void World::AddCharacterInfo(ObjectGuid const& guid, uint32 accountId, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level)
-{
-    CharacterInfo& data = _characterInfoStore[guid];
-    data.Name = name;
-    data.AccountId = accountId;
-    data.Race = race;
-    data.Sex = gender;
-    data.Class = playerClass;
-    data.Level = level;
-}
-
-void World::UpdateCharacterInfo(ObjectGuid const& guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
-{
-    CharacterInfoContainer::iterator itr = _characterInfoStore.find(guid);
-    if (itr == _characterInfoStore.end())
-        return;
-
-    itr->second.Name = name;
-
-    if (gender != GENDER_NONE)
-        itr->second.Sex = gender;
-
-    if (race != RACE_NONE)
-        itr->second.Race = race;
-
-    WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
-    data << guid;
-    SendGlobalMessage(&data);
-}
-
-void World::UpdateCharacterInfoLevel(ObjectGuid const& guid, uint8 level)
-{
-    CharacterInfoContainer::iterator itr = _characterInfoStore.find(guid);
-    if (itr == _characterInfoStore.end())
-        return;
-
-    itr->second.Level = level;
-}
-
-void World::UpdateCharacterInfoAccount(ObjectGuid const& guid, uint32 accountId)
-{
-    auto itr = _characterInfoStore.find(guid);
-    if (itr == _characterInfoStore.end())
-        return;
-
-    itr->second.AccountId = accountId;
 }
 
 void World::ReloadRBAC()

@@ -4,13 +4,12 @@
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotAI.h"
 #include "ChatHelper.h"
-//#include "../../server/game/Cache/CharacterCache.h"
+#include "CharacterCache.h"
 
 PlayerbotSecurity::PlayerbotSecurity(Player* const bot) : bot(bot)
 {
     if (bot)
-        //account = sCharacterCache->GetCharacterAccountIdByGuid(bot->GetGUID());
-        account = sObjectMgr->GetPlayerAccountIdByGUID(bot->GetGUID());
+        account = sCharacterCache->GetCharacterAccountIdByGuid(bot->GetGUID());
 }
 
 PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* reason, bool ignoreGroup)
