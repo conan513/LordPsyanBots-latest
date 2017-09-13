@@ -2782,6 +2782,11 @@ void SpellMgr::LoadSpellInfoCorrections()
                     spellInfo->Effects[j].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
         }
 
+        // disable proc for magnet auras, they're handled differently
+        for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            if (spellInfo->Effects[j].IsAura(SPELL_AURA_SPELL_MAGNET))
+                spellInfo->ProcFlags = 0;
+
         if (spellInfo->ActiveIconID == 2158)  // flight
             spellInfo->Attributes |= SPELL_ATTR0_PASSIVE;
 
@@ -2815,6 +2820,13 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 3137:  // Abolish Poison Effect
                 spellInfo->Effects[EFFECT_0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
                 spellInfo->Effects[EFFECT_0].TargetB = SpellImplicitTargetInfo();
+                break;
+            case 56690: // Thrust Spear
+            case 60586: // Mighty Spear Thrust
+            case 60776: // Claw Swipe
+            case 60881: // Fatal Strike
+            case 60864: // Jaws of Death
+                spellInfo->AttributesEx4 |= SPELL_ATTR4_FIXED_DAMAGE;
                 break;
             case 31344: // Howl of Azgalor
                 spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_100_YARDS); // 100yards instead of 50000?!
@@ -3781,6 +3793,8 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 46099: // Brutal Gladiator's Totem of the Third Wind
             case 46705: // Honorless Target
             case 49883: // Flames
+            case 50365: // Improved Blood Presence (Rank 1)
+            case 50371: // Improved Blood Presence (Rank 2)
             case 50655: // Frost Cut
             case 50995: // Empowered Blood Presence (Rank 1)
             case 55482: // Fire Breath (Rank 3)

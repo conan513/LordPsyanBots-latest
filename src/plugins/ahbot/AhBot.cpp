@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "../playerbot/PlayerbotAIConfig.h"
 #include "../playerbot/playerbot.h"
+#include "GameTime.h"
 
 using namespace ahbot;
 
@@ -656,7 +657,7 @@ void AhBot::Expire(int auction)
     {
         if (IsBotAuction(itr->second->owner))
         {
-            itr->second->expire_time = sWorld->GetGameTime(); /*GameTime::GetGameTime()*/
+            itr->second->expire_time = GameTime::GetGameTime();
             count++;
         }
 
