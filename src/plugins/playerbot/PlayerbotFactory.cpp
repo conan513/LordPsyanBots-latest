@@ -1213,7 +1213,7 @@ ObjectGuid PlayerbotFactory::GetRandomBot()
 void AddPrevQuests(uint32 questId, list<uint32>& questIds)
 {
     Quest const *quest = sObjectMgr->GetQuestTemplate(questId);
-    for (Quest::PrevQuests::const_iterator iter = quest->prevQuests.begin(); iter != quest->prevQuests.end(); ++iter)
+    for (auto iter = quest->PrevChainQuests.begin(); iter != quest->PrevChainQuests.end(); ++iter)
     {
         uint32 prevId = abs(*iter);
         AddPrevQuests(prevId, questIds);
