@@ -394,7 +394,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                     if (unitTarget->HasAuraState(AURA_STATE_CONFLAGRATE))
                     {
                         if (unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x4, 0, 0))
-                            damage += damage/4;
+                            damage += damage / 4;
                     }
                 }
                 // Conflagrate - consumes Immolate or Shadowflame
@@ -3059,13 +3059,9 @@ void Spell::EffectTaunt(SpellEffIndex /*effIndex*/)
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
 
-    if (!unitTarget)
-        return;
-
     // this effect use before aura Taunt apply for prevent taunt already attacking target
     // for spell as marked "non effective at already attacking target"
-    if (!unitTarget || !unitTarget->CanHaveThreatList()
-        || unitTarget->GetVictim() == m_caster)
+    if (!unitTarget || !unitTarget->CanHaveThreatList() || unitTarget->GetVictim() == m_caster)
     {
         SendCastResult(SPELL_FAILED_DONT_REPORT);
         return;
