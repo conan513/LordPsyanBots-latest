@@ -1272,7 +1272,6 @@ class npc_crate_helper : public CreatureScript
         }
 };
 
-
 void AddSC_culling_of_stratholme()
 {
     new npc_arthas();

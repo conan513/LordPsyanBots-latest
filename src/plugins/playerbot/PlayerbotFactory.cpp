@@ -1090,21 +1090,17 @@ void PlayerbotFactory::InitAvailableSpells()
             if (!tSpell)
                 continue;
 
-            //if (!tSpell->ReqAbility[0] && !bot->IsSpellFitByClassAndRace(tSpell->ReqAbility[0]))
-            if (!tSpell->learnedSpell[0] && !bot->IsSpellFitByClassAndRace(tSpell->learnedSpell[0]))
+            if (!tSpell->ReqAbility[0] && !bot->IsSpellFitByClassAndRace(tSpell->ReqAbility[0]))
                 continue;
 
             TrainerSpellState state = bot->GetTrainerSpellState(tSpell);
             if (state != TRAINER_SPELL_GREEN)
                 continue;
 
-            //if (tSpell->ReqAbility)
-                //bot->LearnSpell(tSpell->ReqAbility[0], false);
-            if (tSpell->learnedSpell)
-                bot->LearnSpell(tSpell->learnedSpell[0], false);
+            if (tSpell->ReqAbility)
+                bot->LearnSpell(tSpell->ReqAbility[0], false);
             else
-                //ai->CastSpell(tSpell->SpellID, bot);
-                ai->CastSpell(tSpell->spell, bot);
+                ai->CastSpell(tSpell->SpellID, bot);
         }
     }
 }
@@ -1211,14 +1207,14 @@ ObjectGuid PlayerbotFactory::GetRandomBot()
 }
 
 void AddPrevQuests(uint32 questId, list<uint32>& questIds)
-{
+{/* @todo playerbots
     Quest const *quest = sObjectMgr->GetQuestTemplate(questId);
     for (auto iter = quest->PrevChainQuests.begin(); iter != quest->PrevChainQuests.end(); ++iter)
     {
         uint32 prevId = abs(*iter);
         AddPrevQuests(prevId, questIds);
         questIds.push_back(prevId);
-    }
+    }*/
 }
 
 void PlayerbotFactory::InitQuests()
