@@ -363,7 +363,6 @@ class DynamicObject;
 class GameObject;
 class Item;
 class Pet;
-class PetAura;
 class Minion;
 class Guardian;
 class UnitAI;
@@ -1425,8 +1424,8 @@ class TC_GAME_API Unit : public WorldObject
         virtual void SetSheath(SheathState sheathed) { SetByteValue(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_SHEATH_STATE, sheathed); }
 
         // faction template id
-        uint32 getFaction() const { return GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
-        void setFaction(uint32 faction) { SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction); }
+        uint32 GetFaction() const { return GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE); }
+        void SetFaction(uint32 faction) { SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction); }
         FactionTemplateEntry const* GetFactionTemplateEntry() const;
 
         ReputationRank GetReactionTo(Unit const* target) const;
@@ -2147,12 +2146,6 @@ class TC_GAME_API Unit : public WorldObject
         bool CanProc() const { return !m_procDeep; }
         void SetCantProc(bool apply);
 
-        // pet auras
-        typedef std::set<PetAura const*> PetAuraSet;
-        PetAuraSet m_petAuras;
-        void AddPetAura(PetAura const* petSpell);
-        void RemovePetAura(PetAura const* petSpell);
-
         uint32 GetModelForForm(ShapeshiftForm form, uint32 spellId) const;
         uint32 GetModelForTotem(PlayerTotemType totemType);
 
@@ -2189,7 +2182,8 @@ class TC_GAME_API Unit : public WorldObject
         void _ExitVehicle(Position const* exitPosition = NULL);
         void _EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* aurApp = NULL);
 
-        void BuildMovementPacket(ByteBuffer *data) const;
+        void BuildMovementPacket(ByteBuffer* data) const;
+        static void BuildMovementPacket(Position const& pos, Position const& transportPos, MovementInfo const& movementInfo, ByteBuffer* data);
 
         bool isMoving() const   { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_MASK_MOVING); }
         bool isTurning() const  { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_MASK_TURNING); }

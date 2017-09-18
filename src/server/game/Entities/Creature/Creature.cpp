@@ -484,7 +484,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     if (!GetCreatureAddon())
         SetSheath(SHEATH_STATE_MELEE);
 
-    setFaction(cInfo->faction);
+    SetFaction(cInfo->faction);
 
     uint32 npcflag, unit_flags, dynamicflags;
     ObjectMgr::ChooseCreatureFlags(cInfo, npcflag, unit_flags, dynamicflags, data);
@@ -533,7 +533,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/,
     {
         if (Player* owner = Creature::GetCharmerOrOwnerPlayerOrPlayerItself()) // this check comes in case we don't have a player
         {
-            setFaction(owner->getFaction()); // vehicles should have same as owner faction
+            SetFaction(owner->GetFaction()); // vehicles should have same as owner faction
             owner->VehicleSpellInitialize();
         }
     }
@@ -774,8 +774,6 @@ void Creature::Update(uint32 diff)
         default:
             break;
     }
-
-    sScriptMgr->OnCreatureUpdate(this, diff);
 }
 
 void Creature::Regenerate(Powers power)
@@ -2248,7 +2246,7 @@ bool Creature::CanAssistTo(const Unit* u, const Unit* enemy, bool checkfaction /
     // only from same creature faction
     if (checkfaction)
     {
-        if (getFaction() != u->getFaction())
+        if (GetFaction() != u->GetFaction())
             return false;
     }
     else
@@ -2735,20 +2733,6 @@ float Creature::GetPetChaseDistance() const
     return range;
 }
 
-void Creature::SetPosition(float x, float y, float z, float o)
-{
-    // prevent crash when a bad coord is sent by the client
-    if (!Trinity::IsValidMapCoord(x, y, z, o))
-    {
-        TC_LOG_DEBUG("entities.unit", "Creature::SetPosition(%f, %f, %f) .. bad coordinates!", x, y, z);
-        return;
-    }
-
-    GetMap()->CreatureRelocation(this, x, y, z, o);
-    if (IsVehicle())
-        GetVehicleKit()->RelocatePassengers();
-}
-
 bool Creature::IsDungeonBoss() const
 {
     CreatureTemplate const* cinfo = sObjectMgr->GetCreatureTemplate(GetEntry());
@@ -3116,8 +3100,7 @@ bool Creature::IsMovementPreventedByCasting() const
     {
         if (spell->getState() != SPELL_STATE_FINISHED && spell->IsChannelActive())
             if (spell->GetSpellInfo()->IsMoveAllowedChannel())
-                if (HasUnitState(UNIT_STATE_CASTING))
-                    return true;
+                return false;
     }
 
     if (const_cast<Creature*>(this)->IsFocusing(nullptr, true))

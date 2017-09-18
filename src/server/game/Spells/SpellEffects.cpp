@@ -719,24 +719,18 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
     }
 
     // pet auras
-    if (PetAura const* petSpell = sSpellMgr->GetPetAura(m_spellInfo->Id, effIndex))
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
     {
-        m_caster->AddPetAura(petSpell);
-        return;
+        if (PetAura const* petSpell = sSpellMgr->GetPetAura(m_spellInfo->Id, effIndex))
+        {
+            m_caster->ToPlayer()->AddPetAura(petSpell);
+            return;
+        }
     }
 
     // normal DB scripted effect
     TC_LOG_DEBUG("spells", "Spell ScriptStart spellid %u in EffectDummy(%u)", m_spellInfo->Id, effIndex);
     m_caster->GetMap()->ScriptsStart(sSpellScripts, uint32(m_spellInfo->Id | (effIndex << 24)), m_caster, unitTarget);
-
-    // Script based implementation. Must be used only for not good for implementation in core spell effects
-    // So called only for not proccessed cases
-    if (gameObjTarget)
-        sScriptMgr->OnDummyEffect(m_caster, m_spellInfo->Id, effIndex, gameObjTarget);
-    else if (unitTarget && unitTarget->GetTypeId() == TYPEID_UNIT)
-        sScriptMgr->OnDummyEffect(m_caster, m_spellInfo->Id, effIndex, unitTarget->ToCreature());
-    else if (itemTarget)
-        sScriptMgr->OnDummyEffect(m_caster, m_spellInfo->Id, effIndex, itemTarget);
 }
 
 void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
@@ -1024,12 +1018,9 @@ void Spell::EffectJump(SpellEffIndex effIndex)
     if (!unitTarget)
         return;
 
-    float x, y, z;
-    unitTarget->GetContactPoint(m_caster, x, y, z, CONTACT_DISTANCE);
-
     float speedXY, speedZ;
-    CalculateJumpSpeeds(effIndex, m_caster->GetExactDist2d(x, y), speedXY, speedZ);
-    m_caster->GetMotionMaster()->MoveJump(x, y, z, 0.0f, speedXY, speedZ, EVENT_JUMP, false);
+    CalculateJumpSpeeds(effIndex, m_caster->GetExactDist2d(unitTarget), speedXY, speedZ);
+    m_caster->GetMotionMaster()->MoveJump(*unitTarget, speedXY, speedZ, EVENT_JUMP, false);
 }
 
 void Spell::EffectJumpDest(SpellEffIndex effIndex)
@@ -1865,9 +1856,7 @@ void Spell::SendLoot(ObjectGuid guid, LootType loottype)
             return;
         }
 
-        if (sScriptMgr->OnGossipHello(player, gameObjTarget))
-            return;
-
+        player->PlayerTalkClass->ClearMenus();
         if (gameObjTarget->AI()->GossipHello(player, false))
             return;
 
@@ -2283,7 +2272,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                         if (properties->Category == SUMMON_CATEGORY_ALLY)
                         {
                             summon->SetOwnerGUID(m_originalCaster->GetGUID());
-                            summon->setFaction(m_originalCaster->getFaction());
+                            summon->SetFaction(m_originalCaster->GetFaction());
                             summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
                         }
 
@@ -2324,9 +2313,9 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
             uint32 faction = properties->Faction;
             if (!faction)
-                faction = m_originalCaster->getFaction();
+                faction = m_originalCaster->GetFaction();
 
-            summon->setFaction(faction);
+            summon->SetFaction(faction);
             break;
     }
 
@@ -3820,24 +3809,6 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
 
                     return;
                 }
-                case 58983: // Big Blizzard Bear
-                {
-                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
-                        return;
-
-                    // Prevent stacking of mounts and client crashes upon dismounting
-                    unitTarget->RemoveAurasByType(SPELL_AURA_MOUNTED);
-
-                    // Triggered spell id dependent on riding skill
-                    if (uint16 skillval = unitTarget->ToPlayer()->GetSkillValue(SKILL_RIDING))
-                    {
-                        if (skillval >= 150)
-                            unitTarget->CastSpell(unitTarget, 58999, true);
-                        else
-                            unitTarget->CastSpell(unitTarget, 58997, true);
-                    }
-                    return;
-                }
                 case 59317:                                 // Teleporting
                 {
 
@@ -4073,7 +4044,7 @@ void Spell::EffectDuel(SpellEffIndex effIndex)
         return;
     }
 
-    pGameObj->SetUInt32Value(GAMEOBJECT_FACTION, m_caster->getFaction());
+    pGameObj->SetFaction(m_caster->GetFaction());
     pGameObj->SetUInt32Value(GAMEOBJECT_LEVEL, m_caster->getLevel()+1);
     int32 duration = m_spellInfo->GetDuration();
     pGameObj->SetRespawnTime(duration > 0 ? duration/IN_MILLISECONDS : 0);
@@ -5549,7 +5520,7 @@ void Spell::EffectGameObjectDamage(SpellEffIndex /*effIndex*/)
         return;
 
     FactionTemplateEntry const* casterFaction = caster->GetFactionTemplateEntry();
-    FactionTemplateEntry const* targetFaction = sFactionTemplateStore.LookupEntry(gameObjTarget->GetUInt32Value(GAMEOBJECT_FACTION));
+    FactionTemplateEntry const* targetFaction = sFactionTemplateStore.LookupEntry(gameObjTarget->GetFaction());
     // Do not allow to damage GO's of friendly factions (ie: Wintergrasp Walls/Ulduar Storm Beacons)
     if (!targetFaction || (casterFaction && targetFaction && !casterFaction->IsFriendlyTo(*targetFaction)))
         gameObjTarget->ModifyHealth(-damage, caster, GetSpellInfo()->Id);
@@ -5623,7 +5594,7 @@ void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* 
             ((Guardian*)summon)->InitStatsForLevel(level);
 
         if (properties && properties->Category == SUMMON_CATEGORY_ALLY)
-            summon->setFaction(caster->getFaction());
+            summon->SetFaction(caster->GetFaction());
 
         if (summon->HasUnitTypeMask(UNIT_MASK_MINION) && m_targets.HasDst())
             ((Minion*)summon)->SetFollowAngle(m_caster->GetAngle(summon));

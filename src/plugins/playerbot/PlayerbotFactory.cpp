@@ -211,10 +211,8 @@ void PlayerbotFactory::InitPet()
                 continue;
             }
 
-            //pet->UpdatePosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation());
-            pet->SetPosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation());
-            //pet->SetFaction(bot->GetFaction());
-            pet->setFaction(bot->getFaction());
+            pet->UpdatePosition(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation());
+            pet->SetFaction(bot->GetFaction());
             pet->SetLevel(bot->getLevel());
             bot->SetPetGUID(pet->GetGUID());
             bot->GetMap()->AddToMap(pet->ToCreature());

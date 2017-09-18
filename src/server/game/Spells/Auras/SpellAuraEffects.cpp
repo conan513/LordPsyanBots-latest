@@ -4348,15 +4348,15 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
 
     Unit* caster = GetCaster();
 
-    if (mode & AURA_EFFECT_HANDLE_REAL)
+    // pet auras
+    if (target->GetTypeId() == TYPEID_PLAYER && (mode & AURA_EFFECT_HANDLE_REAL))
     {
-        // pet auras
         if (PetAura const* petSpell = sSpellMgr->GetPetAura(GetId(), m_effIndex))
         {
             if (apply)
-                target->AddPetAura(petSpell);
+                target->ToPlayer()->AddPetAura(petSpell);
             else
-                target->RemovePetAura(petSpell);
+                target->ToPlayer()->RemovePetAura(petSpell);
         }
     }
 
@@ -4839,7 +4839,7 @@ void AuraEffect::HandleAuraModFaction(AuraApplication const* aurApp, uint8 mode,
 
     if (apply)
     {
-        target->setFaction(GetMiscValue());
+        target->SetFaction(GetMiscValue());
         if (target->GetTypeId() == TYPEID_PLAYER)
             target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     }
@@ -5482,12 +5482,7 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) 
         }
     }
     else
-    {
-        Creature* c = target->ToCreature();
-        if (!c || !caster || !sScriptMgr->OnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex()), target->ToCreature()) ||
-            !c->AI()->sOnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex())))
-            TC_LOG_DEBUG("spells", "AuraEffect::HandlePeriodicTriggerSpellAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
-    }
+        TC_LOG_DEBUG("spells", "AuraEffect::HandlePeriodicTriggerSpellAuraTick: Spell %u has non-existent spell %u in EffectTriggered[%d] and is therefor not triggered.", GetId(), triggerSpellId, GetEffIndex());
 }
 
 void AuraEffect::HandlePeriodicTriggerSpellWithValueAuraTick(Unit* target, Unit* caster) const

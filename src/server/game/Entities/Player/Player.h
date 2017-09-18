@@ -51,6 +51,7 @@ class Group;
 class Guild;
 class OutdoorPvP;
 class Pet;
+class PetAura;
 class PlayerMenu;
 class PlayerSocial;
 class SpellCastTargets;
@@ -1157,6 +1158,11 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent = false);
         uint32 GetPhaseMaskForSpawn() const;                // used for proper set phase for DB at GM-mode creature/GO spawn
 
+        // pet auras
+        std::unordered_set<PetAura const*> m_petAuras;
+        void AddPetAura(PetAura const* petSpell);
+        void RemovePetAura(PetAura const* petSpell);
+
         /// Handles said message in regular chat based on declared language and in config pre-defined Range.
         void Say(std::string const& text, Language language, WorldObject const* = nullptr) override;
         void Say(uint32 textId, WorldObject const* target = nullptr) override;
@@ -1811,8 +1817,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SendMessageToSetInRange(WorldPacket const* data, float dist, bool self) override;
         void SendMessageToSetInRange(WorldPacket const* data, float dist, bool self, bool own_team_only);
         void SendMessageToSet(WorldPacket const* data, Player const* skipped_rcvr) override;
-
-        void SendTeleportAckPacket();
 
         Corpse* GetCorpse() const;
         void SpawnCorpseBones(bool triggerSave = true);
