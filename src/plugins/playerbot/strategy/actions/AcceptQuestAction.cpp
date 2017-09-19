@@ -1,6 +1,7 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "AcceptQuestAction.h"
+#include "Player.h"
 
 using namespace ai;
 
@@ -63,14 +64,14 @@ bool AcceptQuestShareAction::Execute(Event event)
     p >> quest;
     Quest const* qInfo = sObjectMgr->GetQuestTemplate(quest);
 
-    if (!qInfo || !bot->GetDivider())
+    if (!qInfo || !bot->GetPlayerSharingQuest())
         return false;
 
     quest = qInfo->GetQuestId();
     if( !bot->CanTakeQuest( qInfo, false ) )
     {
         // can't take quest
-        bot->SetDivider( ObjectGuid() );
+        bot->ClearQuestSharingInfo();
         ai->TellMaster("I can't take this quest");
 
         return false;
@@ -78,7 +79,7 @@ bool AcceptQuestShareAction::Execute(Event event)
 
     // send msg to quest giving player
     master->SendPushToPartyResponse( bot, QUEST_PARTY_MSG_ACCEPT_QUEST );
-    bot->SetDivider( ObjectGuid() );
+    bot->ClearQuestSharingInfo();
 
     if( bot->CanAddQuest( qInfo, false ) )
     {

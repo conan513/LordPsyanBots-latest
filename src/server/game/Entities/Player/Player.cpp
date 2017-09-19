@@ -734,56 +734,6 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     SetHonorPoints(sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
     SetArenaPoints(sWorld->getIntConfig(CONFIG_START_ARENA_POINTS));
 
-    // start with every map explored
-    if (sWorld->getBoolConfig(CONFIG_START_ALL_EXPLORED))
-    {
-        for (uint8 i=0; i<PLAYER_EXPLORED_ZONES_SIZE; i++)
-            SetFlag(PLAYER_EXPLORED_ZONES_1+i, 0xFFFFFFFF);
-    }
-
-    //Reputations if "StartAllReputation" is enabled, -- @todo Fix this in a better way
-    if (sWorld->getBoolConfig(CONFIG_START_ALL_REP))
-    {
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(942), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(935), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(936), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(1011), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(970), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(967), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(989), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(932), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(934), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(1038), 42999);
-        GetReputationMgr().SetReputation(sFactionStore.LookupEntry(1077), 42999);
-
-        // Factions depending on team, like cities and some more stuff
-        switch (GetTeam())
-        {
-        case ALLIANCE:
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(72), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(47), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(69), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(930), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(730), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(978), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(54), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(946), 42999);
-            break;
-        case HORDE:
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(76), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(68), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(81), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(911), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(729), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(941), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(530), 42999);
-            GetReputationMgr().SetReputation(sFactionStore.LookupEntry(947), 42999);
-            break;
-        default:
-            break;
-        }
-    }
-
     // Played time
     m_Last_tick = time(nullptr);
     m_Played_time[PLAYED_TIME_TOTAL] = 0;
@@ -2699,7 +2649,6 @@ bool Player::IsInSameRaidWith(Player const* p) const
 }
 
 ///- If the player is invited, remove him. If the group if then only 1 person, disband the group.
-/// @todo Shouldn't we also check if there is no other invitees before disbanding the group?
 void Player::UninviteFromGroup()
 {
     Group* group = GetGroupInvite();
@@ -2708,13 +2657,14 @@ void Player::UninviteFromGroup()
 
     group->RemoveInvite(this);
 
-    if (group->GetMembersCount() <= 1)                       // group has just 1 member => disband
+    if (group->IsCreated())
     {
-        if (group->IsCreated())
-        {
+        if (group->GetMembersCount() <= 1) // group has just 1 member => disband
             group->Disband(true);
-        }
-        else
+    }
+    else
+    {
+        if (group->GetInviteeCount() <= 1)
         {
             group->RemoveAllInvites();
             delete group;
@@ -2860,7 +2810,7 @@ void Player::GiveLevel(uint8 level)
     UpdateAllStats();
 
     if (sWorld->getBoolConfig(CONFIG_ALWAYS_MAXSKILL)) // Max weapon skill when leveling up
-        UpdateSkillsToMaxSkillsForLevel();
+        UpdateWeaponsSkillsToMaxSkillsForLevel();
 
     _ApplyAllLevelScaleItemMods(true);
 
@@ -3553,6 +3503,9 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
 
             if (skill_max_value < new_skill_max_value)
                 skill_max_value = new_skill_max_value;
+
+            if (sWorld->getBoolConfig(CONFIG_ALWAYS_MAXSKILL) && !IsProfessionOrRidingSkill(spellLearnSkill->skill))
+                skill_value = skill_max_value;
 
             SetSkill(spellLearnSkill->skill, spellLearnSkill->step, skill_value, skill_max_value);
         }
@@ -6153,7 +6106,7 @@ void Player::UpdateSkillsForLevel()
     }
 }
 
-void Player::UpdateSkillsToMaxSkillsForLevel()
+void Player::UpdateWeaponsSkillsToMaxSkillsForLevel()
 {
     for (SkillStatusMap::iterator itr = mSkillStatus.begin(); itr != mSkillStatus.end(); ++itr)
     {
@@ -16348,9 +16301,7 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
                 q_status.Explored = true;
                 m_QuestStatusSave[questId] = QUEST_DEFAULT_SAVE_TYPE;
 
-                // if we cannot complete quest send exploration succeded (to mark exploration on client)
-                if (!CanCompleteQuest(questId))
-                    SendQuestComplete(questId);
+                SendQuestComplete(questId);
             }
         }
         if (CanCompleteQuest(questId))
@@ -22773,6 +22724,14 @@ void Player::SendInitialPacketsAfterAddToMap()
     }
     else if (GetRaidDifficulty() != GetStoredRaidDifficulty())
         SendRaidDifficulty(GetGroup() != NULL);
+
+    if (GetPlayerSharingQuest())
+    {
+        if (Quest const* quest = sObjectMgr->GetQuestTemplate(GetSharedQuestID()))
+            PlayerTalkClass->SendQuestGiverQuestDetails(quest, GetGUID(), true);
+        else
+            ClearQuestSharingInfo();
+    }
 }
 
 void Player::SendUpdateToOutOfRangeGroupMembers()
@@ -22983,7 +22942,9 @@ void Player::LearnDefaultSkill(uint32 skillId, uint16 rank)
         {
             uint16 skillValue = 1;
             uint16 maxValue = GetMaxSkillValueForLevel();
-            if (rcInfo->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
+            if (sWorld->getBoolConfig(CONFIG_ALWAYS_MAXSKILL) && !IsProfessionOrRidingSkill(skillId))
+                skillValue = maxValue;
+            else if (rcInfo->Flags & SKILL_FLAG_ALWAYS_MAX_VALUE)
                 skillValue = maxValue;
             else if (getClass() == CLASS_DEATH_KNIGHT)
                 skillValue = std::min(std::max<uint16>({ 1, uint16((getLevel() - 1) * 5) }), maxValue);
