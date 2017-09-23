@@ -4,12 +4,11 @@
 #include "ConsumableCategory.h"
 #include "TradeCategory.h"
 #include "AhBotConfig.h"
-#include "../DataStores/DBCStructure.h"
-#include "../../common/Logging/Log.h"
-#include "../../server/database/Database/QueryResult.h"
-#include "../../server/database/Database/DatabaseEnv.h"
-#include "../../shared/DataStores/DBCStore.h"
-#include "../AuctionHouse/AuctionHouseMgr.h"
+#include "DBCStructure.h"
+#include "Log.h"
+#include "QueryResult.h"
+#include "AuctionHouseMgr.h"
+#include "DatabaseEnv.h"
 
 using namespace ahbot;
 char * strstri (const char* str1, const char* str2);

@@ -2,6 +2,8 @@
 #include "../../playerbot.h"
 #include "UseMeetingStoneAction.h"
 #include "../../PlayerbotAIConfig.h"
+#include "GameObject.h"
+#include "WorldSession.h"
 
 bool UseMeetingStoneAction::Execute(Event event)
 {

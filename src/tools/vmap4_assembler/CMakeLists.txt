@@ -9,13 +9,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-set(PRIVATE_SOURCES VMapAssembler.cpp)
-
-if (WIN32)
-  list(APPEND PRIVATE_SOURCES ${sources_windows})
-endif()
-
-add_executable(vmap4assembler ${PRIVATE_SOURCES})
+add_executable(vmap4assembler VMapAssembler.cpp)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set_target_properties(vmap4assembler PROPERTIES LINK_FLAGS "-framework Carbon")

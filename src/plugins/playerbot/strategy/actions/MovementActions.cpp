@@ -2,11 +2,12 @@
 #include "../../playerbot.h"
 #include "../values/LastMovementValue.h"
 #include "MovementActions.h"
-#include "../../../Movement/MotionMaster.h"
-#include "../../../Movement/MovementGenerator.h"
+#include "MotionMaster.h"
+#include "MovementGenerator.h"
 #include "../../FleeManager.h"
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
+#include "GameObject.h"
 
 using namespace ai;
 

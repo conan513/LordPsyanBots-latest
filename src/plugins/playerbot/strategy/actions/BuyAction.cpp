@@ -3,6 +3,7 @@
 #include "BuyAction.h"
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
+#include "Creature.h"
 
 using namespace ai;
 

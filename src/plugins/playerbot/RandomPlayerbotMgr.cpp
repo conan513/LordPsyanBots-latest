@@ -2,10 +2,9 @@
 #include "playerbot.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotFactory.h"
-#include "../../server/database/Database/DatabaseEnv.h"
 #include "PlayerbotAI.h"
 #include "AiFactory.h"
-#include "../../game/Maps/MapManager.h"
+#include "MapManager.h"
 #include "PlayerbotCommandServer.h"
 #include "GuildTaskMgr.h"
 

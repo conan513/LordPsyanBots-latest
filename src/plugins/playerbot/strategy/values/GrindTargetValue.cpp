@@ -3,6 +3,7 @@
 #include "GrindTargetValue.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../RandomPlayerbotMgr.h"
+#include "Creature.h"
 
 using namespace ai;
 

@@ -5,8 +5,9 @@
 #include "../../PlayerbotAIConfig.h"
 #include "../ItemVisitors.h"
 #include "../../RandomPlayerbotMgr.h"
-#include "../../../DungeonFinding/LFGMgr.h"
-#include "../../../DungeonFinding/LFG.h"
+#include "LFGMgr.h"
+#include "LFG.h"
+#include "DBCStores.h"
 
 using namespace ai;
 using namespace lfg;

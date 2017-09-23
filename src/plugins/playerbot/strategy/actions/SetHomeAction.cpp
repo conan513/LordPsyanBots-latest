@@ -2,7 +2,7 @@
 #include "../../playerbot.h"
 #include "SetHomeAction.h"
 #include "../../PlayerbotAIConfig.h"
-
+#include "WorldSession.h"
 
 using namespace ai;
 

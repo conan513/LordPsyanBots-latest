@@ -1,6 +1,7 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "UseItemAction.h"
+#include "TradeData.h"
 
 using namespace ai;
 

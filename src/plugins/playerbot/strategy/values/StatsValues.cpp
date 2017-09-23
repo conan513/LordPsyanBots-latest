@@ -1,6 +1,7 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "StatsValues.h"
+#include "Bag.h"
 
 using namespace ai;
 

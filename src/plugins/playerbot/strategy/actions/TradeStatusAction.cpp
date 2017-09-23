@@ -1,7 +1,7 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "TradeStatusAction.h"
-
+#include "TradeData.h"
 #include "../ItemVisitors.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../../../ahbot/AhBot.h"

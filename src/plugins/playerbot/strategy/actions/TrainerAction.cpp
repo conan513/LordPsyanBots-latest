@@ -1,6 +1,7 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "TrainerAction.h"
+#include "Creature.h"
 
 using namespace ai;
 

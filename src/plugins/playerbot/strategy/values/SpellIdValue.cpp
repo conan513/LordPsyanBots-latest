@@ -2,7 +2,8 @@
 #include "../../playerbot.h"
 #include "SpellIdValue.h"
 #include "../../PlayerbotAIConfig.h"
-#include "../../../Entities/Pet/Pet.h"
+#include "Pet.h"
+#include "WorldSession.h"
 
 using namespace ai;
 

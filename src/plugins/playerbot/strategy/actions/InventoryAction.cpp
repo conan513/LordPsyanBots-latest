@@ -1,7 +1,8 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "InventoryAction.h"
-
+#include "Bag.h"
+#include "TradeData.h"
 #include "../values/ItemCountValue.h"
 
 using namespace ai;

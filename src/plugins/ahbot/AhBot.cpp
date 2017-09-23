@@ -522,7 +522,7 @@ int AhBot::AddAuction(int auction, Category* category, ItemTemplate const* proto
     if (!item)
         return 0;
 
-    uint32 randomPropertyId = Item::GenerateItemRandomPropertyId(proto->ItemId);
+    uint32 randomPropertyId = GenerateItemRandomPropertyId(proto->ItemId);
     if (randomPropertyId)
         item->SetItemRandomProperties(randomPropertyId);
 

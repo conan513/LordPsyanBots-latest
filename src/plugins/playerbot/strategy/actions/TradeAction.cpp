@@ -3,6 +3,7 @@
 #include "TradeAction.h"
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
+#include "TradeData.h"
 
 using namespace ai;
 

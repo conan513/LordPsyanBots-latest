@@ -1,6 +1,7 @@
 #pragma once
 #include "PricingStrategy.h"
 #include "ItemTemplate.h"
+#include "Random.h"
 
 using namespace std;
 

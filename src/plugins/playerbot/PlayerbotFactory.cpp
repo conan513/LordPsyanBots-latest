@@ -9,6 +9,7 @@
 #include "../ahbot/AhBot.h"
 #include "Pet.h"
 #include "RandomPlayerbotFactory.h"
+#include "Item.h"
 
 using namespace ai;
 using namespace std;
@@ -680,7 +681,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
             if (newItem)
             {
                 newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
+                AddItemToUpdateQueueOf(newItem, bot);
                 bot->AutoUnequipOffhandIfNeed();
                 EnchantItem(newItem);
                 break;
@@ -789,7 +790,7 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             {
                 EnchantItem(newItem);
                 newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
+                AddItemToUpdateQueueOf(newItem, bot);
                 break;
             }
         }
@@ -835,7 +836,7 @@ void PlayerbotFactory::InitBags()
             if (newItem)
             {
                 newItem->AddToWorld();
-                newItem->AddToUpdateQueueOf(bot);
+                AddItemToUpdateQueueOf(newItem, bot);
                 break;
             }
         }
@@ -934,7 +935,7 @@ bool PlayerbotFactory::CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item)
     if (pItem)
     {
         InventoryResult result = bot->CanEquipItem(slot, dest, pItem, true, false);
-        pItem->RemoveFromUpdateQueueOf(bot);
+        RemoveItemFromUpdateQueueOf(pItem, bot);
         delete pItem;
         return result == EQUIP_ERR_OK;
     }
@@ -1485,7 +1486,7 @@ Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count)
     if (msg != EQUIP_ERR_OK)
         return NULL;
 
-    return bot->StoreNewItem(sDest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+    return bot->StoreNewItem(sDest, itemId, true, GenerateItemRandomPropertyId(itemId));
 }
 
 void PlayerbotFactory::InitInventoryTrade()

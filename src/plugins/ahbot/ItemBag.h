@@ -1,5 +1,6 @@
 #pragma once
 #include "Category.h"
+#include "Random.h"
 
 namespace ahbot
 {

@@ -15,7 +15,7 @@ namespace ai
         void EquipItem(Item& item);
         void TellEquipmentSets();
         bool UseEquipmentSet(string& name);
-        bool UseEquipmentSet(EquipmentSet& set);
+        bool UseEquipmentSet(EquipmentSetContainer& set);
     };
 
 }

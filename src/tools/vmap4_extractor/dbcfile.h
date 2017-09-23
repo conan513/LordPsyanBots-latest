@@ -59,7 +59,7 @@ public:
     class Record
     {
     public:
-        Record& operator= (Record const& r)
+        Record& operator= (const Record& r)
         {
             file = r.file;
             offset = r.offset;
@@ -116,15 +116,15 @@ public:
         }
         /// Return address of current instance
         Record const & operator*() const { return record; }
-        Record const* operator->() const {
+        const Record* operator->() const {
             return &record;
         }
         /// Comparison
-        bool operator==(Iterator const& b) const
+        bool operator==(const Iterator &b) const
         {
             return record.offset == b.record.offset;
         }
-        bool operator!=(Iterator const& b) const
+        bool operator!=(const Iterator &b) const
         {
             return record.offset != b.record.offset;
         }

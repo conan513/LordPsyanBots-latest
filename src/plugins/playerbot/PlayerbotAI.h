@@ -19,7 +19,7 @@ using namespace ai;
 
 bool IsAlliance(uint8 race);
 
-class PlayerbotChatHandler: protected ChatHandler
+class TC_GAME_API PlayerbotChatHandler: protected ChatHandler
 {
 public:
     explicit PlayerbotChatHandler(Player* pMasterPlayer) : ChatHandler(pMasterPlayer->GetSession()) {}

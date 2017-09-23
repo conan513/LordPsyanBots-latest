@@ -2,6 +2,8 @@
 #include "../../playerbot.h"
 #include "TaxiAction.h"
 #include "../values/LastMovementValue.h"
+#include "WorldSession.h"
+#include "Creature.h"
 
 using namespace ai;
 

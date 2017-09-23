@@ -3,6 +3,7 @@
 #include "RewardAction.h"
 #include "../ItemVisitors.h"
 #include "../values/ItemCountValue.h"
+#include "GameObject.h"
 
 using namespace ai;
 

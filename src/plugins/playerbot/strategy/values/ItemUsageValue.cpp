@@ -1,8 +1,9 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "ItemUsageValue.h"
-
+#include "Item.h"
 #include "../../GuildTaskMgr.h"
+
 using namespace ai;
 
 ItemUsage ItemUsageValue::Calculate()
@@ -45,7 +46,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemTemplate const * item)
 
     uint16 dest;
     InventoryResult result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
-    pItem->RemoveFromUpdateQueueOf(bot);
+    RemoveItemFromUpdateQueueOf(pItem, bot);
     delete pItem;
 
     if( result != EQUIP_ERR_OK )

@@ -33,7 +33,7 @@ class MPQArchive
 public:
     mpq_archive_s *mpq_a;
 
-    MPQArchive(char const* filename);
+    MPQArchive(const char* filename);
     ~MPQArchive() { if (isOpened()) close(); }
 
     void GetFileListTo(std::vector<std::string>& filelist) {
@@ -52,13 +52,13 @@ public:
 
         token = strtok( buffer, seps );
         uint32 counter = 0;
-        while ((token != nullptr) && (counter < size)) {
+        while ((token != NULL) && (counter < size)) {
             //cout << token << endl;
             token[strlen(token) - 1] = 0;
             std::string s = token;
             filelist.push_back(s);
             counter += strlen(token) + 2;
-            token = strtok(nullptr, seps);
+            token = strtok(NULL, seps);
         }
 
         delete[] buffer;
@@ -77,11 +77,11 @@ class MPQFile
     char *buffer;
     libmpq__off_t pointer,size;
 
-    MPQFile(MPQFile const& /*f*/) = delete;
-    void operator=(MPQFile const& /*f*/) = delete;
+    MPQFile(const MPQFile& /*f*/) = delete;
+    void operator=(const MPQFile& /*f*/) = delete;
 
 public:
-    MPQFile(char const* filename);    // filenames are not case sensitive
+    MPQFile(const char* filename);    // filenames are not case sensitive
     ~MPQFile() { close(); }
     size_t read(void* dest, size_t bytes);
     size_t getSize() { return size; }

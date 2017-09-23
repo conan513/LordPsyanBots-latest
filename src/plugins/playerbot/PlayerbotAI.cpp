@@ -18,6 +18,8 @@
 #include "Group.h"
 #include "Pet.h"
 #include "SpellAuraEffects.h"
+#include "SpellHistory.h"
+#include <cstdarg>
 
 using namespace ai;
 using namespace std;

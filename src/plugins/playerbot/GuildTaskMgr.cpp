@@ -3,13 +3,12 @@
 #include "PlayerbotAIConfig.h"
 #include "GuildTaskMgr.h"
 #include "CharacterCache.h"
-#include "../../plugins/ahbot/AhBot.h"
+#include "../ahbot/AhBot.h"
 #include "GuildMgr.h"
-#include "DatabaseEnv.h"
 #include "Mail.h"
 #include "PlayerbotAI.h"
 
-#include "../../plugins/ahbot/AhBotConfig.h"
+#include "../ahbot/AhBotConfig.h"
 #include "RandomItemMgr.h"
 
 char * strstri (const char* str1, const char* str2);

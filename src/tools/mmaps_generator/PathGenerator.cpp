@@ -19,7 +19,6 @@
 #include "PathCommon.h"
 #include "MapBuilder.h"
 #include "Timer.h"
-#include "Banner.h"
 
 using namespace MMAP;
 
@@ -76,7 +75,7 @@ bool handleArgs(int argc, char** argv,
                char* &file,
                int& threads)
 {
-    char* param = nullptr;
+    char* param = NULL;
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "--maxAngle") == 0)
@@ -113,7 +112,7 @@ bool handleArgs(int argc, char** argv,
                 return false;
 
             char* stileX = strtok(param, ",");
-            char* stileY = strtok(nullptr, ",");
+            char* stileY = strtok(NULL, ",");
             int tilex = atoi(stileX);
             int tiley = atoi(stileY);
 
@@ -234,7 +233,7 @@ bool handleArgs(int argc, char** argv,
     return true;
 }
 
-int finish(char const* message, int returnValue)
+int finish(const char* message, int returnValue)
 {
     printf("%s", message);
     getchar(); // Wait for user input
@@ -243,8 +242,6 @@ int finish(char const* message, int returnValue)
 
 int main(int argc, char** argv)
 {
-    Trinity::Banner::Show("MMAP generator", [](char const* text) { printf("%s\n", text); }, nullptr);
-
     int threads = 3, mapnum = -1;
     float maxAngle = 70.0f;
     int tileX = -1, tileY = -1;
@@ -255,8 +252,8 @@ int main(int argc, char** argv)
          debugOutput = false,
          silent = false,
          bigBaseUnit = false;
-    char* offMeshInputPath = nullptr;
-    char* file = nullptr;
+    char* offMeshInputPath = NULL;
+    char* file = NULL;
 
     bool validParam = handleArgs(argc, argv, mapnum,
                                  tileX, tileY, maxAngle,

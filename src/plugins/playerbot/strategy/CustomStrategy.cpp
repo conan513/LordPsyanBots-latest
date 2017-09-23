@@ -1,6 +1,7 @@
 #include "../../pchdef.h"
 #include "../playerbot.h"
 #include "CustomStrategy.h"
+#include "DatabaseEnv.h"
 #include <regex>
 
 using namespace ai;

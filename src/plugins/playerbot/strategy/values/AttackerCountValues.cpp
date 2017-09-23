@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "AttackerCountValues.h"
 #include "../../PlayerbotAIConfig.h"
+#include "Creature.h"
 
 using namespace ai;
 

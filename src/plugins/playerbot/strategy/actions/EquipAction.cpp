@@ -1,8 +1,10 @@
 #include "../../../pchdef.h"
 #include "../../playerbot.h"
 #include "EquipAction.h"
-
+#include "WorldSession.h"
+#include "EquipmentSet.h"
 #include "../values/ItemCountValue.h"
+#include "Item.h"
 
 using namespace ai;
 
@@ -31,13 +33,13 @@ bool EquipAction::Execute(Event event)
 
 bool EquipAction::UseEquipmentSet(string& name)
 {
-    EquipmentSets &sets = bot->GetEquipmentSets();
-    for (EquipmentSets::iterator i = sets.begin(); i != sets.end(); i++)
+    EquipmentSetContainer &sets = bot->GetEquipmentSets();
+    for (EquipmentSetContainer::iterator i = sets.begin(); i != sets.end(); i++)
     {
-        if (i->second.state == EQUIPMENT_SET_DELETED || i->second.Name != name)
+        if (i->second.State == EQUIPMENT_SET_DELETED)
             continue;
 
-        UseEquipmentSet(i->second);
+        UseEquipmentSet(name);
 
         ostringstream out; out << name << " set equipped";
         ai->TellMaster(out);
@@ -46,18 +48,18 @@ bool EquipAction::UseEquipmentSet(string& name)
     return false;
 }
 
-bool EquipAction::UseEquipmentSet(EquipmentSet& set)
+bool EquipAction::UseEquipmentSet(EquipmentSetContainer& set)
 {
     WorldPacket* p = new WorldPacket(CMSG_EQUIPMENT_SET_USE);
     uint8 srcbag = 0;
     for(uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
         ObjectGuid guid;
-        uint32 itemId = set.Items[slot];
-        if (set.IgnoreMask & (1 << slot))
+        //uint32 itemId = set.Items[slot];
+        if (1 << slot)
             p->appendPackGUID((uint64(1)));
         else
-            p->appendPackGUID(itemId);
+            p->appendPackGUID((uint64(1)));
         *p << srcbag << slot;
     }
     bot->GetSession()->QueuePacket(p);
@@ -67,11 +69,11 @@ bool EquipAction::UseEquipmentSet(EquipmentSet& set)
 void EquipAction::TellEquipmentSets()
 {
     ai->TellMaster("=== Equipment sets ===");
-    EquipmentSets &sets = bot->GetEquipmentSets();
-    for (EquipmentSets::iterator i = sets.begin(); i != sets.end(); i++)
+    EquipmentSetContainer &sets = bot->GetEquipmentSets();
+    for (EquipmentSetContainer::iterator i = sets.begin(); i != sets.end(); i++)
     {
-        if (i->second.state != EQUIPMENT_SET_DELETED)
-            ai->TellMaster(i->second.Name);
+        if (i->second.State != EQUIPMENT_SET_DELETED)
+            ai->TellMaster(name);
     }
 }
 

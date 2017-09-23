@@ -3,6 +3,7 @@
 #include "ChangeStrategyAction.h"
 #include "../../PlayerbotAIConfig.h"
 #include "CharacterCache.h"
+#include "WorldSession.h"
 
 using namespace ai;
 

@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "PartyMemberValue.h"
 #include "../../PlayerbotAIConfig.h"
+#include "Corpse.h"
 
 using namespace ai;
 using namespace std;

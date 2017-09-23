@@ -1,4 +1,5 @@
 #pragma once
+#include "Item.h"
 
 char * strstri (const char* str1, const char* str2);
 
