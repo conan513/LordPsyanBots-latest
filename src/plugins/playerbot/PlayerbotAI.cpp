@@ -434,7 +434,7 @@ void PlayerbotAI::DoNextAction()
         //WorldPacket packet(CMSG_MOVE_SET_FLY);
         //packet.appendPackGUID(bot->GetGUID());
         //packet << bot->m_movementInfo;
-        bot->SetMover(bot);
+        bot->SetMovedUnit(bot);
         //bot->GetSession()->HandleMovementOpcodes(packet);
     }
 
