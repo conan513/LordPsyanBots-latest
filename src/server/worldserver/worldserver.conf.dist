@@ -58,6 +58,9 @@ PrepatchGI.Added = 0
 #    LOGGING SYSTEM SETTINGS
 #    PACKET SPOOF PROTECTION SETTINGS
 #    METRIC SETTINGS
+#    PLAYERBOTS SETTINGS
+#    PLAYERBOTS AHBOT SETTINGS
+#    CUSTOM SETTINGS
 #
 ###################################################################################################
 
@@ -3840,6 +3843,7 @@ Logger.scripts.hotswap=3,Console Server
 Logger.sql.sql=5,Console DBErrors
 Logger.sql.updates=3,Console Server
 Logger.mmaps=3,Server
+Logger.playerbot=1,Console Server
 
 #Logger.achievement=3,Console Server
 #Logger.addon=3,Console Server
@@ -3982,6 +3986,7 @@ Metric.OverallStatusInterval = 1
 ###################################################################################################
 
 ##########################################
+#          PLAYERBOTS SETTINGS           #
 #  LordPsyanBots Configuration Settings  #
 ##########################################
 
@@ -4169,6 +4174,7 @@ AiPlayerbot.RandomBotTeleLevel = 3
 ###################################################################################################
 
 #######################################################
+#             PLAYERBOTS AHBOT SETTINGS               #
 # LordPsyanBots Auction House Bot Configuration file  #
 #######################################################
 
@@ -4377,6 +4383,10 @@ AhBot.PriceMultiplier.Buy.OtherTrade = 1.0
 AhBot.PriceMultiplier.Sell.projectile = 1.0
 AhBot.PriceMultiplier.Buy.projectile = 1.0
 AhBot.PricingStrategy.projectile = buyOnlyRare
+
+#################################
+#        CUSTOM SETTINGS        #
+#################################
 
 #
 ###################################################################################################
