@@ -549,6 +549,7 @@ m_caster((info->HasAttribute(SPELL_ATTR6_CAST_BY_CHARMER) && caster->GetCharmerO
     m_referencedFromCurrentSpell = false;
     m_executedCurrently = false;
     m_needComboPoints = m_spellInfo->NeedsComboPoints();
+    m_comboTarget = nullptr;
     m_comboPointGain = 0;
     m_delayStart = 0;
     m_delayAtDamageCount = 0;
@@ -2551,7 +2552,8 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask, bool scaleA
             // for delayed spells ignore negative spells (after duel end) for friendly targets
             /// @todo this cause soul transfer bugged
             // 63881 - Malady of the Mind jump spell (Yogg-Saron)
-            if (m_spellInfo->Speed > 0.0f && unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive() && m_spellInfo->Id != 63881)
+            // 45034 - Curse of Boundless Agony jump spell (Kalecgos)
+            if (m_spellInfo->Speed > 0.0f && unit->GetTypeId() == TYPEID_PLAYER && !m_spellInfo->IsPositive() && m_spellInfo->Id != 63881 && m_spellInfo->Id != 45034)
                 return SPELL_MISS_EVADE;
 
             // assisting case, healing and resurrection
@@ -3270,6 +3272,10 @@ void Spell::_cast(bool skipCheck)
 
     // we must send smsg_spell_go packet before m_castItem delete in TakeCastItem()...
     SendSpellGo();
+
+    if (!m_spellInfo->IsChanneled())
+        if (Creature* creatureCaster = m_caster->ToCreature())
+            creatureCaster->ReleaseFocus(this);
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
     if ((m_spellInfo->Speed > 0.0f && !m_spellInfo->IsChanneled()) || m_spellInfo->HasAttribute(SPELL_ATTR4_UNK4))
@@ -7877,7 +7883,7 @@ bool WorldObjectSpellAreaTargetCheck::operator()(WorldObject* target)
         if (!isInsideCylinder)
             return false;
     }
-    
+
     return WorldObjectSpellTargetCheck::operator ()(target);
 }
 

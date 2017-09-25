@@ -40,6 +40,7 @@
 #include "Log.h"
 #include "LootMgr.h"
 #include "MotionMaster.h"
+#include "MovementGenerator.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
 #include "ObjectAccessor.h"
@@ -2607,7 +2608,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
 SpellMissInfo Unit::MagicSpellHitResult(Unit* victim, SpellInfo const* spellInfo) const
 {
     // Can`t miss on dead target (on skinning for example)
-    if ((!victim->IsAlive() && victim->GetTypeId() != TYPEID_PLAYER))
+    if (!victim->IsAlive() && victim->GetTypeId() != TYPEID_PLAYER)
         return SPELL_MISS_NONE;
 
     SpellSchoolMask schoolMask = spellInfo->GetSchoolMask();
@@ -3391,7 +3392,8 @@ void Unit::ProcessTerrainStatusUpdate(ZLiquidStatus status, Optional<LiquidData>
     {
         if (_lastLiquid && _lastLiquid->SpellId)
             RemoveAurasDueToSpell(_lastLiquid->SpellId);
-        if (curLiquid && curLiquid->SpellId)
+        Player* player = GetCharmerOrOwnerPlayerOrPlayerItself();
+        if (curLiquid && curLiquid->SpellId && (!player || !player->IsGameMaster()))
             CastSpell(this, curLiquid->SpellId, true);
         _lastLiquid = curLiquid;
     }
@@ -5675,8 +5677,6 @@ ReputationRank Unit::GetFactionReactionTo(FactionTemplateEntry const* factionTem
         return REP_NEUTRAL;
 
     FactionTemplateEntry const* targetFactionTemplateEntry = target->GetFactionTemplateEntry();
-    if (!targetFactionTemplateEntry)
-        return REP_NEUTRAL;
 
     if (Player const* targetPlayerOwner = target->GetAffectingPlayer())
     {
@@ -5728,7 +5728,7 @@ bool Unit::IsFriendlyTo(Unit const* unit) const
 bool Unit::IsHostileToPlayers() const
 {
     FactionTemplateEntry const* my_faction = GetFactionTemplateEntry();
-    if (!my_faction || !my_faction->faction)
+    if (!my_faction->faction)
         return false;
 
     FactionEntry const* raw_faction = sFactionStore.LookupEntry(my_faction->faction);
@@ -5741,7 +5741,7 @@ bool Unit::IsHostileToPlayers() const
 bool Unit::IsNeutralToAll() const
 {
     FactionTemplateEntry const* my_faction = GetFactionTemplateEntry();
-    if (!my_faction || !my_faction->faction)
+    if (!my_faction->faction)
         return true;
 
     FactionEntry const* raw_faction = sFactionStore.LookupEntry(my_faction->faction);
@@ -8683,6 +8683,24 @@ void Unit::SetInCombatWith(Unit* enemy)
     SetInCombatState(false, enemy);
 }
 
+void Unit::SetImmuneToPC(bool apply, bool keepCombat)
+{
+    (void)keepCombat;
+    if (apply)
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+    else
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+}
+
+void Unit::SetImmuneToNPC(bool apply, bool keepCombat)
+{
+    (void)keepCombat;
+    if (apply)
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
+    else
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
+}
+
 void Unit::CombatStart(Unit* target, bool initialAggro)
 {
     if (initialAggro)
@@ -8878,11 +8896,11 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellInfo const* bySpell, Wo
     }
     // check flags
     if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_TAXI_FLIGHT | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_UNK_16)
-        || (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC))
-        || (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC))
-        || (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC))
+        || (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && target->IsImmuneToNPC())
+        || (!target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && IsImmuneToNPC())
+        || (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && target->IsImmuneToPC())
         // check if this is a world trigger cast - GOs are using world triggers to cast their spells, so we need to ignore their immunity flag here, this is a temp workaround, needs removal when go cast is implemented properly
-        || ((GetEntry() != WORLD_TRIGGER && (!obj || !obj->isType(TYPEMASK_GAMEOBJECT | TYPEMASK_DYNAMICOBJECT))) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC)))
+        || ((GetEntry() != WORLD_TRIGGER && (!obj || !obj->isType(TYPEMASK_GAMEOBJECT | TYPEMASK_DYNAMICOBJECT))) && target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && IsImmuneToPC()))
         return false;
 
     // CvC case - can attack each other only when one of them is hostile
@@ -8986,12 +9004,12 @@ bool Unit::_IsValidAssistTarget(Unit const* target, SpellInfo const* bySpell) co
     {
         if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
         {
-            if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC))
+            if (target->IsImmuneToPC())
                 return false;
         }
         else
         {
-            if (target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC))
+            if (target->IsImmuneToNPC())
                 return false;
         }
     }
@@ -9665,11 +9683,10 @@ Unit* Creature::SelectVictim()
 
     // last case when creature must not go to evade mode:
     // it in combat but attacker not make any damage and not enter to aggro radius to have record in threat list
-    // for example at owner command to pet attack some far away creature
     // Note: creature does not have targeted movement generator but has attacker in this case
     for (AttackerSet::const_iterator itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
     {
-        if ((*itr) && !CanCreatureAttack(*itr) && (*itr)->GetTypeId() != TYPEID_PLAYER
+        if ((*itr) && CanCreatureAttack(*itr) && (*itr)->GetTypeId() != TYPEID_PLAYER
         && !(*itr)->ToCreature()->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN))
             return nullptr;
     }
@@ -11389,6 +11406,26 @@ void Unit::StopMoving()
     init.Stop();
 }
 
+void Unit::PauseMovement(uint32 timer/* = 0*/, uint8 slot/* = 0*/)
+{
+    if (slot >= MAX_MOTION_SLOT)
+        return;
+
+    if (MovementGenerator* movementGenerator = GetMotionMaster()->GetMotionSlot(slot))
+        movementGenerator->Pause(timer);
+
+    StopMoving();
+}
+
+void Unit::ResumeMovement(uint32 timer/* = 0*/, uint8 slot/* = 0*/)
+{
+    if (slot >= MAX_MOTION_SLOT)
+        return;
+
+    if (MovementGenerator* movementGenerator = GetMotionMaster()->GetMotionSlot(slot))
+        movementGenerator->Resume(timer);
+}
+
 void Unit::SendMovementFlagUpdate(bool self /* = false */)
 {
     WorldPacket data;
@@ -12049,9 +12086,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
             }
         }
 
-        // Don't give kill credit if creature killed itself
-        if (this != victim)
-            player->RewardPlayerAndGroupAtKill(victim, false);
+        player->RewardPlayerAndGroupAtKill(victim, false);
     }
 
     // Do KILL and KILLED procs. KILL proc is called only for the unit who landed the killing blow (and its owner - for pets and totems) regardless of who tapped the victim
@@ -12068,11 +12103,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
     // Proc auras on death - must be before aura/combat remove
     victim->ProcSkillsAndAuras(victim, PROC_FLAG_NONE, PROC_FLAG_DEATH, PROC_SPELL_TYPE_MASK_ALL, PROC_SPELL_PHASE_NONE, PROC_HIT_NONE, nullptr, nullptr, nullptr);
 
-    // update get killing blow achievements (only if creature did not kill itself), must be done before setDeathState to be able to require auras on target
+    // update get killing blow achievements, must be done before setDeathState to be able to require auras on target
     // and before Spirit of Redemption as it also removes auras
-    if (this != victim)
-        if (Player* killerPlayer = GetCharmerOrOwnerPlayerOrPlayerItself())
-            killerPlayer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS, 1, 0, victim);
+    if (Player* killerPlayer = GetCharmerOrOwnerPlayerOrPlayerItself())
+        killerPlayer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS, 1, 0, victim);
 
     // if talent known but not triggered (check priest class for speedup check)
     bool spiritOfRedemption = false;
@@ -12582,8 +12616,14 @@ bool Unit::SetCharmedBy(Unit* charmer, CharmType type, AuraApplication const* au
 
     if (GetTypeId() == TYPEID_UNIT)
     {
+        if (MovementGenerator* movementGenerator = GetMotionMaster()->GetMotionSlot(MOTION_SLOT_IDLE))
+            movementGenerator->Pause(0);
+
+        GetMotionMaster()->Clear(MOTION_SLOT_ACTIVE);
+
+        StopMoving();
+
         ToCreature()->AI()->OnCharmed(true);
-        GetMotionMaster()->MoveIdle();
     }
     else if (Player* player = ToPlayer())
     {
@@ -12697,6 +12737,7 @@ void Unit::RemoveCharmedBy(Unit* charmer)
     else
         RestoreFaction();
 
+    ///@todo Handle SLOT_IDLE motion resume
     GetMotionMaster()->InitDefault();
 
     if (Creature* creature = ToCreature())

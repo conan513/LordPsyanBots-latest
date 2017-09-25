@@ -243,7 +243,7 @@ namespace Trinity
                     xpMod *= 1.0f - 2.0f * creature->m_PlayerDamageReq / creature->GetMaxHealth();
 
                 gain = uint32(gain * xpMod);
-            }
+                }
             }
 
             sScriptMgr->OnGainCalculation(gain, player, u);

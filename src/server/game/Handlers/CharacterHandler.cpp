@@ -107,10 +107,7 @@ void PlayerbotHolder::AddPlayerBot(uint64 playerGuid, uint32 masterAccount)
 
     WorldSession* masterSession = masterAccount ? sWorld->FindSession(masterAccount) : NULL;
     uint32 botAccountId = holder->GetAccountId();
-    std::string accountName;
-    AccountMgr::GetName(botAccountId, accountName);
-    WorldSession *botSession = new WorldSession(botAccountId, std::move(accountName), NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
-    //WorldSession *botSession = new WorldSession(botAccountId, "bot", NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
+    WorldSession *botSession = new WorldSession(botAccountId, "bot", NULL, SEC_PLAYER, 2, 0, LOCALE_enUS, 0, false);
 
     botSession->HandlePlayerLogin(holder); // will delete lqh
 
@@ -766,8 +763,6 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recvData)
     m_playerLoading = true;
     ObjectGuid playerGuid;
 
-    TC_LOG_DEBUG("network", "WORLD: Recvd Player Logon Message");
-
     recvData >> playerGuid;
 
     if (!IsLegitCharacterForAccount(playerGuid))
@@ -834,8 +829,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         // send server info
         if (sWorld->getIntConfig(CONFIG_ENABLE_SINFO_LOGIN) == 1)
             chH.PSendSysMessage(GitRevision::GetFullVersion());
-
-        TC_LOG_DEBUG("network", "WORLD: Sent server info");
     }
 
     //QueryResult* result = CharacterDatabase.PQuery("SELECT guildid, rank FROM guild_member WHERE guid = '%u'", pCurrChar->GetGUID().GetCounter());
@@ -1110,6 +1103,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     // End of prepatch
     delete holder;
 }
+
     // Prepatch by LordPsyan
     // 01
     // 02
@@ -1696,6 +1690,9 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& recvData)
             InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, sDest, uItem, false);
             if (msg == EQUIP_ERR_OK)
             {
+                if (_player->CanEquipItem(NULL_SLOT, dstpos, uItem, false) != EQUIP_ERR_OK)
+                    continue;
+
                 _player->RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
                 _player->StoreItem(sDest, uItem, true);
             }
@@ -1706,6 +1703,9 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& recvData)
         }
 
         if (item->GetPos() == dstpos)
+            continue;
+
+        if (_player->CanUnequipItem(dstpos, true) != EQUIP_ERR_OK)
             continue;
 
         _player->SwapItem(item->GetPos(), dstpos);

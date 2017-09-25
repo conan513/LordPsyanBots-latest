@@ -821,27 +821,6 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
                     m_caster->CastSpell(unitTarget, spell->Id, true);
                 return;
             }
-            // Cloak of Shadows
-            case 35729:
-            {
-                uint32 dispelMask = SpellInfo::GetDispelMask(DISPEL_ALL);
-                Unit::AuraApplicationMap& Auras = unitTarget->GetAppliedAuras();
-                for (Unit::AuraApplicationMap::iterator iter = Auras.begin(); iter != Auras.end();)
-                {
-                    // remove all harmful spells on you...
-                    SpellInfo const* spell = iter->second->GetBase()->GetSpellInfo();
-                    if (((spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && spell->GetSchoolMask() != SPELL_SCHOOL_MASK_NORMAL) // only affect magic spells
-                        || (spell->GetDispelMask() & dispelMask)) &&
-                        // ignore positive and passive auras
-                        !iter->second->IsPositive() && !iter->second->GetBase()->IsPassive())
-                    {
-                        m_caster->RemoveAura(iter);
-                    }
-                    else
-                        ++iter;
-                }
-                return;
-            }
         }
     }
 
@@ -1008,7 +987,7 @@ void Spell::EffectTriggerRitualOfSummoning(SpellEffIndex effIndex)
 
     finish();
 
-    m_caster->CastSpell((Unit*)nullptr, spellInfo, false);
+    m_caster->CastSpell(nullptr, spellInfo, false);
 }
 
 void Spell::EffectJump(SpellEffIndex effIndex)
@@ -2248,8 +2227,7 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
                     summon->SelectLevel();       // some summoned creaters have different from 1 DB data for level/hp
                     summon->SetUInt32Value(UNIT_NPC_FLAGS, summon->GetCreatureTemplate()->npcflag);
-
-                    summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+                    summon->SetImmuneToAll(true);
 
                     summon->AI()->EnterEvadeMode();
                     break;
@@ -3210,7 +3188,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
             // Mangle (Cat): CP
             if (m_spellInfo->SpellFamilyFlags[1] & 0x400)
                 AddComboPointGain(unitTarget, 1);
-            
+
             // Shred, Maul - Rend and Tear
             else if (m_spellInfo->SpellFamilyFlags[0] & 0x00008800 && unitTarget->HasAuraState(AURA_STATE_BLEEDING))
             {
@@ -4656,9 +4634,13 @@ void Spell::EffectChargeDest(SpellEffIndex /*effIndex*/)
     if (m_targets.HasDst())
     {
         Position pos = destTarget->GetPosition();
-        float angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
-        float dist = m_caster->GetDistance(pos);
-        pos = m_caster->GetFirstCollisionPosition(dist, angle);
+
+        if (!m_caster->IsWithinLOS(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ()))
+        {
+            float angle = m_caster->GetRelativeAngle(pos.GetPositionX(), pos.GetPositionY());
+            float dist = m_caster->GetDistance(pos);
+            pos = m_caster->GetFirstCollisionPosition(dist, angle);
+        }
 
         m_caster->GetMotionMaster()->MoveCharge(pos.m_positionX, pos.m_positionY, pos.m_positionZ);
     }

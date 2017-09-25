@@ -202,6 +202,7 @@ Player::Player(WorldSession* session): Unit(true)
     m_session = session;
 
     m_ingametime = 0;
+    m_sharedQuestId = 0;
 
     m_ExtraFlags = 0;
 
@@ -520,6 +521,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     }
 
     SetMap(sMapMgr->CreateMap(info->mapId, this));
+    UpdatePositionData();
 
     uint8 powertype = cEntry->powerType;
 
@@ -7074,23 +7076,22 @@ void Player::UpdateArea(uint32 newArea)
 
 void Player::UpdateZone(uint32 newZone, uint32 newArea)
 {
-    if (m_zoneUpdateId != newZone)
+    uint32 const oldZone = m_zoneUpdateId;
+    m_zoneUpdateId = newZone;
+    m_zoneUpdateTimer = ZONE_UPDATE_INTERVAL;
+
+    GetMap()->UpdatePlayerZoneStats(oldZone, newZone);
+
+    // call leave script hooks immedately (before updating flags)
+    if (oldZone != newZone)
     {
         sOutdoorPvPMgr->HandlePlayerLeaveZone(this, m_zoneUpdateId);
-        sOutdoorPvPMgr->HandlePlayerEnterZone(this, newZone);
         sBattlefieldMgr->HandlePlayerLeaveZone(this, m_zoneUpdateId);
-        sBattlefieldMgr->HandlePlayerEnterZone(this, newZone);
-        SendInitWorldStates(newZone, newArea);              // only if really enters to new zone, not just area change, works strange...
-        if (Guild* guild = GetGuild())
-            guild->UpdateMemberData(this, GUILD_MEMBER_DATA_ZONEID, newZone);
     }
 
     // group update
     if (GetGroup())
         SetGroupUpdateFlag(GROUP_UPDATE_FULL);
-
-    m_zoneUpdateId    = newZone;
-    m_zoneUpdateTimer = ZONE_UPDATE_INTERVAL;
 
     // zone changed, so area changed as well, update it
     UpdateArea(newArea);
@@ -7107,8 +7108,6 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
             // send fine weather packet to remove old zone's weather
             WeatherMgr::SendFineWeatherUpdateToPlayer(this);
     }
-
-    sScriptMgr->OnPlayerUpdateZone(this, newZone, newArea);
 
     // in PvP, any not controlled zone (except zone->team == 6, default case)
     // in PvE, only opposition team capital
@@ -7156,6 +7155,17 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
     UpdateLocalChannels(newZone);
 
     UpdateZoneDependentAuras(newZone);
+
+    // call enter script hooks after everyting else has processed
+    sScriptMgr->OnPlayerUpdateZone(this, newZone, newArea);
+    if (oldZone != newZone)
+    {
+        sOutdoorPvPMgr->HandlePlayerEnterZone(this, newZone);
+        sBattlefieldMgr->HandlePlayerEnterZone(this, newZone);
+        SendInitWorldStates(newZone, newArea);              // only if really enters to new zone, not just area change, works strange...
+        if (Guild* guild = GetGuild())
+            guild->UpdateMemberData(this, GUILD_MEMBER_DATA_ZONEID, newZone);
+    }
 }
 
 //If players are too far away from the duel flag... they lose the duel
@@ -11275,6 +11285,9 @@ InventoryResult Player::CanEquipItem(uint8 slot, uint16 &dest, Item* pItem, bool
                 if (HasUnitState(UNIT_STATE_STUNNED))
                     return EQUIP_ERR_YOU_ARE_STUNNED;
 
+                if (IsCharmed())
+                    return EQUIP_ERR_CANT_DO_RIGHT_NOW; // @todo is this the correct error?
+
                 // do not allow equipping gear except weapons, offhands, projectiles, relics in
                 // - combat
                 // - in-progress arenas
@@ -11431,6 +11444,9 @@ InventoryResult Player::CanUnequipItem(uint16 pos, bool swap) const
     // item used
     if (pItem->m_lootGenerated)
         return EQUIP_ERR_ALREADY_LOOTED;
+
+    if (IsCharmed())
+        return EQUIP_ERR_CANT_DO_RIGHT_NOW; // @todo is this the correct error?
 
     // do not allow unequipping gear except weapons, offhands, projectiles, relics in
     // - combat
@@ -15104,19 +15120,6 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
     RemoveTimedQuest(quest_id);
 
-    if (quest->GetRewChoiceItemsCount() > 0)
-    {
-        if (uint32 itemId = quest->RewardChoiceItemId[reward])
-        {
-            ItemPosCountVec dest;
-            if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, quest->RewardChoiceItemCount[reward]) == EQUIP_ERR_OK)
-            {
-                Item* item = StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId));
-                SendNewItem(item, quest->RewardChoiceItemCount[reward], true, false);
-            }
-        }
-    }
-
     if (quest->GetRewItemsCount() > 0)
     {
         for (uint32 i = 0; i < quest->GetRewItemsCount(); ++i)
@@ -15135,7 +15138,18 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
         }
     }
 
-    RewardReputation(quest);
+    if (quest->GetRewChoiceItemsCount() > 0)
+    {
+        if (uint32 itemId = quest->RewardChoiceItemId[reward])
+        {
+            ItemPosCountVec dest;
+            if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, quest->RewardChoiceItemCount[reward]) == EQUIP_ERR_OK)
+            {
+                Item* item = StoreNewItem(dest, itemId, true, GenerateItemRandomPropertyId(itemId));
+                SendNewItem(item, quest->RewardChoiceItemCount[reward], true, false);
+            }
+        }
+    }
 
     uint16 log_slot = FindQuestSlot(quest_id);
     if (log_slot < MAX_QUEST_LOG_SIZE)
@@ -15245,11 +15259,13 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     if (announce)
         SendQuestReward(quest, XP);
 
+    RewardReputation(quest);
+
     // cast spells after mark quest complete (some spells have quest completed state requirements in spell_area data)
     if (quest->GetRewSpellCast() > 0)
     {
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(quest->GetRewSpellCast());
-        if (spellInfo && questGiver->isType(TYPEMASK_UNIT) && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL) && !spellInfo->HasEffect(SPELL_EFFECT_CREATE_ITEM) && !spellInfo->IsSelfCast())
+        if (spellInfo && questGiver->isType(TYPEMASK_UNIT) && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL) && !spellInfo->HasEffect(SPELL_EFFECT_CREATE_ITEM))
         {
             if (Creature* creature = GetMap()->GetCreature(questGiver->GetGUID()))
                 creature->CastSpell(this, quest->GetRewSpellCast(), true);
@@ -15260,7 +15276,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     else if (quest->GetRewSpell() > 0)
     {
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(quest->GetRewSpell());
-        if (spellInfo && questGiver->isType(TYPEMASK_UNIT) && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL) && !spellInfo->HasEffect(SPELL_EFFECT_CREATE_ITEM) && !spellInfo->IsSelfCast())
+        if (spellInfo && questGiver->isType(TYPEMASK_UNIT) && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL) && !spellInfo->HasEffect(SPELL_EFFECT_CREATE_ITEM))
         {
             if (Creature* creature = GetMap()->GetCreature(questGiver->GetGUID()))
                 creature->CastSpell(this, quest->GetRewSpell(), true);
@@ -15630,7 +15646,7 @@ bool Player::SatisfyQuestStatus(Quest const* qInfo, bool msg) const
 
 bool Player::SatisfyQuestConditions(Quest const* qInfo, bool msg)
 {
-    if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, qInfo->GetQuestId(), this))
+    if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_AVAILABLE, qInfo->GetQuestId(), this))
     {
         if (msg)
         {
@@ -16029,7 +16045,7 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
         if (!quest)
             continue;
 
-        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId(), this))
+        if (!sConditionMgr->IsObjectMeetingNotGroupedConditions(CONDITION_SOURCE_TYPE_QUEST_AVAILABLE, quest->GetQuestId(), this))
             continue;
 
         QuestStatus status = GetQuestStatus(questId);
@@ -17501,6 +17517,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder)
 
     SetMap(map);
     StoreRaidMapDifficulty();
+    UpdatePositionData();
 
     // now that map position is determined, check instance validity
     if (!CheckInstanceValidity(true) && !IsInstanceLoginGameMasterException())
@@ -21453,6 +21470,27 @@ void Player::ContinueTaxiFlight() const
     GetSession()->SendDoFlight(mountDisplayId, path, startNode);
 }
 
+void Player::SendTaxiNodeStatusMultiple()
+{
+    for (auto itr = m_clientGUIDs.begin(); itr != m_clientGUIDs.end(); ++itr)
+    {
+        if (!itr->IsCreature())
+            continue;
+        Creature* creature = ObjectAccessor::GetCreature(*this, *itr);
+        if (!creature || creature->IsHostileTo(this))
+            continue;
+        if (!creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER))
+            continue;
+        uint32 nearestNode = sObjectMgr->GetNearestTaxiNode(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetMapId(), GetTeam());
+        if (!nearestNode)
+            continue;
+        WorldPacket data(SMSG_TAXINODE_STATUS, 9);
+        data << *itr;
+        data << uint8(m_taxi.IsTaximaskNodeKnown(nearestNode) ? 1 : 0);
+        SendDirectMessage(&data);
+    }
+}
+
 void Player::InitDataForForm(bool reapplyMods)
 {
     ShapeshiftForm form = GetShapeshiftForm();
@@ -22645,6 +22683,8 @@ void Player::SendInitialPacketsAfterAddToMap()
     SendAurasForTarget(this);
     SendEnchantmentDurations();                             // must be after add to map
     SendItemDurations();                                    // must be after add to map
+    SendQuestGiverStatusMultiple();
+    SendTaxiNodeStatusMultiple();
 
     // raid downscaling - send difficulty to player
     if (GetMap()->IsRaid())
@@ -24161,7 +24201,7 @@ void Player::ProcessTerrainStatusUpdate(ZLiquidStatus status, Optional<LiquidDat
             else
                 m_MirrorTimerFlags &= ~UNDERWATER_INLAVA;
         }
-        
+
         // Slime state (any contact)
         if (liquidData->type_flags & MAP_LIQUID_TYPE_SLIME)
         {
@@ -26371,9 +26411,6 @@ bool Player::SetDisableGravity(bool disable, bool packetOnly /*= false*/)
 
 bool Player::SetCanFly(bool apply, bool packetOnly /*= false*/)
 {
-    if (!packetOnly && !Unit::SetCanFly(apply))
-        return false;
-
     if (!apply)
         SetFallInformation(0, GetPositionZ());
 
@@ -26382,11 +26419,16 @@ bool Player::SetCanFly(bool apply, bool packetOnly /*= false*/)
     data << uint32(0);          //! movement counter
     SendDirectMessage(&data);
 
-    data.Initialize(MSG_MOVE_UPDATE_CAN_FLY, 64);
-    data << GetPackGUID();
-    BuildMovementPacket(&data);
-    SendMessageToSet(&data, false);
-    return true;
+    if (packetOnly || Unit::SetCanFly(apply))
+    {
+        data.Initialize(MSG_MOVE_UPDATE_CAN_FLY, 64);
+        data << GetPackGUID();
+        BuildMovementPacket(&data);
+        SendMessageToSet(&data, false);
+        return true;
+    }
+    else
+        return false;
 }
 
 bool Player::SetHover(bool apply, bool packetOnly /*= false*/)

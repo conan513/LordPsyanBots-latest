@@ -38,6 +38,7 @@ PrepatchGI.Added = 0
 #    WARDEN SETTINGS
 #    PLAYER INTERACTION
 #    CREATURE SETTINGS
+#    SPAWN/RESPAWN SETTINGS
 #    CHAT SETTINGS
 #    GAME MASTER SETTINGS
 #    VISIBILITY AND DISTANCES
@@ -1731,6 +1732,130 @@ ListenRange.Yell = 300
 #        Default: 180000
 
 Creature.MovingStopTimeForPlayer = 180000
+
+#    MonsterSight
+#        Description: The maximum distance in yards that a "monster" creature can see
+#                     regardless of level difference (through CreatureAI::IsVisible).
+#                     Increases CONFIG_SIGHT_MONSTER to 50 yards. Used to be 20 yards.
+#        Default:     50.000000
+
+MonsterSight = 50.000000
+
+#
+###################################################################################################
+
+###################################################################################################
+# SPAWN/RESPAWN SETTINGS
+#
+#    Respawn.MinCheckIntervalMS
+#        Description: Minimum time that needs to pass between respawn checks for any given map.
+#        Default:     5000 - 5 seconds
+
+Respawn.MinCheckIntervalMS = 5000
+
+#
+#    Respawn.GuidWarnLevel
+#        Description: The point at which the highest guid for creatures or gameobjects in any map must reach
+#                     before the warning logic is enabled. A restart will then be queued at the next quiet time
+#                     The maximum guid per map is 16,777,216. So, it must be less than this value.
+#        Default:     12000000 - 12 million
+
+Respawn.GuidWarnLevel = 12000000
+
+#
+#    Respawn.WarningMessage
+#        Description: This message will be periodically shown (Frequency specified by Respawn.WarningFrequency) to
+#                     all users of the server, once the Respawn.GuidWarnLevel has been passed, and a restart scheduled.
+#                     It's used to warn users that there will be an out of schedule server restart soon.
+#        Default:     "There will be an unscheduled server restart at 03:00 server time. The server will be available again shortly after."
+
+Respawn.WarningMessage = "There will be an unscheduled server restart at 03:00. The server will be available again shortly after."
+
+#
+#    Respawn.WarningFrequency
+#        Description: The frequency (in seconds) that the warning message will be sent to users after a quiet time restart is triggered.
+#                     The message will repeat each time this many seconds passed until the server is restarted.
+#                     If set to 0, no warnings will be sent.
+#        Default:     1800 - (30 minutes)
+
+Respawn.WarningFrequency = 1800
+
+#
+#    Respawn.GuidAlertLevel
+#        Description: The point at which the highest guid for creatures or gameobjects in any map must reach
+#                     before the alert logic is enabled. A restart will then be triggered for 30 mins from that
+#                     point. The maximum guid per map is 16,777,216. So, it must be less than this value.
+#        Default:     16000000 - 16 million
+
+Respawn.GuidAlertLevel = 16000000
+
+#
+#    Respawn.AlertRestartReason
+#        Description: The shutdown reason given when the alert level is reached. The server will use a fixed time of
+#                     5 minutes and the reason for shutdown will be this message
+#        Default:     "Urgent Maintenance"
+
+Respawn.AlertRestartReason = "Urgent Maintenance"
+
+#
+#    Respawn.RestartQuietTime
+#        Description: The hour at which the server will be restarted after the Respawn.GuidWarnLevel
+#                     threshold has been reached. This can be between 0 and 23. 20 will be 8pm server time
+#        Default:     3 - 3am
+
+Respawn.RestartQuietTime = 3
+
+#
+#    Respawn.DynamicMode
+#        Description: Select which mode (if any) should be used to adjust respawn of creatures.
+#                     This will only affect creatures that have dynamic spawn rate scaling enabled in
+#                     the spawn group table (by default, gathering nodes and quest targets with respawn time <30min
+#                     1 - Use number of players in zone
+#        Default:     0 - No dynamic respawn function
+
+Respawn.DynamicMode = 0
+
+#
+#    Respawn.DynamicEscortNPC
+#        Description: This switch controls the dynamic respawn system for escort NPCs not in instancable maps (base maps only).
+#                     This will cause the respawn timer to begin when an escort event begins, and potentially
+#                     allow multiple instances of the NPC to be alive at the same time (when combined with Respawn.DynamicMode > 0)
+#                     1 - Enabled
+#        Default:     0 - Disabled
+
+Respawn.DynamicEscortNPC = 0
+
+#
+#    Respawn.DynamicRateCreature
+#        Description: The rate at which the respawn time is adjusted for high player counts in a zone (for creatures).
+#                     Up to this number of players, the respawn rate is unchanged.
+#                     At double this number in players, you get twice as many respawns, at three times this number, three times the respawns, and so forth.
+#        Default:     10
+
+Respawn.DynamicRateCreature = 10
+
+#
+#    Respawn.DynamicMinimumCreature
+#        Description: The minimum respawn time for a creature under dynamic scaling.
+#        Default:     10 - (10 seconds)
+
+Respawn.DynamicMinimumCreature = 10
+
+#
+#    Respawn.DynamicRateGameObject
+#        Description: The rate at which the respawn time is adjusted for high player counts in a zone (for gameobjects).
+#                     Up to this number of players, the respawn rate is unchanged.
+#                     At double this number in players, you get twice as many respawns, at three times this number, three times the respawns, and so forth.
+#        Default:     10
+
+Respawn.DynamicRateGameObject = 10
+
+#
+#    Respawn.DynamicMinimumGameObject
+#        Description: The minimum respawn time for a gameobject under dynamic scaling.
+#        Default:     10 - (10 seconds)
+
+Respawn.DynamicMinimumGameObject = 10
 
 #
 ###################################################################################################
@@ -3714,7 +3839,6 @@ Logger.commands.gm=3,Console GM
 Logger.scripts.hotswap=3,Console Server
 Logger.sql.sql=5,Console DBErrors
 Logger.sql.updates=3,Console Server
-Logger.playerbot=1,Console Server
 Logger.mmaps=3,Server
 
 #Logger.achievement=3,Console Server
@@ -3853,6 +3977,406 @@ Metric.ConnectionInfo = "127.0.0.1;8086;worldserver"
 #
 
 Metric.OverallStatusInterval = 1
+
+#
+###################################################################################################
+
+##########################################
+#  LordPsyanBots Configuration Settings  #
+##########################################
+
+[AiPlayerbotConf]
+ConfVersion=2010102201
+
+# Enable or disable AI Playerbot
+AiPlayerbot.Enabled = 1
+
+# Warrior
+AiPlayerbot.RandomClassSpecProbability.1.0 = 20
+AiPlayerbot.RandomClassSpecProbability.1.1 = 30
+AiPlayerbot.RandomClassSpecProbability.1.2 = 50
+# Paladin
+AiPlayerbot.RandomClassSpecProbability.2.0 = 20
+AiPlayerbot.RandomClassSpecProbability.2.1 = 50
+AiPlayerbot.RandomClassSpecProbability.2.2 = 30
+# Hunter
+AiPlayerbot.RandomClassSpecProbability.3.0 = 25
+AiPlayerbot.RandomClassSpecProbability.3.1 = 50
+AiPlayerbot.RandomClassSpecProbability.3.2 = 25
+# Rogue
+AiPlayerbot.RandomClassSpecProbability.4.0 = 40
+AiPlayerbot.RandomClassSpecProbability.4.1 = 50
+AiPlayerbot.RandomClassSpecProbability.4.2 = 10
+# Priest
+AiPlayerbot.RandomClassSpecProbability.5.0 = 40
+AiPlayerbot.RandomClassSpecProbability.5.1 = 40
+AiPlayerbot.RandomClassSpecProbability.5.2 = 20
+# Shaman
+AiPlayerbot.RandomClassSpecProbability.7.0 = 10
+AiPlayerbot.RandomClassSpecProbability.7.1 = 45
+AiPlayerbot.RandomClassSpecProbability.7.2 = 45
+# Mage
+AiPlayerbot.RandomClassSpecProbability.8.0 = 20
+AiPlayerbot.RandomClassSpecProbability.8.1 = 10
+AiPlayerbot.RandomClassSpecProbability.8.2 = 70
+# Warlock
+AiPlayerbot.RandomClassSpecProbability.9.0 = 33
+AiPlayerbot.RandomClassSpecProbability.9.1 = 33
+AiPlayerbot.RandomClassSpecProbability.9.2 = 33
+# Druid
+AiPlayerbot.RandomClassSpecProbability.11.0 = 10
+AiPlayerbot.RandomClassSpecProbability.11.1 = 45
+AiPlayerbot.RandomClassSpecProbability.11.2 = 45
+
+#
+# All other parameters are optional but can be changed by uncommenting them here
+#
+
+# Prefix for bot chat commands (e.g. follow, stay)
+AiPlayerbot.CommandPrefix =
+
+# Max AI iterations per tick
+#AiPlayerbot.IterationsPerTick = 10
+
+# Allow/deny bots from your guild
+#AiPlayerbot.AllowGuildBots = 1
+
+# Delay between two short-time spells cast
+#AiPlayerbot.GlobalCooldown = 500
+
+# Max wait time when moving
+#AiPlayerbot.MaxWaitForMove = 5000
+
+# Delay between two bot actions
+#AiPlayerbot.ReactDelay = 100
+
+# Distances
+#AiPlayerbot.SightDistance = 75.0
+#AiPlayerbot.SpellDistance = 30.0
+#AiPlayerbot.ReactDistance = 150.0
+#AiPlayerbot.GrindDistance = 100.0
+#AiPlayerbot.LootDistance = 20.0
+#AiPlayerbot.FleeDistance = 20.0
+#AiPlayerbot.TooCloseDistance = 7.0
+#AiPlayerbot.MeleeDistance = 1.0
+#AiPlayerbot.FollowDistance = 1.5
+#AiPlayerbot.WhisperDistance = 6000.0
+#AiPlayerbot.ContactDistance = 0.5
+
+# Bot can flee for enemy
+#AiPlayerbot.FleeingEnabled = 1
+
+# Health/Mana levels
+#AiPlayerbot.CriticalHealth = 25
+#AiPlayerbot.LowHealth = 45
+#AiPlayerbot.MediumHealth = 65
+#AiPlayerbot.AlmostFullHealth = 85
+#AiPlayerbot.LowMana = 15
+#AiPlayerbot.MediumMana = 40
+
+# Enable random bot system
+#AiPlayerbot.RandomBotAutologin = 1
+
+# Random bot default strategies (applied after defaults)
+#AiPlayerbot.RandomBotCombatStrategies = +dps,+attack weak
+#AiPlayerbot.RandomBotNonCombatStrategies = +grind,+move random,+loot
+
+# Create random bot characters automatically
+#AiPlayerbot.RandomBotAutoCreate = 1
+
+# Random bot count
+#AiPlayerbot.MinRandomBots = 50
+#AiPlayerbot.MaxRandomBots = 200
+#AiPlayerbot.RandomBotMinLevel = 1
+#AiPlayerbot.RandomBotMaxLevel = 255 (ignored if more than MaxPlayerLevel mangosd.conf value)
+
+# Accounts to create for random bots
+#AiPlayerbot.RandomBotAccountPrefix = rndbot
+#AiPlayerbot.RandomBotAccountCount = 50
+
+# Delete all random bot accounts
+#AiPlayerbot.DeleteRandomBotAccounts = 0
+
+# Random bot guild count
+#AiPlayerbot.RandomBotGuildCount = 50
+
+# Guild Task system
+#AiPlayerbot.EnableGuildTasks = 1
+
+# How often tasks are changed
+#AiPlayerbot.MinGuildTaskChangeTime = 172800
+#AiPlayerbot.MaxGuildTaskChangeTime = 432000
+# Mail spam interval
+#AiPlayerbot.MinGuildTaskAdvertisementTime = 300
+#AiPlayerbot.MaxGuildTaskAdvertisementTime = 28800
+# Delay before reward is sent
+#AiPlayerbot.MinGuildTaskRewardTime = 300
+#AiPlayerbot.MaxGuildTaskRewardTime = 3600
+
+# Delete all random bot guilds
+#AiPlayerbot.DeleteRandomBotGuilds = 0
+
+# Maps to teleport random bots
+#AiPlayerbot.RandomBotMaps = 0,1,530,571
+
+# Change random bot has lower gear
+#AiPlayerbot.RandomGearLoweringChance = 0.15
+
+# Chance random bot has max level on first randomize
+#AiPlayerbot.RandomBotMaxLevelChance = 0.4
+
+# Quest items to leave (do not destroy)
+#AiPlayerbot.RandomBotQuestItems = 6948,5175,5176,5177,5178
+
+# Spells every random bot will learn on randomize (54197 - cold weather flying)
+#AiPlayerbot.RandomBotSpellIds = 54197
+
+# Enable LFG for random bots
+#AiPlayerbot.RandomBotJoinLfg = 1
+
+# Level diff between random bots and nearby creatures for random teleports
+AiPlayerbot.RandomBotTeleLevel = 3
+
+# Intervals
+#AiPlayerbot.RandomBotUpdateInterval = 60
+#AiPlayerbot.RandomBotCountChangeMinInterval = 86400
+#AiPlayerbot.RandomBotCountChangeMaxInterval = 259200
+#AiPlayerbot.MinRandomBotInWorldTime = 7200
+#AiPlayerbot.MaxRandomBotInWorldTime = 1209600
+#AiPlayerbot.MinRandomBotRandomizeTime = 7200
+#AiPlayerbot.MaxRandomRandomizeTime = 1209600
+#AiPlayerbot.MinRandomBotsPerInterval = 50
+#AiPlayerbot.MaxRandomBotsPerInterval = 100
+#AiPlayerbot.MinRandomBotsPriceChangeInterval = 7200
+#AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
+
+# Log on all random bots on start
+#AiPlayerbot.RandomBotLoginAtStartup = 1
+
+# How far random bots are teleported after death
+#AiPlayerbot.RandomBotTeleportDistance = 1000
+
+# Debug switches
+#AiPlayerbot.SpellDump = 0
+#AiPlayerbot.LogInGroupOnly = 1
+#AiPlayerbot.LogValuesPerTick = 0
+#AiPlayerbot.RandomChangeMultiplier = 1
+
+# Command server port, 0 - disabled
+#AiPlayerbot.CommandServerPort = 8888
+
+#
+###################################################################################################
+
+#######################################################
+# LordPsyanBots Auction House Bot Configuration file  #
+#######################################################
+
+[AhbotConf]
+ConfVersion=2010102201
+
+###################################################################################################################
+# AUCTION HOUSE BOT SETTINGS
+#
+###################################################################################################################
+
+# Disable original AuctionHouseBot
+AuctionHouseBot.Seller.Enabled = 0
+AuctionHouseBot.Buyer.Enabled = 0
+
+# Replace with the new AhBot
+AhBot.Enabled = 1
+
+# Should be used only if random bots are disabled
+# AhBot.GUID = 0
+
+# 199 for 80, 80 for 70, 70 for 60, ..., 25 for 20
+AhBot.MaxItemLevel = 199
+# Same as level cap
+AhBot.MaxRequiredLevel = 80
+
+# Ignore items by ID
+AhBot.IgnoreItemIds = 49283,52200,8494,6345,6891,2460
+
+AhBot.PriceMultiplier = 1.0
+AhBot.DefaultMinPrice = 20
+AhBot.PriceQualityMultiplier = 1.0
+AhBot.AlwaysAvailableMoney = 2000000
+
+# Buy/sell delays
+AhBot.ItemBuyMinInterval = 7200
+AhBot.ItemBuyMaxInterval = 28800
+AhBot.ItemSellMinInterval = 7200
+AhBot.ItemSellMaxInterval = 28800
+
+#
+# Items
+#
+
+AhBot.MaxAuctionCount.equip.green = 0
+AhBot.MaxAuctionCount.equip.blue = 40
+AhBot.MaxAuctionCount.equip.epic = 20
+AhBot.PriceMultiplier.Sell.equip = 1.0
+AhBot.PriceMultiplier.Buy.equip = 1.0
+AhBot.PricingStrategy.equip = buyOnlyRare
+
+AhBot.MaxAuctionCount.reagent.white = 6
+AhBot.MaxAuctionCount.reagent.green = 2
+AhBot.PriceMultiplier.Sell.reagent = 1.0
+AhBot.PriceMultiplier.Buy.reagent = 1.0
+AhBot.PricingStrategy.reagent = buyOnlyRare
+
+AhBot.MaxAuctionCount.other.white = 20
+AhBot.MaxAuctionCount.other.green = 10
+AhBot.MaxAuctionCount.other.blue = 6
+AhBot.PriceMultiplier.Sell.other = 1.0
+AhBot.PriceMultiplier.Buy.other = 1.0
+AhBot.PricingStrategy.other = buyOnlyRare
+
+#
+# Container
+#
+
+AhBot.MaxAuctionCount.quiver.white = 2
+AhBot.PriceMultiplier.Sell.quiver = 1.0
+AhBot.PriceMultiplier.Buy.quiver = 1.0
+AhBot.PricingStrategy.quiver = buyOnlyRare
+
+AhBot.MaxAuctionCount.container.white = 6
+AhBot.MaxAuctionCount.container.green = 2
+AhBot.MaxAuctionCount.container.blue = 2
+AhBot.PriceMultiplier.Sell.container = 1.0
+AhBot.PriceMultiplier.Buy.container = 1.0
+
+#
+# Glyph
+#
+
+AhBot.MaxAuctionCount.glyph.white = 50
+AhBot.MaxAuctionCount.glyph.green = 20
+AhBot.MaxAuctionCount.glyph.blue = 10
+AhBot.PriceMultiplier.Sell.glyph = 1.0
+AhBot.PriceMultiplier.Buy.glyph = 1.0
+
+#
+# Quest
+#
+
+AhBot.MaxAuctionCount.quest.white = 14
+AhBot.MaxAuctionCount.quest.green = 2
+AhBot.MaxAuctionCount.quest.blue = 2
+AhBot.PriceMultiplier.Sell.quest = 1.0
+AhBot.PriceMultiplier.Buy.quest = 1.0
+
+#
+# Consumables
+#
+
+AhBot.MaxAuctionCount.alchemy.white = 50
+AhBot.MaxAuctionCount.alchemy.green = 20
+AhBot.MaxAuctionCount.alchemy.blue = 10
+AhBot.PriceMultiplier.Sell.alchemy = 1.0
+AhBot.PriceMultiplier.Buy.alchemy = 1.0
+
+AhBot.MaxAuctionCount.scroll.white = 40
+AhBot.MaxAuctionCount.scroll.green = 6
+AhBot.MaxAuctionCount.scroll.blue = 4
+AhBot.PriceMultiplier.Sell.scroll = 1.0
+AhBot.PriceMultiplier.Buy.scroll = 1.0
+
+AhBot.MaxAuctionCount.Food.white = 40
+AhBot.PriceMultiplier.Sell.Food = 1.0
+AhBot.PriceMultiplier.Buy.Food = 1.0
+
+AhBot.MaxAuctionCount.bandage.white = 10
+AhBot.PriceMultiplier.Sell.bandage = 1.0
+AhBot.PriceMultiplier.Buy.bandage = 1.0
+
+AhBot.MaxAuctionCount.OtherConsumable.white = 20
+AhBot.MaxAuctionCount.OtherConsumable.green = 10
+AhBot.MaxAuctionCount.OtherConsumable.blue = 5
+AhBot.PriceMultiplier.Sell.OtherConsumable = 1.0
+AhBot.PriceMultiplier.Buy.OtherConsumable = 1.0
+
+#
+# Recipe
+#
+
+AhBot.MaxAuctionCount.recipe.white = 8
+AhBot.MaxAuctionCount.recipe.green = 4
+AhBot.MaxAuctionCount.recipe.blue = 2
+AhBot.MaxAuctionCount.recipe.epic = 2
+AhBot.PriceMultiplier.Sell.recipe = 1.0
+AhBot.PriceMultiplier.Buy.recipe = 1.0
+
+#
+# Trade
+#
+
+AhBot.MaxAuctionCount.Elemental.white = 30
+AhBot.MaxAuctionCount.Elemental.green = 20
+AhBot.MaxAuctionCount.Elemental.blue = 6
+AhBot.PriceMultiplier.Sell.Elemental = 1.0
+AhBot.PriceMultiplier.Buy.Elemental = 1.0
+
+AhBot.MaxAuctionCount.Cloth.white = 50
+AhBot.MaxAuctionCount.Cloth.green = 14
+AhBot.MaxAuctionCount.Cloth.blue = 6
+AhBot.PriceMultiplier.Sell.Cloth = 1.0
+AhBot.PriceMultiplier.Buy.Cloth = 1.0
+
+AhBot.MaxAuctionCount.Leather.white = 50
+AhBot.MaxAuctionCount.Leather.green = 14
+AhBot.MaxAuctionCount.Leather.blue = 6
+AhBot.PriceMultiplier.Sell.Leather = 1.0
+AhBot.PriceMultiplier.Buy.Leather = 1.0
+
+AhBot.MaxAuctionCount.Herb.white = 50
+AhBot.MaxAuctionCount.Herb.green = 14
+AhBot.PriceMultiplier.Sell.Herb = 1.0
+AhBot.PriceMultiplier.Buy.Herb = 1.0
+
+AhBot.MaxAuctionCount.Meat.white = 50
+AhBot.PriceMultiplier.Sell.Meat = 1.0
+AhBot.PriceMultiplier.Buy.Meat = 1.0
+
+AhBot.MaxAuctionCount.Metal.white = 50
+AhBot.MaxAuctionCount.Metal.green = 14
+AhBot.MaxAuctionCount.Metal.blue = 6
+AhBot.PriceMultiplier.Sell.Metal = 1.0
+AhBot.PriceMultiplier.Buy.Metal = 1.0
+
+AhBot.MaxAuctionCount.Engineering.white = 20
+AhBot.MaxAuctionCount.Engineering.green = 10
+AhBot.MaxAuctionCount.Engineering.blue = 4
+AhBot.PriceMultiplier.Sell.Engineering = 1.0
+AhBot.PriceMultiplier.Buy.Engineering = 1.0
+
+AhBot.MaxAuctionCount.Disenchants.white = 40
+AhBot.MaxAuctionCount.Disenchants.green = 20
+AhBot.MaxAuctionCount.Disenchants.blue = 20
+AhBot.PriceMultiplier.Sell.Disenchants = 1.0
+AhBot.PriceMultiplier.Buy.Disenchants = 1.0
+
+AhBot.MaxAuctionCount.SimpleGems.green = 30
+AhBot.MaxAuctionCount.SimpleGems.blue = 20
+AhBot.MaxAuctionCount.SimpleGems.epic = 4
+AhBot.PriceMultiplier.Sell.SimpleGems = 1.0
+AhBot.PriceMultiplier.Buy.SimpleGems = 1.0
+
+AhBot.MaxAuctionCount.SocketGems.green = 50
+AhBot.MaxAuctionCount.SocketGems.blue = 20
+AhBot.MaxAuctionCount.SocketGems.epic = 4
+AhBot.PriceMultiplier.Sell.SocketGems = 1.0
+AhBot.PriceMultiplier.Buy.SocketGems = 1.0
+
+AhBot.MaxAuctionCount.OtherTrade.white = 10
+AhBot.PriceMultiplier.Sell.OtherTrade = 1.0
+AhBot.PriceMultiplier.Buy.OtherTrade = 1.0
+
+AhBot.PriceMultiplier.Sell.projectile = 1.0
+AhBot.PriceMultiplier.Buy.projectile = 1.0
+AhBot.PricingStrategy.projectile = buyOnlyRare
 
 #
 ###################################################################################################

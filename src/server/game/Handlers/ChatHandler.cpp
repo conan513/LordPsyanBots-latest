@@ -150,7 +150,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     // LANG_ADDON should not be changed nor be affected by flood control
     else
     {
-        // send in universal language if player in .gmon mode (ignore spell effects)
+        // send in universal language if player in .gm on mode (ignore spell effects)
         if (sender->IsGameMaster())
             lang = LANG_UNIVERSAL;
         else
@@ -240,11 +240,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         if (msg.empty())
             return;
 
-        if (ChatHandler(this).ParseCommands(msg.c_str()))
-            return;
-
+        if (lang == LANG_ADDON)
+        {
+            if (AddonChannelCommandHandler(this).ParseCommands(msg.c_str()))
+                return;
+        }
         if (lang != LANG_ADDON)
         {
+            if (ChatHandler(this).ParseCommands(msg.c_str()))
+                return;
             // Strip invisible characters for non-addon messages
             if (sWorld->getBoolConfig(CONFIG_CHAT_FAKE_MESSAGE_PREVENTING))
                 stripLineInvisibleChars(msg);
@@ -570,8 +574,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 }
                     sRandomPlayerbotMgr.HandleCommand(type, msg, *_player);
                     // END Playerbot mod
-                    sScriptMgr->OnPlayerChat(sender, type, lang, msg, chn);
-                    chn->Say(sender->GetGUID(), msg.c_str(), lang);
+                sScriptMgr->OnPlayerChat(sender, type, lang, msg, chn);
+                chn->Say(sender->GetGUID(), msg.c_str(), lang);
             }
             break;
         }
