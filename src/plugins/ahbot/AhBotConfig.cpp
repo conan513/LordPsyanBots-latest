@@ -1,5 +1,7 @@
 #include "../pchdef.h"
 #include "AhBotConfig.h"
+#include "World.h"
+
 std::vector<std::string> split(const std::string &s, char delim);
 
 using namespace std;
@@ -28,30 +30,30 @@ bool AhBotConfig::Initialize()
     vector<string> args;
     if (!config.LoadInitial("worldserver.conf", args, error))
     {
-        sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled. Unable to open configuration file ahbot.conf");
+        sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled. Unable to open configuration file worldserver.conf");
         return false;
     }
 
-    enabled = sConfigMgr->GetBoolDefault("AhBot.Enabled", true);
+    enabled = sWorld->getBoolConfig(CONFIG_AHBOT_ENABLED);
 
     if (!enabled)
-        sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled in ahbot.conf");
+        sLog->outMessage("ahbot", LOG_LEVEL_INFO, "AhBot is Disabled in worldserver.conf");
 
-    guid = (uint64)sConfigMgr->GetIntDefault("AhBot.GUID", 0);
-    updateInterval = sConfigMgr->GetIntDefault("AhBot.UpdateIntervalInSeconds", 300);
-    historyDays = sConfigMgr->GetIntDefault("AhBot.History.Days", 30);
-    itemBuyMinInterval = sConfigMgr->GetIntDefault("AhBot.ItemBuyMinInterval", 600);
-    itemBuyMaxInterval = sConfigMgr->GetIntDefault("AhBot.ItemBuyMaxInterval", 7200);
-    itemSellMinInterval = sConfigMgr->GetIntDefault("AhBot.ItemSellMinInterval", 600);
-    itemSellMaxInterval = sConfigMgr->GetIntDefault("AhBot.ItemSellMaxInterval", 7200);
-    maxSellInterval = sConfigMgr->GetIntDefault("AhBot.MaxSellInterval", 3600 * 8);
-    alwaysAvailableMoney = sConfigMgr->GetIntDefault("AhBot.AlwaysAvailableMoney", 200000);
-    priceMultiplier = sConfigMgr->GetFloatDefault("AhBot.PriceMultiplier", 1.0f);
-    defaultMinPrice = sConfigMgr->GetIntDefault("AhBot.DefaultMinPrice", 20);
-    maxItemLevel = sConfigMgr->GetIntDefault("AhBot.MaxItemLevel", 199);
-    maxRequiredLevel = sConfigMgr->GetIntDefault("AhBot.MaxRequiredLevel", 80);
-    priceQualityMultiplier = sConfigMgr->GetFloatDefault("AhBot.PriceQualityMultiplier", 1.0f);
-    underPriceProbability = sConfigMgr->GetFloatDefault("AhBot.UnderPriceProbability", 0.05f);
+    guid = (uint64)sWorld->getIntConfig(CONFIG_AHBOT_GUID);
+    updateInterval = sWorld->getIntConfig(CONFIG_AHBOT_UPDATEINTERVAL);
+    historyDays = sWorld->getIntConfig(CONFIG_AHBOT_HOSTORYDAYS);
+    itemBuyMinInterval = sWorld->getIntConfig(CONFIG_AHBOT_ITEMBUYMIN);
+    itemBuyMaxInterval = sWorld->getIntConfig(CONFIG_AHBOT_ITEMBUYMAX);
+    itemSellMinInterval = sWorld->getIntConfig(CONFIG_AHBOT_ITEMSELLMIN);
+    itemSellMaxInterval = sWorld->getIntConfig(CONFIG_AHBOT_ITEMSELLMAX);
+    maxSellInterval = sWorld->getIntConfig(CONFIG_AHBOT_MAXSELL);
+    alwaysAvailableMoney = sWorld->getIntConfig(CONFIG_AHBOT_ALWAYSMONEY);
+    priceMultiplier = sWorld->getFloatConfig(CONFIG_AHBOT_PRICEMULTIPLIER);
+    defaultMinPrice = sWorld->getIntConfig(CONFIG_AHBOT_DEFAULTMINPRICE);
+    maxItemLevel = sWorld->getIntConfig(CONFIG_AHBOT_MAXITEMLEVEL);
+    maxRequiredLevel = sWorld->getIntConfig(CONFIG_AHBOT_MAXREQLEVEL);
+    priceQualityMultiplier = sWorld->getFloatConfig(CONFIG_AHBOT_PRICEQUALITYMULTIPLY);
+    underPriceProbability = sWorld->getFloatConfig(CONFIG_AHBOT_UNDERPRICEPROB);
     LoadSet<set<uint32> >(sConfigMgr->GetStringDefault("AhBot.IgnoreItemIds", "49283,52200,8494,6345,6891,2460,37164,34835"), ignoreItemIds);
 
 
